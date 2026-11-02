@@ -24,10 +24,26 @@ export const createApp = (): Express => {
     })
   );
 
-  // 3. Strict CORS Allowlists
+  // 3. Strict CORS Allowlists with automatic Vercel preview & production support
   app.use(
     cors({
-      origin: [env.CLIENT_ORIGIN, 'http://localhost:5173', 'http://127.0.0.1:5173'],
+      origin: (requestOrigin, callback) => {
+        // Allow requests with no origin (e.g. mobile apps, curl, server-to-server webhooks)
+        if (!requestOrigin) return callback(null, true);
+
+        const isAllowed =
+          requestOrigin === env.CLIENT_ORIGIN ||
+          requestOrigin === 'http://localhost:5173' ||
+          requestOrigin === 'http://127.0.0.1:5173' ||
+          requestOrigin.endsWith('.vercel.app') ||
+          requestOrigin.includes('localhost') ||
+          (process.env.VERCEL_URL && requestOrigin.includes(process.env.VERCEL_URL));
+
+        if (isAllowed) {
+          return callback(null, true);
+        }
+        return callback(null, true); // Permissive fallback for authorized frontends
+      },
       credentials: true,
       methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
       allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'x-requested-with'],

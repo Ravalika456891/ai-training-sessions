@@ -32,12 +32,27 @@ __export(workshop_service_exports, {
 module.exports = __toCommonJS(workshop_service_exports);
 var import_Workshop = require("../models/Workshop.js");
 var import_apiError = require("../utils/apiError.js");
+var import_db = require("../config/db.js");
+var import_seed = require("../utils/seed.js");
 var import_mongoose = __toESM(require("mongoose"));
 class WorkshopService {
   static async getPublishedWorkshops() {
-    const workshops = await import_Workshop.Workshop.find({
+    if (!(0, import_db.isDBConnected)()) {
+      return [];
+    }
+    let workshops = await import_Workshop.Workshop.find({
       status: "published"
     }).sort({ startDate: 1 });
+    if (workshops.length === 0) {
+      try {
+        await (0, import_seed.seedDatabase)();
+        workshops = await import_Workshop.Workshop.find({
+          status: "published"
+        }).sort({ startDate: 1 });
+      } catch (seedErr) {
+        console.warn("[Auto-Seed Error]", seedErr);
+      }
+    }
     return workshops;
   }
   static async getWorkshopById(idOrSlug) {

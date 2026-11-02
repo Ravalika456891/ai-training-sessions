@@ -4,34 +4,53 @@ import { env } from './env.js';
 let isConnected = false;
 
 export const connectDB = async (): Promise<boolean> => {
-  if (isConnected) {
+  // If connection is already open in this serverless runtime, reuse it
+  if (mongoose.connection.readyState === 1) {
+    isConnected = true;
     return true;
+  }
+
+  // If connection is currently connecting, wait for it
+  if (mongoose.connection.readyState === 2) {
+    return true;
+  }
+
+  // If running on Vercel without a configured remote MongoDB Atlas URI
+  const isVercel = Boolean(process.env.VERCEL || process.env.VERCEL_ENV);
+  const isLocalhostURI = !env.MONGODB_URI || env.MONGODB_URI.includes('127.0.0.1') || env.MONGODB_URI.includes('localhost');
+
+  if (isVercel && isLocalhostURI) {
+    console.warn('[MongoDB Notice] Running on Vercel with default localhost MONGODB_URI. Please add your live MongoDB Atlas connection string in Vercel Project Settings.');
+    isConnected = false;
+    return false;
   }
 
   try {
     mongoose.set('strictQuery', true);
     
-    // Connect with 5s timeout to not hang if MongoDB Atlas is not yet provisioned
+    // Connect with 4s timeout so serverless invocations don't freeze
     await mongoose.connect(env.MONGODB_URI, {
-      serverSelectionTimeoutMS: 5000,
-      autoIndex: true,
+      serverSelectionTimeoutMS: 4000,
+      connectTimeoutMS: 4000,
+      maxPoolSize: 10,
+      autoIndex: !env.isProduction,
     });
 
     isConnected = true;
     console.log(`[MongoDB] Successfully connected to database: ${mongoose.connection.name}`);
     return true;
   } catch (error: any) {
-    console.warn(`[MongoDB Warning] Could not establish connection to ${env.MONGODB_URI}`);
+    isConnected = false;
+    console.warn(`[MongoDB Warning] Could not establish connection to database.`);
     console.warn(`Reason: ${error.message}`);
-    console.warn(`Please set MONGODB_URI in server/.env with your valid MongoDB Atlas connection string.`);
     return false;
   }
 };
 
-export const isDBConnected = (): boolean => isConnected;
+export const isDBConnected = (): boolean => mongoose.connection.readyState === 1;
 
 export const disconnectDB = async (): Promise<void> => {
-  if (isConnected) {
+  if (mongoose.connection.readyState !== 0) {
     await mongoose.disconnect();
     isConnected = false;
     console.log('[MongoDB] Disconnected from database.');

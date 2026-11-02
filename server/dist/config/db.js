@@ -36,28 +36,41 @@ var import_mongoose = __toESM(require("mongoose"));
 var import_env = require("./env.js");
 let isConnected = false;
 const connectDB = async () => {
-  if (isConnected) {
+  if (import_mongoose.default.connection.readyState === 1) {
+    isConnected = true;
     return true;
+  }
+  if (import_mongoose.default.connection.readyState === 2) {
+    return true;
+  }
+  const isVercel = Boolean(process.env.VERCEL || process.env.VERCEL_ENV);
+  const isLocalhostURI = !import_env.env.MONGODB_URI || import_env.env.MONGODB_URI.includes("127.0.0.1") || import_env.env.MONGODB_URI.includes("localhost");
+  if (isVercel && isLocalhostURI) {
+    console.warn("[MongoDB Notice] Running on Vercel with default localhost MONGODB_URI. Please add your live MongoDB Atlas connection string in Vercel Project Settings.");
+    isConnected = false;
+    return false;
   }
   try {
     import_mongoose.default.set("strictQuery", true);
     await import_mongoose.default.connect(import_env.env.MONGODB_URI, {
-      serverSelectionTimeoutMS: 5e3,
-      autoIndex: true
+      serverSelectionTimeoutMS: 4e3,
+      connectTimeoutMS: 4e3,
+      maxPoolSize: 10,
+      autoIndex: !import_env.env.isProduction
     });
     isConnected = true;
     console.log(`[MongoDB] Successfully connected to database: ${import_mongoose.default.connection.name}`);
     return true;
   } catch (error) {
-    console.warn(`[MongoDB Warning] Could not establish connection to ${import_env.env.MONGODB_URI}`);
+    isConnected = false;
+    console.warn(`[MongoDB Warning] Could not establish connection to database.`);
     console.warn(`Reason: ${error.message}`);
-    console.warn(`Please set MONGODB_URI in server/.env with your valid MongoDB Atlas connection string.`);
     return false;
   }
 };
-const isDBConnected = () => isConnected;
+const isDBConnected = () => import_mongoose.default.connection.readyState === 1;
 const disconnectDB = async () => {
-  if (isConnected) {
+  if (import_mongoose.default.connection.readyState !== 0) {
     await import_mongoose.default.disconnect();
     isConnected = false;
     console.log("[MongoDB] Disconnected from database.");

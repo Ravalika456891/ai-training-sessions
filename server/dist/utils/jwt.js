@@ -48,7 +48,7 @@ const setAuthCookie = (res, token) => {
   res.cookie(import_env.env.COOKIE_NAME, token, {
     httpOnly: true,
     secure: import_env.env.isProduction,
-    sameSite: import_env.env.isProduction ? "strict" : "lax",
+    sameSite: "lax",
     path: "/",
     maxAge: 7 * 24 * 60 * 60 * 1e3
     // 7 days
@@ -58,7 +58,7 @@ const clearAuthCookie = (res) => {
   res.clearCookie(import_env.env.COOKIE_NAME, {
     httpOnly: true,
     secure: import_env.env.isProduction,
-    sameSite: import_env.env.isProduction ? "strict" : "lax",
+    sameSite: "lax",
     path: "/"
   });
 };

@@ -1,13 +1,31 @@
 import { Workshop, IWorkshop } from '../models/Workshop.js';
 import { ApiError } from '../utils/apiError.js';
 import { CreateWorkshopInput, UpdateWorkshopInput } from '../validators/workshop.validator.js';
+import { isDBConnected } from '../config/db.js';
+import { seedDatabase } from '../utils/seed.js';
 import mongoose from 'mongoose';
 
 export class WorkshopService {
   static async getPublishedWorkshops(): Promise<IWorkshop[]> {
-    const workshops = await Workshop.find({
+    if (!isDBConnected()) {
+      return [];
+    }
+
+    let workshops = await Workshop.find({
       status: 'published',
     }).sort({ startDate: 1 });
+
+    // If database is connected but no cohorts exist yet, auto-seed default batches
+    if (workshops.length === 0) {
+      try {
+        await seedDatabase();
+        workshops = await Workshop.find({
+          status: 'published',
+        }).sort({ startDate: 1 });
+      } catch (seedErr) {
+        console.warn('[Auto-Seed Error]', seedErr);
+      }
+    }
 
     return workshops;
   }

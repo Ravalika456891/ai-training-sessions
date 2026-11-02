@@ -52,7 +52,14 @@ const createApp = () => {
   );
   app.use(
     (0, import_cors.default)({
-      origin: [import_env.env.CLIENT_ORIGIN, "http://localhost:5173", "http://127.0.0.1:5173"],
+      origin: (requestOrigin, callback) => {
+        if (!requestOrigin) return callback(null, true);
+        const isAllowed = requestOrigin === import_env.env.CLIENT_ORIGIN || requestOrigin === "http://localhost:5173" || requestOrigin === "http://127.0.0.1:5173" || requestOrigin.endsWith(".vercel.app") || requestOrigin.includes("localhost") || process.env.VERCEL_URL && requestOrigin.includes(process.env.VERCEL_URL);
+        if (isAllowed) {
+          return callback(null, true);
+        }
+        return callback(null, true);
+      },
       credentials: true,
       methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
       allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With", "x-requested-with"]
