@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../src/routes/admin.routes.ts"],
+  "sourcesContent": ["import { Router } from 'express';\nimport { AdminController } from '../controllers/admin.controller.js';\nimport { authenticate, requireRole } from '../middleware/auth.middleware.js';\n\nconst router = Router();\n\nrouter.use(authenticate);\n\n// Admin-only metrics\nrouter.get('/metrics', requireRole('admin'), AdminController.getMetrics);\n\n// Roster (Admin & Instructor)\nrouter.get('/roster/:workshopId', requireRole('admin', 'instructor'), AdminController.getRoster);\n\n// Attendance marking (Admin & Instructor)\nrouter.post('/attendance', requireRole('admin', 'instructor'), AdminController.markAttendance);\n\n// Certificate issuance (Admin)\nrouter.post('/certificates/issue', requireRole('admin'), AdminController.issueCertificate);\n\nexport default router;\n\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,qBAAuB;AACvB,8BAAgC;AAChC,6BAA0C;AAE1C,MAAM,aAAS,uBAAO;AAEtB,OAAO,IAAI,mCAAY;AAGvB,OAAO,IAAI,gBAAY,oCAAY,OAAO,GAAG,wCAAgB,UAAU;AAGvE,OAAO,IAAI,2BAAuB,oCAAY,SAAS,YAAY,GAAG,wCAAgB,SAAS;AAG/F,OAAO,KAAK,mBAAe,oCAAY,SAAS,YAAY,GAAG,wCAAgB,cAAc;AAG7F,OAAO,KAAK,2BAAuB,oCAAY,OAAO,GAAG,wCAAgB,gBAAgB;AAEzF,IAAO,uBAAQ;",
+  "names": []
+}

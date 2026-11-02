@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../src/config/razorpay.ts"],
+  "sourcesContent": ["import { env } from './env.js';\n\nlet razorpayClient: any = null;\n\ntry {\n  // Use require to isolate razorpay from static TypeScript type parsing\n  // eslint-disable-next-line @typescript-eslint/no-require-imports\n  const Razorpay = require('razorpay');\n  razorpayClient = new Razorpay({\n    key_id: env.RAZORPAY_KEY_ID,\n    key_secret: env.RAZORPAY_KEY_SECRET,\n  });\n} catch {\n  razorpayClient = {\n    orders: {\n      create: async (params: any) => ({\n        id: `order_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`,\n        ...params,\n      }),\n    },\n  };\n}\n\nexport const razorpayInstance = razorpayClient;\n\nexport const isRazorpayConfigured = (): boolean => {\n  return (\n    Boolean(env.RAZORPAY_KEY_ID) &&\n    Boolean(env.RAZORPAY_KEY_SECRET) &&\n    env.RAZORPAY_KEY_ID !== 'rzp_test_YourTestKeyId'\n  );\n};\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,iBAAoB;AAEpB,IAAI,iBAAsB;AAE1B,IAAI;AAGF,QAAM,WAAW,QAAQ,UAAU;AACnC,mBAAiB,IAAI,SAAS;AAAA,IAC5B,QAAQ,eAAI;AAAA,IACZ,YAAY,eAAI;AAAA,EAClB,CAAC;AACH,QAAQ;AACN,mBAAiB;AAAA,IACf,QAAQ;AAAA,MACN,QAAQ,OAAO,YAAiB;AAAA,QAC9B,IAAI,SAAS,KAAK,IAAI,CAAC,IAAI,KAAK,OAAO,EAAE,SAAS,EAAE,EAAE,UAAU,GAAG,CAAC,CAAC;AAAA,QACrE,GAAG;AAAA,MACL;AAAA,IACF;AAAA,EACF;AACF;AAEO,MAAM,mBAAmB;AAEzB,MAAM,uBAAuB,MAAe;AACjD,SACE,QAAQ,eAAI,eAAe,KAC3B,QAAQ,eAAI,mBAAmB,KAC/B,eAAI,oBAAoB;AAE5B;",
+  "names": []
+}

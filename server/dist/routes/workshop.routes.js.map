@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../src/routes/workshop.routes.ts"],
+  "sourcesContent": ["import { Router } from 'express';\nimport { WorkshopController } from '../controllers/workshop.controller.js';\nimport { authenticate, requireRole } from '../middleware/auth.middleware.js';\nimport { validateRequest } from '../middleware/validate.middleware.js';\nimport { createWorkshopSchema, updateWorkshopSchema } from '../validators/workshop.validator.js';\n\nconst router = Router();\n\n// Public routes\nrouter.get('/', WorkshopController.getWorkshops);\nrouter.get('/:id', WorkshopController.getWorkshopById);\n\n// Admin-only routes\nrouter.post(\n  '/admin',\n  authenticate,\n  requireRole('admin'),\n  validateRequest(createWorkshopSchema),\n  WorkshopController.createWorkshop\n);\n\nrouter.patch(\n  '/admin/:id',\n  authenticate,\n  requireRole('admin'),\n  validateRequest(updateWorkshopSchema),\n  WorkshopController.updateWorkshop\n);\n\nexport default router;\n\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,qBAAuB;AACvB,iCAAmC;AACnC,6BAA0C;AAC1C,iCAAgC;AAChC,gCAA2D;AAE3D,MAAM,aAAS,uBAAO;AAGtB,OAAO,IAAI,KAAK,8CAAmB,YAAY;AAC/C,OAAO,IAAI,QAAQ,8CAAmB,eAAe;AAGrD,OAAO;AAAA,EACL;AAAA,EACA;AAAA,MACA,oCAAY,OAAO;AAAA,MACnB,4CAAgB,8CAAoB;AAAA,EACpC,8CAAmB;AACrB;AAEA,OAAO;AAAA,EACL;AAAA,EACA;AAAA,MACA,oCAAY,OAAO;AAAA,MACnB,4CAAgB,8CAAoB;AAAA,EACpC,8CAAmB;AACrB;AAEA,IAAO,0BAAQ;",
+  "names": []
+}

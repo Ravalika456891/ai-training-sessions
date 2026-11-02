@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../src/routes/certificate.routes.ts"],
+  "sourcesContent": ["import { Router } from 'express';\nimport { CertificateController } from '../controllers/certificate.controller.js';\n\nconst router = Router();\n\n// Public certificate verification\nrouter.get('/verify/:serialNumber', CertificateController.verifyCertificate);\n\nexport default router;\n\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,qBAAuB;AACvB,oCAAsC;AAEtC,MAAM,aAAS,uBAAO;AAGtB,OAAO,IAAI,yBAAyB,oDAAsB,iBAAiB;AAE3E,IAAO,6BAAQ;",
+  "names": []
+}

@@ -1,0 +1,405 @@
+﻿AI LAUNCHPAD
+2-Day Hands-On AI Bootcamp | Complete Product Requirements Document
+Version 1.0  |  Date: 01 November 2026  |  Status: Proposed / For Review
+Reference inspiration: https://www.outskill.com/2-day-ai-mastermind
+Document purpose: One consolidated specification for product owners, UI/UX designers, developers, QA, marketing and operations. AI Launchpad is a new, independent proposed brand; this document does not reproduce Outskill content or assert affiliation.
+1. Executive Summary
+AI Launchpad is a mobile-first website and workshop enrollment platform for practical beginner-friendly generative AI training. The first offering is a 2-day live bootcamp. Visitors discover the program, explore outcomes and curriculum, register, pay if applicable, and access a learner area. Administrators configure batches, instructors, content, enrollment, attendance and performance analytics.
+Primary product goal: convert relevant visitors into confidently informed workshop registrants while ensuring dependable enrollment and an effective workshop experience.
+2. Assumptions and Decisions Pending
+Area
+Working assumption / open decision
+Brand
+AI Launchpad is a suggested working name; legal/trademark and domain checks required.
+Audience
+India-first English-language launch; Telugu/multilingual support is optional future scope.
+Format
+Live online cohort, two days; exact duration and platform TBD.
+Pricing
+Configurable free or paid batches; no fixed price or discount assumed.
+Batch dates
+Admin-managed; no date or seat availability should be fabricated.
+Instructors
+Profiles and qualifications provided and verified by operator.
+Certificate
+Completion certificate issued by AI Launchpad; no external accreditation claimed.
+Payments
+Razorpay for India or Stripe if supported; final choice subject to incorporation and eligibility.
+Hosting
+Next.js with PostgreSQL and managed hosting is recommended, not mandatory.
+Policies
+Refund, privacy, terms, tax and marketing-consent copy require legal/business review.
+3. Product Vision, Goals and Non-Goals
+3.1 Vision
+“Learn AI in 2 Days. Build Real Projects. Unlock New Opportunities.” Practical learning through demonstrations, guided exercises and real outputs.
+3.2 Goals
+Explain workshop value, who it is for, expected outputs and required prerequisites.
+Drive high-quality registrations using accurate workshop details and clear calls to action.
+Give learners a secure, usable post-registration experience.
+Allow nontechnical administrators to update marketing and workshop operations.
+Measure visits, lead-to-enrollment conversion, attendance and satisfaction.
+3.3 Non-Goals for MVP
+Native mobile apps and a full video-streaming platform.
+Guarantees of employment, income, certification recognition or learning outcomes.
+Marketplace of third-party trainers or complex subscriptions.
+Personalized AI tutor and community feed.
+4. Target Users and Jobs to Be Done
+Persona
+Needs
+Key journey
+Student / beginner
+Understand basics without prerequisites; obtain practical examples
+Explore → register → attend → practice
+Working professional
+Apply AI to everyday workflows and productivity
+Review outcomes → pick batch → enroll
+Founder / entrepreneur
+Build prototypes and automations
+Evaluate project demos → enroll → build
+Creator / freelancer
+Create content and repetitive-work automations
+Review creative module → enroll
+Instructor
+See class roster, session agenda, submissions
+Sign in → lead session → mark attendance
+Administrator
+Manage workshops, seats, payments and content
+Configure → publish → monitor → report
+5. Information Architecture and Navigation
+Public navigation: Home | What You’ll Learn | Curriculum | Tools | Mentors | Reviews | FAQ | Register Now. Secondary navigation/footer: About, Contact, Terms, Privacy, Refund Policy, Accessibility and social channels as applicable.
+Protected routes: /dashboard, /dashboard/workshops, /dashboard/resources, /dashboard/certificates, /dashboard/profile. Admin routes: /admin, /admin/workshops, /admin/enrollments, /admin/payments, /admin/content, /admin/analytics, /admin/users.
+6. Landing Page Requirements
+Section
+Required content / behavior
+Priority
+Header
+Original logo, anchor navigation, strong Register CTA, accessible mobile menu
+P0
+Hero
+Title “Master AI Skills in Just One Weekend”; short outcome statement; true date/time/timezone, format, duration, price and CTA
+P0
+Trust
+Verified metrics, testimonials and authorized partner logos only; hide if unavailable
+P0
+Outcomes
+Six topic cards: AI basics, prompt engineering, assistants, apps, media creation, automation
+P0
+Audience fit
+Who should attend, required device/accounts, skill prerequisites
+P0
+Curriculum
+Day 1 / Day 2 tabs; modules, activities and expected deliverables
+P0
+AI tools
+Tool categories and examples with access/paid-plan caveats; configurable
+P1
+Mentors
+Authentic portraits, names, roles and short bios
+P1
+Testimonials
+Source-verified reviews; no invented ratings/photos
+P1
+FAQ
+Eligibility, format, language, schedule, recordings, materials, payments and refunds
+P0
+Pricing / CTA
+Accurate price, taxes, inclusions, deadline policy and call to action
+P0
+Footer
+Legal links, contact, copyright and company identity
+P0
+CTA behavior: Register Now scrolls or navigates to the selected live batch, preserving referral/UTM parameters. Sticky mobile CTA may be used if it does not obscure content. Never use false countdowns, fake enrollment counts or invented “few seats left” claims.
+7. Bootcamp Program and Curriculum
+7.1 Day 1 — Foundations and Creation
+Module
+Topics
+Hands-on output
+1. Generative AI basics
+LLMs, capabilities, limitations, privacy and safe usage
+AI use-case worksheet
+2. Prompt engineering
+Prompt goals, context, constraints, iteration and evaluation
+Reusable prompt library
+3. AI assistants
+Custom instructions, reference materials, grounding and testing
+Simple task-specific assistant
+4. Creative AI
+Image/video generation principles, storyboard prompts and responsible media use
+Creative concept or short storyboard
+7.2 Day 2 — Building and Automation
+Module
+Topics
+Hands-on output
+5. AI-assisted app creation
+Problem statement, simple PRD, prototype and testing
+Small functional prototype or guided mock-up
+6. Workflow automation
+Triggers, actions, webhooks, approvals and error handling
+Simple end-to-end automation
+7. Capstone and showcase
+Demonstration, review checklist, next steps
+Project showcase and feedback
+Curriculum content, timings, instructors, software requirements and deliverables must be configurable by batch. Some third-party AI tools may require accounts, paid subscriptions or regional access; disclose those requirements before purchase.
+8. End-to-End User Journeys
+Visitor: ad/search/referral → landing page → curriculum/FAQ → select available batch → start registration → create account or verify email → payment if required → success/confirmation → learner dashboard.
+Learner: sign in → see upcoming session in local timezone → access join link at approved time → attend → download resources → submit optional project → see completion status → receive certificate if eligible.
+Admin: sign in with privileged role → create draft workshop and batch → configure capacity and price → publish → track enrollments → support users → record attendance → manage refunds/completions → export reports.
+9. Registration and Enrollment Specification
+9.1 Registration Form
+Fields: full name, email, phone with country code, user category, selected batch; optional experience level; mandatory Terms/Privacy acknowledgement and separate optional marketing consent.
+Front-end and server-side validation; accessible inline errors and clear help text.
+Email normalization, anti-bot/rate limits, duplicate handling and clear conflict resolution.
+Enrollment ID generated once; confirmation page and email include program, date, timezone, receipt (if paid) and support contact.
+9.2 Seat and State Rules
+Workshop states: draft, published, unpublished, canceled, completed. Batch states: scheduled, full, closed, in-progress, completed, canceled. Enrollment states: pending, payment_pending, confirmed, canceled, refunded, attended, completed. Actual availability must derive from server data, not static UI.
+Concurrent enrollments must use transactional seat-capacity enforcement. For paid cohorts, a temporary reservation and expiry policy should be defined. Payment webhook retries must be idempotent.
+10. Payments, Pricing and Refunds
+Free and paid workshop modes; configurable currency, tax, coupon, start/end time and batch-level price.
+Display subtotal, tax, discount and total before confirming checkout.
+Create payment orders securely on server; never trust client-reported success.
+Verify provider signatures/webhooks, store external transaction references, and reconcile mismatches.
+Handle success, pending, failure, retry, cancellation, refunds and chargeback states.
+Send receipt and payment confirmation; keep payment data minimal and never store full card numbers.
+Refund policy must state eligibility, turnaround and contacting support; legal owner to approve.
+11. Learner Portal
+Module
+Features
+My workshops
+Upcoming/past cohorts; status; timezone-aware schedule; authenticated join link
+Materials
+Resource downloads, worksheets, prompt templates, permissions
+Progress
+Session and exercise tracking; manual attendance fallback
+Projects
+Assignment descriptions; uploads or URL submissions; instructor feedback in later phase
+Certificates
+Eligibility-based issuance, serial/verification ID and PDF export
+Profile
+Name, email, preferences, consent and enrollment history
+Support
+Contact form/FAQ; cancellation and payment help
+12. Instructor and Admin Portal
+Role model: Learner, Instructor, Support, Admin, Super Admin. Least privilege by default. Instructor access is limited to assigned workshops; support should not have unrestricted payment or administrator privileges.
+Manage landing page content, FAQs, mentors, testimonials and workshop metadata.
+Create cohorts with date, timezone, duration, capacity, joining instructions and enrollment cutoffs.
+Review/search/filter registration lists and export authorized datasets.
+Send manual/automated transactional notifications and correct schedule changes.
+Record attendance and issue/revoke certificates with audit logs.
+View payments, refunds and aggregate operational metrics without exposing card details.
+Manage users, role assignments, policies and admin actions with auditable history.
+13. UX / UI and Content Standards
+Visual direction: contemporary AI education brand with dark navy, blue/violet accents, high-contrast text, restrained gradients, airy spacing, consistent icons and focused action buttons. The final design must be distinct from reference competitors.
+Mobile-first for narrow screens; desktop and tablet responsive behavior.
+Visible form labels and focus states; WCAG 2.2 AA target.
+Day 1/Day 2 tabs keyboard operable; no hidden essential content.
+Real examples and truthful claims; avoid fabricated logos, numbers, profiles or testimonials.
+Consistent empty/loading/success/error states for every data-driven section.
+Use local timezone labels and explicit date formats; avoid ambiguous “tomorrow” in static copy.
+Optimize hero media, lazy-load below-fold assets, respect reduced-motion settings.
+14. Proposed Data Model
+Entity
+Important fields
+User
+id, name, email, phone, role, consent flags, timestamps
+Workshop
+id, title, description, curriculum, format, status
+Batch
+id, workshop_id, start_at, end_at, timezone, capacity, price, currency, status
+Session
+id, batch_id, title, start_at, end_at, instructor_id, join_url
+Enrollment
+id, user_id, batch_id, status, reserved_until, timestamps
+Payment
+id, enrollment_id, provider, provider_ref, amount, currency, status, tax
+Attendance
+id, enrollment_id, session_id, attendance_status, source
+Resource
+id, workshop_id/session_id, title, storage_key, visibility
+ProjectSubmission
+id, enrollment_id, project_id, submission_url, state, feedback
+Certificate
+id, enrollment_id, serial, issued_at, revoked_at
+Review
+id, user_id, rating, text, moderation_status, consent
+AuditLog
+id, actor_id, action, entity_type, entity_id, timestamp
+15. System Architecture and Integrations
+Suggested stack: Next.js + TypeScript + Tailwind CSS for the website; server-side Next.js endpoints or NestJS for business logic; PostgreSQL for transactional data; a managed auth provider; S3-compatible storage; email delivery provider; Razorpay or Stripe for supported payments; managed cloud hosting; analytics and monitoring.
+Logical components: public content layer; identity/access layer; workshop/catalog service; registration/capacity service; payment/webhook service; notifications; learner portal; admin console; reporting/analytics; data storage.
+Integration dependencies: video conferencing provider, calendar invitation generation, transactional email/SMS optional, payment gateway, analytics and optional CRM. Use environment secrets, webhook verification, least-privileged credentials and staging integrations.
+16. Functional Requirements and Priorities
+ID
+Requirement
+Priority
+Acceptance summary
+FR-01
+Responsive public landing page
+P0
+Mobile and desktop navigation/content work
+FR-02
+Dynamic curriculum & FAQ
+P0
+Admin updates reflect on site
+FR-03
+Batch catalog with real availability
+P0
+Only eligible future batches selectable
+FR-04
+Registration & validation
+P0
+Unique enrollment recorded reliably
+FR-05
+Account authentication
+P0
+User securely accesses own record
+FR-06
+Confirmation emails
+P0
+Delivered after verified enrollment
+FR-07
+Learner dashboard
+P0
+Displays correct enrolled batches
+FR-08
+Admin workshop and learner management
+P0
+Authorized roles can manage records
+FR-09
+Paid checkout
+P1
+Verified webhooks confirm enrollment
+FR-10
+Reminders and calendar invites
+P1
+Correct batch/timezone information
+FR-11
+Resources and project tracking
+P1
+Permissions and status enforced
+FR-12
+Attendance and certificates
+P1
+Rule-driven eligibility and download
+FR-13
+Funnel and cohort analytics
+P1
+Events and reports internally consistent
+FR-14
+Community integration
+P2
+Opt-in participation and controls
+FR-15
+AI learner assistant
+P2
+Safe, bounded help with transparency
+17. Non-Functional Requirements
+Category
+Requirement / target
+Security
+TLS, server-side authorization, input validation, CSRF protection where relevant, rate limits and audit logging
+Privacy
+Data minimization, access/export/delete process, consent tracking and retention policy
+Accessibility
+Target WCAG 2.2 AA; keyboard and screen-reader usability
+Performance
+Optimize Core Web Vitals; mobile Lighthouse score goal 90+ under defined test conditions
+Availability
+99.9% monthly platform uptime design target, subject to vendor SLAs
+Reliability
+Idempotent payments; transactional enrollment; error handling and retries
+Observability
+Structured logs, alerting, uptime monitors and conversion event QA
+Scalability
+Load test concurrent cohort launch and registration peaks
+Backup
+Automatic encrypted backups and tested recovery plan
+Compliance
+Applicable local privacy, tax, consumer protection and marketing rules reviewed by counsel
+18. Analytics and Measurement
+Track privacy-respecting events: landing_view, hero_cta_click, curriculum_open, batch_selected, registration_start, registration_submitted, payment_started, payment_verified, enrollment_confirmed, session_joined, attendance_recorded, certificate_issued. Store campaign UTM attributes with consent requirements.
+KPI
+Proposed initial target
+Visitor-to-registration conversion
+≥5% (test and revise)
+Form completion rate
+≥80%
+Payment authorization/settlement success
+≥98%, depending on provider and cohort
+Attendance rate
+≥70%
+Average post-workshop satisfaction
+≥4.5/5
+Mobile Lighthouse performance
+90+ in agreed testing environment
+All numerical targets above are planning assumptions, not actual performance data or guarantees.
+19. QA Plan and Acceptance Criteria
+A visitor can view full, accurate program details at common viewport widths.
+Day tabs, FAQ, anchor links, keyboard navigation and forms operate accessibly.
+Registration succeeds for an open batch and returns a unique record.
+Duplicate submissions cannot create duplicate active enrollments or payments.
+Last-seat concurrency cannot oversell a batch.
+Past/full/closed/canceled batches cannot be enrolled in.
+Payment success is accepted only after server-side verification and idempotent processing.
+Email and calendar details agree with stored schedule and timezone.
+Learners cannot read or change another learner’s account or materials.
+Instructor and admin permissions are enforced server-side.
+Cancellation, failure, refund, expired reservation and webhook retry paths are tested.
+Admin can publish, update and unpublish batches with audit trail.
+Certificate generation follows defined attendance/completion rules.
+Usability, accessibility, performance, backup recovery and security tests are documented.
+20. Release Plan
+Phase
+Scope
+Exit criteria
+1. Public MVP
+Brand, responsive landing page, curriculum, FAQ, dynamic batches
+Visitors understand and locate available cohort
+2. Enrollment
+Forms, auth, capacity logic, confirmation emails
+Free enrollment fully tested end-to-end
+3. Learner/Admin
+User dashboard; admin workshop and registration management
+Roles and operations validated
+4. Commerce/Learning
+Payments, reminders, resources, attendance, certificates, analytics
+Paid lifecycle and learning journey validated
+5. Expansion
+Community, AI assistant, multilingual support, advanced reports
+Post-launch feedback confirms need
+21. Delivery Artifacts and Responsibilities
+Product owner: confirm brand, price, positioning, schedule, refund policy and feature priorities.
+Design: responsive wireframes, approved design system and accessibility annotations.
+Engineering: frontend, backend, data model, integrations, deployment scripts and tests.
+Content/training team: final curriculum, exercise files, mentor bios and FAQ.
+Operations: support workflows, email templates, refunds and cohort logistics.
+Legal/compliance: privacy policy, terms, taxes, advertising claims and consent.
+QA: test scenarios, bug reports, performance/security checks and release sign-off.
+22. Risks and Mitigations
+Risk
+Mitigation
+Inaccurate dates/pricing/seats
+Serve all public values from verified admin-controlled records.
+Registration traffic spikes
+Rate limits, transactional locking, capacity testing.
+Payment mismatch
+Verified signed webhooks, reconciliation and idempotency keys.
+Unverifiable marketing claims
+Editorial review workflow and proof for testimonials/metrics.
+Third-party tool changes
+Tool-agnostic curriculum and dated prerequisites.
+Privacy/unauthorized access
+RBAC, data minimization, audit logs and periodic reviews.
+Workshop cancellations
+Clear cancellation policy, notifications and refund handling.
+23. Open Questions for Owner Approval
+What is the confirmed brand name, domain and operating entity?
+Which country/currency, language(s), and tax treatment apply at launch?
+What are the first batch dates, daily timings, capacity and live platform?
+Who are the actual mentors and what can be publicly claimed about them?
+Is the workshop free, paid, or hybrid? What is the refund policy?
+Are recordings, resources and certificates included, and for how long?
+Will learners receive optional project feedback?
+Which payment provider, email provider and hosting vendor are approved?
+Which acquisition channels and CRM integrations are required?
+24. Reference and Originality Note
+Inspiration source: Outskill 2-Day AI Mastermind, https://www.outskill.com/2-day-ai-mastermind. This PRD provides an original concept and implementation specification. Do not copy any third-party site’s logos, photos, testimonials, written copy, code or distinctive visual identity without permission.
