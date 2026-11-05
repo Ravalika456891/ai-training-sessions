@@ -6,11 +6,11 @@ import { TESTIMONIALS_DATA } from '../../data/workshopData';
 
 export const TestimonialsSection: React.FC = () => {
   return (
-    <section id="reviews" className="py-20 bg-navy-950 relative scroll-mt-20">
+    <section id="reviews" className="py-20 bg-[#0A0F1D] relative scroll-mt-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto space-y-4">
-          <Badge variant="purple" size="md">
+          <Badge variant="primary" size="md">
             Alumni Outcomes
           </Badge>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
@@ -24,16 +24,16 @@ export const TestimonialsSection: React.FC = () => {
         {/* Testimonials Grid */}
         <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
           {TESTIMONIALS_DATA.map((t) => (
-            <Card key={t.id} hoverable className="p-6 border-slate-800 flex flex-col justify-between">
+            <Card key={t.id} hoverable className="p-6 border-slate-800 bg-[#111827] flex flex-col justify-between">
               <div className="space-y-4">
                 {/* Rating & Quote Icon */}
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1">
                     {[...Array(t.rating)].map((_, i) => (
-                      <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
+                      <Star key={i} className="w-4 h-4 fill-blue-400 text-blue-400" />
                     ))}
                   </div>
-                  <Quote className="w-6 h-6 text-indigo-500/30" />
+                  <Quote className="w-6 h-6 text-blue-500/20" />
                 </div>
 
                 {/* Quote Text */}
@@ -47,14 +47,14 @@ export const TestimonialsSection: React.FC = () => {
                 <img
                   src={t.avatarUrl}
                   alt={t.name}
-                  className="w-10 h-10 rounded-full object-cover border border-indigo-500/40"
+                  className="w-10 h-10 rounded-full object-cover border border-blue-500/40"
                 />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1.5">
                     <h4 className="text-sm font-bold text-white truncate">
                       {t.name}
                     </h4>
-                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                    <ShieldCheck className="w-3.5 h-3.5 text-blue-400 shrink-0" />
                   </div>
                   <p className="text-xs text-slate-400 truncate">
                     {t.role} • {t.company}
@@ -77,4 +77,3 @@ export const TestimonialsSection: React.FC = () => {
     </section>
   );
 };
-

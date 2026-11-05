@@ -118,19 +118,17 @@ export const LearnerDashboardModal: React.FC<LearnerDashboardModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-black/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in-50 duration-200">
-      <div className="relative w-full max-w-4xl bg-navy-950 border border-indigo-500/30 rounded-3xl shadow-2xl overflow-hidden my-8 max-h-[90vh] flex flex-col">
+      <div className="relative w-full max-w-4xl bg-[#111827] border border-[#1E293B] rounded-3xl shadow-2xl overflow-hidden my-8 max-h-[90vh] flex flex-col">
         {/* Header Bar */}
-        <div className="p-5 sm:p-6 bg-navy-900 border-b border-slate-800 flex items-center justify-between shrink-0">
+        <div className="p-5 sm:p-6 bg-[#0A0F1D] border-b border-[#1E293B] flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-violet to-brand-cyan p-0.5">
-              <div className="w-full h-full bg-navy-950 rounded-[10px] flex items-center justify-center">
-                <GraduationCap className="w-5 h-5 text-brand-cyan" />
-              </div>
+            <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white">
+              <GraduationCap className="w-5 h-5 text-white" />
             </div>
             <div>
               <div className="flex items-center gap-2">
                 <h3 className="text-lg font-bold text-white">Learner Dashboard</h3>
-                <Badge variant="cyan" size="sm">
+                <Badge variant="primary" size="sm">
                   {user?.role || 'Learner'}
                 </Badge>
               </div>
@@ -149,7 +147,7 @@ export const LearnerDashboardModal: React.FC<LearnerDashboardModalProps> = ({
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex items-center gap-2 px-6 pt-4 border-b border-slate-800 bg-navy-950 shrink-0 overflow-x-auto">
+        <div className="flex items-center gap-2 px-6 pt-4 border-b border-[#1E293B] bg-[#111827] shrink-0 overflow-x-auto">
           {[
             { id: 'workshops', label: 'My Cohorts', icon: Calendar, count: workshops.length },
             { id: 'resources', label: 'Materials & Prompts', icon: BookOpen },
@@ -164,14 +162,14 @@ export const LearnerDashboardModal: React.FC<LearnerDashboardModalProps> = ({
                 onClick={() => setActiveTab(tab.id as any)}
                 className={`flex items-center gap-2 py-3 px-4 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap transition-colors ${
                   isActive
-                    ? 'border-brand-violet text-white font-semibold'
-                    : 'border-transparent text-slate-400 hover:text-slate-200'
+                    ? 'border-blue-600 text-white font-semibold'
+                    : 'border-transparent text-slate-400 hover:text-white'
                 }`}
               >
-                <Icon className={`w-4 h-4 ${isActive ? 'text-brand-cyan' : 'text-slate-500'}`} />
+                <Icon className={`w-4 h-4 ${isActive ? 'text-blue-500' : 'text-slate-400'}`} />
                 <span>{tab.label}</span>
                 {tab.count !== undefined && (
-                  <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-navy-800 text-slate-300">
+                  <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-[#0A0F1D] text-slate-300">
                     {tab.count}
                   </span>
                 )}
@@ -184,7 +182,7 @@ export const LearnerDashboardModal: React.FC<LearnerDashboardModalProps> = ({
         <div className="p-6 overflow-y-auto flex-1">
           {isLoading ? (
             <div className="py-20 text-center space-y-3">
-              <Loader2 className="w-8 h-8 animate-spin text-brand-cyan mx-auto" />
+              <Loader2 className="w-8 h-8 animate-spin text-blue-500 mx-auto" />
               <p className="text-xs text-slate-400">Loading your learner records...</p>
             </div>
           ) : (
@@ -193,7 +191,7 @@ export const LearnerDashboardModal: React.FC<LearnerDashboardModalProps> = ({
               {activeTab === 'workshops' && (
                 <div className="space-y-4">
                   {workshops.length === 0 ? (
-                    <div className="text-center py-12 space-y-3 border border-dashed border-slate-800 rounded-2xl p-6">
+                    <div className="text-center py-12 space-y-3 border border-dashed border-[#1E293B] rounded-2xl p-6">
                       <GraduationCap className="w-10 h-10 text-slate-600 mx-auto" />
                       <p className="text-sm text-slate-300 font-semibold">No active cohort enrollments yet.</p>
                       <p className="text-xs text-slate-500 max-w-sm mx-auto">
@@ -202,16 +200,16 @@ export const LearnerDashboardModal: React.FC<LearnerDashboardModalProps> = ({
                     </div>
                   ) : (
                     workshops.map((w: any) => (
-                      <Card key={w.enrollmentId} className="p-5 border-slate-800 bg-navy-900/80 space-y-4">
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-800">
+                      <Card key={w.enrollmentId} className="p-5 border-[#1E293B] bg-[#0A0F1D] space-y-4">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#1E293B]">
                           <div>
-                            <span className="text-[11px] font-mono text-brand-cyan font-bold block">
+                            <span className="text-[11px] font-mono text-blue-400 font-bold block">
                               {w.workshop.batchCode}
                             </span>
                             <h4 className="text-base font-bold text-white mt-0.5">{w.workshop.title}</h4>
                             <div className="flex items-center gap-3 text-xs text-slate-400 mt-1">
                               <span className="flex items-center gap-1">
-                                <Clock className="w-3.5 h-3.5 text-brand-violet" />
+                                <Clock className="w-3.5 h-3.5 text-blue-500" />
                                 {w.workshop.timings}
                               </span>
                               <span>•</span>
@@ -220,17 +218,17 @@ export const LearnerDashboardModal: React.FC<LearnerDashboardModalProps> = ({
                           </div>
 
                           <div className="flex items-center gap-2">
-                            <Badge variant={w.status === 'confirmed' ? 'success' : 'warning'} size="sm">
+                            <Badge variant={w.status === 'confirmed' ? 'primary' : 'warning'} size="sm">
                               {w.status === 'confirmed' ? 'Confirmed & Active' : 'Seat Reserved (Pending Payment)'}
                             </Badge>
                           </div>
                         </div>
 
                         {/* Session Access Card */}
-                        <div className="p-4 rounded-xl bg-navy-950/80 border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div className="p-4 rounded-xl bg-[#111827] border border-[#1E293B] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                           <div className="space-y-1 text-xs">
                             <div className="font-semibold text-slate-200 flex items-center gap-2">
-                              <Video className="w-4 h-4 text-emerald-400" />
+                              <Video className="w-4 h-4 text-blue-500" />
                               <span>Virtual Classroom Status: {w.sessionAccess.platform}</span>
                             </div>
                             <p className="text-slate-400 text-[11px]">
@@ -245,7 +243,7 @@ export const LearnerDashboardModal: React.FC<LearnerDashboardModalProps> = ({
                               href={w.sessionAccess.joinUrl}
                               target="_blank"
                               rel="noreferrer"
-                              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-bold text-xs shadow-md shadow-emerald-500/20 hover:opacity-95 shrink-0"
+                              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shrink-0"
                             >
                               <Video className="w-4 h-4" />
                               <span>Join Live Session</span>
@@ -266,7 +264,7 @@ export const LearnerDashboardModal: React.FC<LearnerDashboardModalProps> = ({
               {/* TAB 2: RESOURCES & DELIVERABLES */}
               {activeTab === 'resources' && (
                 <div className="space-y-4">
-                  <div className="p-4 rounded-2xl bg-navy-900 border border-indigo-500/20 text-xs text-slate-300">
+                  <div className="p-4 rounded-2xl bg-[#0A0F1D] border border-[#1E293B] text-xs text-slate-300">
                     <strong className="text-white block mb-1">Bootcamp Starter Pack:</strong>
                     Download your standardized prompt templates, project boilerplates, and automation workflows.
                   </div>
@@ -294,19 +292,19 @@ export const LearnerDashboardModal: React.FC<LearnerDashboardModalProps> = ({
                         tag: 'JSON Blueprint',
                       },
                     ].map((item, idx) => (
-                      <Card key={idx} className="p-5 border-slate-800 bg-navy-900/60 flex flex-col justify-between">
+                      <Card key={idx} className="p-5 border-[#1E293B] bg-[#0A0F1D] flex flex-col justify-between">
                         <div>
-                          <Badge variant="cyan" size="sm">
+                          <Badge variant="primary" size="sm">
                             {item.tag}
                           </Badge>
                           <h4 className="text-sm font-bold text-white mt-2">{item.title}</h4>
                           <p className="text-xs text-slate-400 mt-1 leading-relaxed">{item.desc}</p>
                         </div>
-                        <div className="mt-4 pt-3 border-t border-slate-800 flex justify-end">
+                        <div className="mt-4 pt-3 border-t border-[#1E293B] flex justify-end">
                           <button
                             type="button"
                             onClick={() => alert(`Downloaded: ${item.title}`)}
-                            className="inline-flex items-center gap-1.5 text-xs text-brand-cyan hover:underline font-semibold"
+                            className="inline-flex items-center gap-1.5 text-xs text-blue-400 hover:underline font-semibold"
                           >
                             <Download className="w-3.5 h-3.5" />
                             <span>Download Asset</span>
@@ -322,7 +320,7 @@ export const LearnerDashboardModal: React.FC<LearnerDashboardModalProps> = ({
               {activeTab === 'submissions' && (
                 <div className="space-y-6">
                   {projectSuccessMsg && (
-                    <div className="p-3.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs flex items-center gap-2">
+                    <div className="p-3.5 rounded-xl bg-blue-600/15 border border-blue-600/30 text-blue-300 text-xs flex items-center gap-2">
                       <CheckCircle2 className="w-4 h-4 shrink-0" />
                       <span>{projectSuccessMsg}</span>
                     </div>
@@ -336,7 +334,7 @@ export const LearnerDashboardModal: React.FC<LearnerDashboardModalProps> = ({
                   )}
 
                   {workshops.length > 0 && (
-                    <Card className="p-5 border-slate-800 bg-navy-900/70">
+                    <Card className="p-5 border-[#1E293B] bg-[#0A0F1D]">
                       <h4 className="text-sm font-bold text-white mb-3">Submit Capstone Project</h4>
                       <form
                         onSubmit={(e) => handleSubmitProject(e, workshops[0]?.enrollmentId)}
@@ -350,7 +348,7 @@ export const LearnerDashboardModal: React.FC<LearnerDashboardModalProps> = ({
                             placeholder="e.g., Autonomous Support Agent & PRD Prototype"
                             value={projectTitle}
                             onChange={(e) => setProjectTitle(e.target.value)}
-                            className="w-full bg-navy-950 border border-slate-700 rounded-xl px-3.5 py-2 text-white focus:outline-none focus:ring-2 focus:ring-brand-violet"
+                            className="w-full bg-[#111827] border border-[#1E293B] rounded-xl px-3.5 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-600"
                           />
                         </div>
 
@@ -362,7 +360,7 @@ export const LearnerDashboardModal: React.FC<LearnerDashboardModalProps> = ({
                               placeholder="https://github.com/username/project"
                               value={repoUrl}
                               onChange={(e) => setRepoUrl(e.target.value)}
-                              className="w-full bg-navy-950 border border-slate-700 rounded-xl px-3.5 py-2 text-white focus:outline-none focus:ring-2 focus:ring-brand-violet"
+                              className="w-full bg-[#111827] border border-[#1E293B] rounded-xl px-3.5 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-600"
                             />
                           </div>
 
@@ -373,7 +371,7 @@ export const LearnerDashboardModal: React.FC<LearnerDashboardModalProps> = ({
                               placeholder="https://my-app.netlify.app"
                               value={demoUrl}
                               onChange={(e) => setDemoUrl(e.target.value)}
-                              className="w-full bg-navy-950 border border-slate-700 rounded-xl px-3.5 py-2 text-white focus:outline-none focus:ring-2 focus:ring-brand-violet"
+                              className="w-full bg-[#111827] border border-[#1E293B] rounded-xl px-3.5 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-600"
                             />
                           </div>
                         </div>
@@ -385,13 +383,13 @@ export const LearnerDashboardModal: React.FC<LearnerDashboardModalProps> = ({
                             placeholder="Briefly describe what you built, which AI tools were integrated, and key challenges solved..."
                             value={notes}
                             onChange={(e) => setNotes(e.target.value)}
-                            className="w-full bg-navy-950 border border-slate-700 rounded-xl px-3.5 py-2 text-white focus:outline-none focus:ring-2 focus:ring-brand-violet"
+                            className="w-full bg-[#111827] border border-[#1E293B] rounded-xl px-3.5 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-600"
                           />
                         </div>
 
                         <Button
                           type="submit"
-                          variant="gradient"
+                          variant="primary"
                           size="sm"
                           isLoading={isSubmittingProject}
                         >
@@ -410,7 +408,7 @@ export const LearnerDashboardModal: React.FC<LearnerDashboardModalProps> = ({
                       submissions.map((sub: any) => (
                         <div
                           key={sub._id}
-                          className="p-3.5 rounded-xl bg-navy-900 border border-slate-800 flex items-center justify-between text-xs"
+                          className="p-3.5 rounded-xl bg-[#0A0F1D] border border-[#1E293B] flex items-center justify-between text-xs"
                         >
                           <div>
                             <span className="font-bold text-white block">{sub.projectTitle}</span>
@@ -418,7 +416,7 @@ export const LearnerDashboardModal: React.FC<LearnerDashboardModalProps> = ({
                               Submitted on {new Date(sub.submittedAt).toLocaleDateString()}
                             </span>
                           </div>
-                          <Badge variant="success" size="sm">
+                          <Badge variant="primary" size="sm">
                             {sub.status}
                           </Badge>
                         </div>
@@ -432,7 +430,7 @@ export const LearnerDashboardModal: React.FC<LearnerDashboardModalProps> = ({
               {activeTab === 'certificates' && (
                 <div className="space-y-4">
                   {certificates.length === 0 ? (
-                    <div className="text-center py-12 space-y-3 border border-dashed border-slate-800 rounded-2xl p-6">
+                    <div className="text-center py-12 space-y-3 border border-dashed border-[#1E293B] rounded-2xl p-6">
                       <Award className="w-10 h-10 text-slate-600 mx-auto" />
                       <p className="text-sm text-slate-300 font-semibold">No certificate issued yet.</p>
                       <p className="text-xs text-slate-500 max-w-sm mx-auto">
@@ -441,14 +439,14 @@ export const LearnerDashboardModal: React.FC<LearnerDashboardModalProps> = ({
                     </div>
                   ) : (
                     certificates.map((cert: any) => (
-                      <Card key={cert._id} glow className="p-6 border-indigo-500/30 bg-navy-900 space-y-4">
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-slate-800">
+                      <Card key={cert._id} className="p-6 border-[#1E293B] bg-[#0A0F1D] space-y-4">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-[#1E293B]">
                           <div>
                             <div className="flex items-center gap-2">
-                              <Badge variant="cyan" size="sm">
+                              <Badge variant="primary" size="sm">
                                 Verified Credential
                               </Badge>
-                              <span className="font-mono text-xs text-emerald-400 font-bold">
+                              <span className="font-mono text-xs text-blue-400 font-bold">
                                 {cert.serialNumber}
                               </span>
                             </div>
@@ -467,7 +465,7 @@ export const LearnerDashboardModal: React.FC<LearnerDashboardModalProps> = ({
                           </div>
                         </div>
 
-                        <div className="p-3 bg-navy-950 rounded-xl border border-slate-800 text-[11px] font-mono text-slate-400 break-all">
+                        <div className="p-3 bg-[#111827] rounded-xl border border-[#1E293B] text-[11px] font-mono text-slate-400 break-all">
                           Cryptographic Hash: {cert.verificationHash}
                         </div>
                       </Card>

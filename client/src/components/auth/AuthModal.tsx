@@ -68,11 +68,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-black/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in-50 duration-200">
-      <div className="relative w-full max-w-md bg-navy-950 border border-indigo-500/30 rounded-3xl shadow-2xl overflow-hidden my-8">
+      <div className="relative w-full max-w-md bg-[#111827] border border-[#1E293B] rounded-3xl shadow-2xl overflow-hidden my-8">
         {/* Header */}
-        <div className="p-5 sm:p-6 bg-navy-900 border-b border-slate-800 flex items-center justify-between">
+        <div className="p-5 sm:p-6 bg-[#0A0F1D] border-b border-[#1E293B] flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-xl bg-blue-600/15 text-blue-400 flex items-center justify-center">
               <Lock className="w-4 h-4" />
             </div>
             <div>
@@ -113,7 +113,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                       placeholder="e.g., Rajesh Kumar"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      className="w-full bg-navy-900 border border-slate-700 rounded-xl pl-9 pr-4 py-2.5 text-xs text-white focus:outline-none focus:ring-2 focus:ring-brand-violet"
+                      className="w-full bg-[#0A0F1D] border border-[#1E293B] rounded-xl pl-9 pr-4 py-2.5 text-xs text-white focus:outline-none focus:ring-2 focus:ring-blue-600"
                     />
                   </div>
                 </div>
@@ -126,7 +126,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     placeholder="9876543210"
                     value={phoneNumber}
                     onChange={(e) => setPhoneNumber(e.target.value)}
-                    className="w-full bg-navy-900 border border-slate-700 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:ring-2 focus:ring-brand-violet"
+                    className="w-full bg-[#0A0F1D] border border-[#1E293B] rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:ring-2 focus:ring-blue-600"
                   />
                 </div>
               </>
@@ -142,7 +142,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   placeholder="name@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-navy-900 border border-slate-700 rounded-xl pl-9 pr-4 py-2.5 text-xs text-white focus:outline-none focus:ring-2 focus:ring-brand-violet"
+                  className="w-full bg-[#0A0F1D] border border-[#1E293B] rounded-xl pl-9 pr-4 py-2.5 text-xs text-white focus:outline-none focus:ring-2 focus:ring-blue-600"
                 />
               </div>
             </div>
@@ -151,7 +151,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               <div className="flex items-center justify-between">
                 <label className="text-xs font-semibold text-slate-300">Password</label>
                 {mode === 'login' && (
-                  <span className="text-[11px] text-brand-cyan hover:underline cursor-pointer">
+                  <span className="text-[11px] text-blue-400 hover:underline cursor-pointer">
                     Forgot?
                   </span>
                 )}
@@ -164,7 +164,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-navy-900 border border-slate-700 rounded-xl pl-9 pr-4 py-2.5 text-xs text-white focus:outline-none focus:ring-2 focus:ring-brand-violet"
+                  className="w-full bg-[#0A0F1D] border border-[#1E293B] rounded-xl pl-9 pr-4 py-2.5 text-xs text-white focus:outline-none focus:ring-2 focus:ring-blue-600"
                 />
               </div>
             </div>
@@ -172,7 +172,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             <div className="pt-2">
               <Button
                 type="submit"
-                variant="gradient"
+                variant="primary"
                 size="md"
                 isLoading={isLoading}
                 className="w-full text-xs py-3"
@@ -184,7 +184,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           </form>
 
           {/* Toggle between login and register */}
-          <div className="mt-5 text-center text-xs text-slate-400 border-t border-slate-800 pt-4">
+          <div className="mt-5 text-center text-xs text-slate-400 border-t border-[#1E293B] pt-4">
             {mode === 'login' ? (
               <p>
                 Don't have an account yet?{' '}
@@ -194,7 +194,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     setMode('register');
                     setError(null);
                   }}
-                  className="text-brand-cyan font-semibold hover:underline"
+                  className="text-blue-400 font-semibold hover:underline"
                 >
                   Register here
                 </button>
@@ -208,7 +208,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     setMode('login');
                     setError(null);
                   }}
-                  className="text-brand-cyan font-semibold hover:underline"
+                  className="text-blue-400 font-semibold hover:underline"
                 >
                   Sign in
                 </button>
@@ -216,9 +216,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             )}
           </div>
 
-          <div className="mt-4 p-2.5 rounded-xl bg-navy-900/60 border border-slate-800 text-[11px] text-slate-500 text-center flex items-center justify-center gap-1.5">
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-            <span>Admin Demo: <code className="text-slate-400">admin@ailaunchpad.edu</code> / <code className="text-slate-400">AdminLaunchpad2026!</code></span>
+          <div className="mt-4 p-2.5 rounded-xl bg-[#0A0F1D] border border-[#1E293B] text-[11px] text-slate-400 text-center flex items-center justify-center gap-1.5">
+            <ShieldCheck className="w-3.5 h-3.5 text-blue-500" />
+            <span>Admin Demo: <code className="text-slate-300">admin@ailaunchpad.edu</code> / <code className="text-slate-300">AdminLaunchpad2026!</code></span>
           </div>
         </div>
       </div>

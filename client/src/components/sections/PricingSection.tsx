@@ -37,11 +37,11 @@ export const PricingSection: React.FC<PricingSectionProps> = ({
   ];
 
   return (
-    <section id="pricing" className="py-20 bg-navy-900/60 relative scroll-mt-20">
+    <section id="pricing" className="py-20 bg-[#0A0F1D] relative scroll-mt-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto space-y-4">
-          <Badge variant="cyan" size="md">
+          <Badge variant="primary" size="md">
             Transparent Pricing
           </Badge>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
@@ -58,7 +58,7 @@ export const PricingSection: React.FC<PricingSectionProps> = ({
           <div className="lg:col-span-5 space-y-6">
             <div className="space-y-3">
               <h3 className="text-xl sm:text-2xl font-bold text-white flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-brand-cyan" />
+                <Sparkles className="w-5 h-5 text-blue-400" />
                 Everything Included
               </h3>
               <p className="text-slate-400 text-sm leading-relaxed">
@@ -69,16 +69,16 @@ export const PricingSection: React.FC<PricingSectionProps> = ({
             <ul className="space-y-3">
               {inclusions.map((item, idx) => (
                 <li key={idx} className="flex items-start gap-2.5 text-sm text-slate-200">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400 mt-0.5 shrink-0" />
+                  <CheckCircle2 className="w-4 h-4 text-blue-400 mt-0.5 shrink-0" />
                   <span>{item}</span>
                 </li>
               ))}
             </ul>
 
-            <div className="p-4 rounded-xl bg-navy-950/70 border border-emerald-500/20 text-xs text-slate-300 flex items-start gap-3">
-              <ShieldCheck className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
+            <div className="p-4 rounded-xl bg-[#111827] border border-slate-800 text-xs text-slate-300 flex items-start gap-3">
+              <ShieldCheck className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
               <div>
-                <strong className="text-emerald-300 block mb-0.5">
+                <strong className="text-white block mb-0.5">
                   Risk-Free 100% Refund Policy
                 </strong>
                 Cancel anytime up to 24 hours before the bootcamp starts, or attend Day 1 and request a full refund if not completely satisfied.
@@ -101,10 +101,10 @@ export const PricingSection: React.FC<PricingSectionProps> = ({
                 <Card
                   key={batch.id}
                   onClick={() => onSelectBatch(batch.id)}
-                  className={`p-5 sm:p-6 cursor-pointer transition-all border-2 ${
+                  className={`p-5 sm:p-6 cursor-pointer transition-all border-2 bg-[#111827] ${
                     isSelected
-                      ? 'border-brand-violet bg-navy-850 shadow-xl shadow-indigo-500/15'
-                      : 'border-slate-800 hover:border-slate-700 bg-navy-900/80'
+                      ? 'border-blue-600'
+                      : 'border-slate-800 hover:border-slate-700'
                   }`}
                 >
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -113,22 +113,22 @@ export const PricingSection: React.FC<PricingSectionProps> = ({
                         <span
                           className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 ${
                             isSelected
-                              ? 'border-brand-violet bg-brand-violet'
+                              ? 'border-blue-600 bg-blue-600'
                               : 'border-slate-600'
                           }`}
                         >
                           {isSelected && <span className="w-1.5 h-1.5 rounded-full bg-white" />}
                         </span>
-                        <span className="font-mono text-xs text-brand-cyan font-bold">
+                        <span className="font-mono text-xs text-blue-400 font-bold">
                           {batch.batchCode}
                         </span>
-                        <Badge variant="success" size="sm">
+                        <Badge variant="primary" size="sm">
                           {batch.status}
                         </Badge>
                       </div>
 
                       <div className="text-base sm:text-lg font-bold text-white flex items-center gap-2">
-                        <Calendar className="w-4 h-4 text-brand-violet" />
+                        <Calendar className="w-4 h-4 text-blue-400" />
                         <span>{batch.dateRange}</span>
                         <span className="text-slate-500">•</span>
                         <span className="text-sm font-normal text-slate-300">
@@ -142,7 +142,7 @@ export const PricingSection: React.FC<PricingSectionProps> = ({
                           {batch.timings}
                         </span>
                         <span>•</span>
-                        <span className="flex items-center gap-1 text-emerald-400 font-medium">
+                        <span className="flex items-center gap-1 text-blue-400 font-medium">
                           <Users className="w-3 h-3" />
                           {batch.availableSeats} of {batch.totalSeats} seats open
                         </span>
@@ -158,7 +158,7 @@ export const PricingSection: React.FC<PricingSectionProps> = ({
                       </div>
                       <div className="mt-2">
                         <Button
-                          variant={isSelected ? 'gradient' : 'outline'}
+                          variant={isSelected ? 'primary' : 'outline'}
                           size="sm"
                           onClick={(e) => {
                             e.stopPropagation();

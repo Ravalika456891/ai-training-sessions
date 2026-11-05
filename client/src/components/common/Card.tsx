@@ -18,19 +18,16 @@ export const Card: React.FC<CardProps> = ({
   return (
     <div
       onClick={onClick}
-      className={`rounded-2xl transition-all duration-300 relative overflow-hidden ${
+      className={`rounded-2xl transition-all duration-200 relative overflow-hidden bg-[#111827] border ${
         glow
-          ? 'bg-gradient-to-b from-navy-850 to-navy-900 border border-indigo-500/30 shadow-xl shadow-indigo-950/40'
-          : 'bg-navy-900/70 backdrop-blur-md border border-slate-800/80 shadow-lg'
+          ? 'border-blue-600/50 shadow-md shadow-blue-950/30'
+          : 'border-slate-800'
       } ${
         hoverable
-          ? 'hover:border-indigo-500/40 hover:-translate-y-1 hover:shadow-2xl hover:shadow-indigo-500/10'
+          ? 'hover:border-blue-500 hover:-translate-y-0.5'
           : ''
       } ${className}`}
     >
-      {glow && (
-        <div className="absolute -top-24 -right-24 w-48 h-48 bg-brand-violet/10 rounded-full blur-3xl pointer-events-none" />
-      )}
       {children}
     </div>
   );

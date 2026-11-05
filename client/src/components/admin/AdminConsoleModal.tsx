@@ -159,17 +159,17 @@ export const AdminConsoleModal: React.FC<AdminConsoleModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-black/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in-50 duration-200">
-      <div className="relative w-full max-w-5xl bg-navy-950 border border-indigo-500/30 rounded-3xl shadow-2xl overflow-hidden my-8 max-h-[90vh] flex flex-col">
+      <div className="relative w-full max-w-5xl bg-[#111827] border border-[#1E293B] rounded-3xl shadow-2xl overflow-hidden my-8 max-h-[90vh] flex flex-col">
         {/* Header Bar */}
-        <div className="p-5 sm:p-6 bg-navy-900 border-b border-slate-800 flex items-center justify-between shrink-0">
+        <div className="p-5 sm:p-6 bg-[#0A0F1D] border-b border-[#1E293B] flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-blue-600/15 text-blue-400 flex items-center justify-center">
               <ShieldAlert className="w-5 h-5" />
             </div>
             <div>
               <div className="flex items-center gap-2">
                 <h3 className="text-lg font-bold text-white">Operations & Admin Console</h3>
-                <Badge variant="purple" size="sm">
+                <Badge variant="primary" size="sm">
                   Super Admin
                 </Badge>
               </div>
@@ -190,7 +190,7 @@ export const AdminConsoleModal: React.FC<AdminConsoleModalProps> = ({
         {/* Body Content */}
         <div className="p-6 overflow-y-auto space-y-6 flex-1">
           {actionMessage && (
-            <div className="p-3.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs flex items-center justify-between">
+            <div className="p-3.5 rounded-xl bg-blue-600/15 border border-blue-600/30 text-blue-300 text-xs flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 shrink-0" />
                 <span>{actionMessage}</span>
@@ -203,21 +203,21 @@ export const AdminConsoleModal: React.FC<AdminConsoleModalProps> = ({
 
           {/* 4 Metric Cards */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            <Card className="p-4 bg-navy-900/80 border-slate-800">
+            <Card className="p-4 bg-[#0A0F1D] border-[#1E293B]">
               <div className="flex items-center justify-between text-xs text-slate-400">
                 <span>Total Revenue</span>
-                <DollarSign className="w-4 h-4 text-emerald-400" />
+                <DollarSign className="w-4 h-4 text-blue-500" />
               </div>
               <div className="text-xl font-black text-white mt-2">
                 ₹{(metrics?.totalRevenue || 0).toLocaleString('en-IN')}
               </div>
-              <div className="text-[10px] text-emerald-400 mt-1">Verified Razorpay Captured</div>
+              <div className="text-[10px] text-blue-400 mt-1">Verified Razorpay Captured</div>
             </Card>
 
-            <Card className="p-4 bg-navy-900/80 border-slate-800">
+            <Card className="p-4 bg-[#0A0F1D] border-[#1E293B]">
               <div className="flex items-center justify-between text-xs text-slate-400">
                 <span>Total Registrations</span>
-                <Users className="w-4 h-4 text-brand-cyan" />
+                <Users className="w-4 h-4 text-blue-500" />
               </div>
               <div className="text-xl font-black text-white mt-2">
                 {metrics?.totalEnrollments || 0}
@@ -227,10 +227,10 @@ export const AdminConsoleModal: React.FC<AdminConsoleModalProps> = ({
               </div>
             </Card>
 
-            <Card className="p-4 bg-navy-900/80 border-slate-800">
+            <Card className="p-4 bg-[#0A0F1D] border-[#1E293B]">
               <div className="flex items-center justify-between text-xs text-slate-400">
                 <span>Seat Utilization</span>
-                <TrendingUp className="w-4 h-4 text-brand-violet" />
+                <TrendingUp className="w-4 h-4 text-blue-500" />
               </div>
               <div className="text-xl font-black text-white mt-2">
                 {metrics?.capacityFillRate || 0}%
@@ -238,15 +238,15 @@ export const AdminConsoleModal: React.FC<AdminConsoleModalProps> = ({
               <div className="text-[10px] text-slate-400 mt-1">Across active cohorts</div>
             </Card>
 
-            <Card className="p-4 bg-navy-900/80 border-slate-800">
+            <Card className="p-4 bg-[#0A0F1D] border-[#1E293B]">
               <div className="flex items-center justify-between text-xs text-slate-400">
                 <span>Certificates Issued</span>
-                <Award className="w-4 h-4 text-amber-400" />
+                <Award className="w-4 h-4 text-blue-500" />
               </div>
               <div className="text-xl font-black text-white mt-2">
                 {metrics?.totalCertificates || 0}
               </div>
-              <div className="text-[10px] text-amber-400 mt-1">Verifiable Credentials</div>
+              <div className="text-[10px] text-blue-400 mt-1">Verifiable Credentials</div>
             </Card>
           </div>
 
@@ -260,7 +260,7 @@ export const AdminConsoleModal: React.FC<AdminConsoleModalProps> = ({
                     setSelectedWorkshopId(e.target.value);
                     fetchRoster(e.target.value);
                   }}
-                  className="bg-navy-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:ring-2 focus:ring-brand-violet"
+                  className="bg-[#0A0F1D] border border-[#1E293B] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:ring-2 focus:ring-blue-600"
                 >
                   {workshops.map((w) => (
                     <option key={w.id} value={w.id}>
@@ -276,7 +276,7 @@ export const AdminConsoleModal: React.FC<AdminConsoleModalProps> = ({
                     placeholder="Search attendee or email..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="bg-navy-900 border border-slate-700 rounded-xl pl-8 pr-3 py-1.5 text-xs text-white focus:outline-none focus:ring-2 focus:ring-brand-violet"
+                    className="bg-[#0A0F1D] border border-[#1E293B] rounded-xl pl-8 pr-3 py-1.5 text-xs text-white focus:outline-none focus:ring-2 focus:ring-blue-600"
                   />
                 </div>
               </div>
@@ -293,9 +293,9 @@ export const AdminConsoleModal: React.FC<AdminConsoleModalProps> = ({
             </div>
 
             {/* Attendees Table */}
-            <div className="overflow-x-auto border border-slate-800 rounded-2xl bg-navy-900/60">
+            <div className="overflow-x-auto border border-[#1E293B] rounded-2xl bg-[#0A0F1D]">
               <table className="w-full text-left text-xs text-slate-300">
-                <thead className="bg-navy-900 text-slate-400 font-semibold border-b border-slate-800 uppercase text-[10px] tracking-wider">
+                <thead className="bg-[#111827] text-slate-400 font-semibold border-b border-[#1E293B] uppercase text-[10px] tracking-wider">
                   <tr>
                     <th className="py-3 px-4">Enrollment ID</th>
                     <th className="py-3 px-4">Participant Name</th>
@@ -306,11 +306,11 @@ export const AdminConsoleModal: React.FC<AdminConsoleModalProps> = ({
                     <th className="py-3 px-4 text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-800/60 font-sans">
+                <tbody className="divide-y divide-[#1E293B] font-sans">
                   {isLoading ? (
                     <tr>
                       <td colSpan={7} className="py-12 text-center text-slate-500">
-                        <Loader2 className="w-6 h-6 animate-spin mx-auto mb-2 text-brand-cyan" />
+                        <Loader2 className="w-6 h-6 animate-spin mx-auto mb-2 text-blue-500" />
                         Loading attendee roster...
                       </td>
                     </tr>
@@ -322,8 +322,8 @@ export const AdminConsoleModal: React.FC<AdminConsoleModalProps> = ({
                     </tr>
                   ) : (
                     filteredRoster.map((attendee) => (
-                      <tr key={attendee.enrollmentId} className="hover:bg-navy-800/40 transition-colors">
-                        <td className="py-3 px-4 font-mono font-bold text-brand-cyan">
+                      <tr key={attendee.enrollmentId} className="hover:bg-[#111827]/60 transition-colors">
+                        <td className="py-3 px-4 font-mono font-bold text-blue-400">
                           {attendee.enrollmentId}
                         </td>
                         <td className="py-3 px-4 font-semibold text-white">
@@ -334,7 +334,7 @@ export const AdminConsoleModal: React.FC<AdminConsoleModalProps> = ({
                         </td>
                         <td className="py-3 px-4">
                           <Badge
-                            variant={attendee.status === 'confirmed' ? 'success' : 'warning'}
+                            variant={attendee.status === 'confirmed' ? 'primary' : 'warning'}
                             size="sm"
                           >
                             {attendee.status}
@@ -347,7 +347,7 @@ export const AdminConsoleModal: React.FC<AdminConsoleModalProps> = ({
                             onChange={() =>
                               handleToggleAttendance(attendee.enrollmentId, 1, attendee.day1Attended)
                             }
-                            className="w-4 h-4 rounded bg-navy-950 border-slate-700 text-brand-violet focus:ring-brand-violet cursor-pointer"
+                            className="w-4 h-4 rounded bg-[#0A0F1D] border-[#1E293B] text-blue-600 focus:ring-blue-600 cursor-pointer"
                           />
                         </td>
                         <td className="py-3 px-4 text-center">
@@ -357,14 +357,14 @@ export const AdminConsoleModal: React.FC<AdminConsoleModalProps> = ({
                             onChange={() =>
                               handleToggleAttendance(attendee.enrollmentId, 2, attendee.day2Attended)
                             }
-                            className="w-4 h-4 rounded bg-navy-950 border-slate-700 text-brand-violet focus:ring-brand-violet cursor-pointer"
+                            className="w-4 h-4 rounded bg-[#0A0F1D] border-[#1E293B] text-blue-600 focus:ring-blue-600 cursor-pointer"
                           />
                         </td>
                         <td className="py-3 px-4 text-right">
                           <button
                             type="button"
                             onClick={() => handleIssueCertificate(attendee.enrollmentId)}
-                            className="inline-flex items-center gap-1 text-[11px] text-indigo-400 hover:text-white font-semibold"
+                            className="inline-flex items-center gap-1 text-[11px] text-blue-400 hover:text-white font-semibold"
                           >
                             <Award className="w-3.5 h-3.5" />
                             <span>Issue Cert</span>

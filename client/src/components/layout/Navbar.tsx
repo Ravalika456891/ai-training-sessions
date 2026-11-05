@@ -52,10 +52,10 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   return (
     <header
-      className={`sticky top-0 z-40 transition-all duration-300 ${
+      className={`sticky top-0 z-40 transition-all duration-200 ${
         isScrolled
-          ? 'bg-[#050814]/90 backdrop-blur-xl border-b border-slate-800/90 shadow-xl shadow-black/40 py-3'
-          : 'bg-[#050814]/70 backdrop-blur-lg border-b border-slate-800/40 py-4'
+          ? 'bg-[#0A0F1D] border-b border-slate-800 shadow-lg py-3'
+          : 'bg-[#0A0F1D]/90 border-b border-slate-800/60 py-4'
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -69,15 +69,13 @@ export const Navbar: React.FC<NavbarProps> = ({
             }}
             className="flex items-center gap-2.5 group cursor-pointer"
           >
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-violet to-brand-cyan p-0.5 shadow-md shadow-indigo-500/20 group-hover:shadow-indigo-500/40 transition-shadow">
-              <div className="w-full h-full bg-navy-950 rounded-[10px] flex items-center justify-center">
-                <Sparkles className="w-5 h-5 text-brand-cyan group-hover:scale-110 transition-transform" />
-              </div>
+            <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shadow-md">
+              <Sparkles className="w-5 h-5 text-white" />
             </div>
             <div>
               <span className="font-extrabold text-lg tracking-tight text-white flex items-center gap-1.5">
                 AI Launchpad
-                <span className="hidden sm:inline-block text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-brand-violet/20 text-brand-violet border border-brand-violet/30">
+                <span className="hidden sm:inline-block text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-blue-600/20 text-blue-400 border border-blue-600/30">
                   Bootcamp
                 </span>
               </span>
@@ -106,10 +104,10 @@ export const Navbar: React.FC<NavbarProps> = ({
             {/* Verify Certificate */}
             <button
               onClick={onOpenVerifyModal}
-              className="text-xs font-semibold text-slate-300 hover:text-white px-2.5 py-1.5 rounded-lg border border-slate-700/60 hover:border-slate-500 bg-navy-900/50 flex items-center gap-1.5 transition-all"
+              className="text-xs font-semibold text-slate-300 hover:text-white px-2.5 py-1.5 rounded-lg border border-slate-800 hover:border-slate-600 bg-[#111827] flex items-center gap-1.5 transition-all"
               title="Verify credential by serial number"
             >
-              <Award className="w-3.5 h-3.5 text-amber-400" />
+              <Award className="w-3.5 h-3.5 text-blue-400" />
               <span>Verify Cert</span>
             </button>
 
@@ -119,7 +117,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 {user.role === 'admin' && (
                   <button
                     onClick={onOpenAdminConsole}
-                    className="text-xs font-semibold text-amber-300 hover:text-white px-2.5 py-1.5 rounded-lg border border-amber-500/30 bg-amber-500/10 hover:bg-amber-500/20 flex items-center gap-1.5 transition-all"
+                    className="text-xs font-semibold text-blue-300 hover:text-white px-2.5 py-1.5 rounded-lg border border-blue-600/30 bg-blue-600/10 hover:bg-blue-600/20 flex items-center gap-1.5 transition-all"
                   >
                     <ShieldAlert className="w-3.5 h-3.5" />
                     <span>Admin Ops</span>
@@ -128,7 +126,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
                 <button
                   onClick={onOpenLearnerDashboard}
-                  className="text-xs font-semibold text-cyan-300 hover:text-white px-2.5 py-1.5 rounded-lg border border-cyan-500/30 bg-cyan-500/10 hover:bg-cyan-500/20 flex items-center gap-1.5 transition-all"
+                  className="text-xs font-semibold text-blue-300 hover:text-white px-2.5 py-1.5 rounded-lg border border-blue-600/30 bg-blue-600/10 hover:bg-blue-600/20 flex items-center gap-1.5 transition-all"
                 >
                   <LayoutDashboard className="w-3.5 h-3.5" />
                   <span>Dashboard</span>
@@ -137,16 +135,16 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <div className="relative">
                   <button
                     onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                    className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-navy-900 border border-slate-700 text-xs text-slate-200 hover:border-slate-500 transition-colors"
+                    className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#111827] border border-slate-700 text-xs text-slate-200 hover:border-slate-500 transition-colors"
                   >
-                    <div className="w-5 h-5 rounded-full bg-gradient-to-tr from-brand-violet to-brand-cyan flex items-center justify-center text-[10px] font-bold text-white uppercase">
+                    <div className="w-5 h-5 rounded-full bg-blue-600 flex items-center justify-center text-[10px] font-bold text-white uppercase">
                       {user.name.charAt(0)}
                     </div>
                     <span className="font-medium max-w-[90px] truncate">{user.name.split(' ')[0]}</span>
                   </button>
 
                   {isUserMenuOpen && (
-                    <div className="absolute right-0 mt-2 w-48 rounded-xl bg-navy-900 border border-slate-800 shadow-xl py-1 z-50 animate-in fade-in zoom-in-95">
+                    <div className="absolute right-0 mt-2 w-48 rounded-xl bg-[#111827] border border-slate-800 shadow-xl py-1 z-50">
                       <div className="px-3 py-2 border-b border-slate-800">
                         <p className="text-xs font-semibold text-white truncate">{user.name}</p>
                         <p className="text-[10px] text-slate-400 truncate">{user.email}</p>
@@ -158,7 +156,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                         }}
                         className="w-full text-left px-3 py-2 text-xs text-slate-300 hover:text-white hover:bg-white/5 flex items-center gap-2"
                       >
-                        <LayoutDashboard className="w-3.5 h-3.5 text-brand-cyan" />
+                        <LayoutDashboard className="w-3.5 h-3.5 text-blue-400" />
                         My Dashboard
                       </button>
                       {user.role === 'admin' && (
@@ -167,9 +165,9 @@ export const Navbar: React.FC<NavbarProps> = ({
                             setIsUserMenuOpen(false);
                             if (onOpenAdminConsole) onOpenAdminConsole();
                           }}
-                          className="w-full text-left px-3 py-2 text-xs text-amber-300 hover:text-white hover:bg-amber-500/10 flex items-center gap-2"
+                          className="w-full text-left px-3 py-2 text-xs text-blue-300 hover:text-white hover:bg-blue-600/10 flex items-center gap-2"
                         >
-                          <ShieldAlert className="w-3.5 h-3.5 text-amber-400" />
+                          <ShieldAlert className="w-3.5 h-3.5 text-blue-400" />
                           Admin Console
                         </button>
                       )}
@@ -178,7 +176,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                           setIsUserMenuOpen(false);
                           await logout();
                         }}
-                        className="w-full text-left px-3 py-2 text-xs text-rose-400 hover:bg-rose-500/10 flex items-center gap-2 border-t border-slate-800"
+                        className="w-full text-left px-3 py-2 text-xs text-slate-400 hover:text-white hover:bg-white/5 flex items-center gap-2 border-t border-slate-800"
                       >
                         <LogOut className="w-3.5 h-3.5" />
                         Sign Out
@@ -198,7 +196,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             )}
 
             <Button
-              variant="gradient"
+              variant="primary"
               size="sm"
               onClick={onRegisterClick}
               rightIcon={<ArrowRight className="w-3.5 h-3.5" />}
@@ -210,7 +208,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           {/* Mobile Menu Button */}
           <div className="flex md:hidden items-center gap-2">
             <Button
-              variant="gradient"
+              variant="primary"
               size="sm"
               onClick={onRegisterClick}
               className="text-xs px-3 py-1.5"
@@ -219,7 +217,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             </Button>
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="p-2 rounded-lg bg-navy-900 border border-slate-800 text-slate-300 hover:text-white focus:outline-none focus:ring-2 focus:ring-brand-violet"
+              className="p-2 rounded-lg bg-[#111827] border border-slate-800 text-slate-300 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-600"
               aria-label="Toggle Navigation Menu"
             >
               {isMobileMenuOpen ? (
@@ -233,7 +231,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
         {/* Mobile Navigation Drawer */}
         {isMobileMenuOpen && (
-          <div className="md:hidden mt-3 pt-3 pb-4 border-t border-slate-800/80 bg-navy-950/95 backdrop-blur-xl rounded-2xl p-4 shadow-2xl animate-in slide-in-from-top-2 duration-200">
+          <div className="md:hidden mt-3 pt-3 pb-4 border-t border-slate-800 bg-[#111827] rounded-2xl p-4 shadow-xl">
             <div className="flex flex-col gap-1.5">
               {navLinks.map((link) => (
                 <a
@@ -246,15 +244,15 @@ export const Navbar: React.FC<NavbarProps> = ({
                 </a>
               ))}
 
-              <div className="pt-2 border-t border-slate-800/80 flex flex-col gap-2">
+              <div className="pt-2 border-t border-slate-800 flex flex-col gap-2">
                 <button
                   onClick={() => {
                     setIsMobileMenuOpen(false);
                     if (onOpenVerifyModal) onOpenVerifyModal();
                   }}
-                  className="w-full text-left px-3 py-2 rounded-lg bg-navy-900 border border-slate-800 text-xs font-semibold text-amber-300 flex items-center gap-2"
+                  className="w-full text-left px-3 py-2 rounded-lg bg-[#0A0F1D] border border-slate-800 text-xs font-semibold text-blue-300 flex items-center gap-2"
                 >
-                  <Award className="w-4 h-4 text-amber-400" />
+                  <Award className="w-4 h-4 text-blue-400" />
                   Verify Certificate
                 </button>
 
@@ -265,9 +263,9 @@ export const Navbar: React.FC<NavbarProps> = ({
                         setIsMobileMenuOpen(false);
                         if (onOpenLearnerDashboard) onOpenLearnerDashboard();
                       }}
-                      className="w-full text-left px-3 py-2 rounded-lg bg-cyan-950/40 border border-cyan-800/50 text-xs font-semibold text-cyan-300 flex items-center gap-2"
+                      className="w-full text-left px-3 py-2 rounded-lg bg-blue-950/40 border border-blue-800/50 text-xs font-semibold text-blue-300 flex items-center gap-2"
                     >
-                      <LayoutDashboard className="w-4 h-4 text-cyan-400" />
+                      <LayoutDashboard className="w-4 h-4 text-blue-400" />
                       Learner Dashboard ({user.name.split(' ')[0]})
                     </button>
                     {user.role === 'admin' && (
@@ -276,9 +274,9 @@ export const Navbar: React.FC<NavbarProps> = ({
                           setIsMobileMenuOpen(false);
                           if (onOpenAdminConsole) onOpenAdminConsole();
                         }}
-                        className="w-full text-left px-3 py-2 rounded-lg bg-amber-950/40 border border-amber-800/50 text-xs font-semibold text-amber-300 flex items-center gap-2"
+                        className="w-full text-left px-3 py-2 rounded-lg bg-blue-950/40 border border-blue-800/50 text-xs font-semibold text-blue-300 flex items-center gap-2"
                       >
-                        <ShieldAlert className="w-4 h-4 text-amber-400" />
+                        <ShieldAlert className="w-4 h-4 text-blue-400" />
                         Admin Operations Console
                       </button>
                     )}
@@ -287,9 +285,9 @@ export const Navbar: React.FC<NavbarProps> = ({
                         setIsMobileMenuOpen(false);
                         await logout();
                       }}
-                      className="w-full text-left px-3 py-2 rounded-lg bg-rose-950/30 border border-rose-800/40 text-xs font-semibold text-rose-300 flex items-center gap-2"
+                      className="w-full text-left px-3 py-2 rounded-lg bg-[#0A0F1D] border border-slate-800 text-xs font-semibold text-slate-300 flex items-center gap-2"
                     >
-                      <LogOut className="w-4 h-4 text-rose-400" />
+                      <LogOut className="w-4 h-4 text-slate-400" />
                       Sign Out
                     </button>
                   </>
@@ -299,9 +297,9 @@ export const Navbar: React.FC<NavbarProps> = ({
                       setIsMobileMenuOpen(false);
                       if (onOpenAuthModal) onOpenAuthModal();
                     }}
-                    className="w-full text-left px-3 py-2 rounded-lg bg-navy-900 border border-slate-800 text-xs font-semibold text-slate-200 flex items-center gap-2"
+                    className="w-full text-left px-3 py-2 rounded-lg bg-[#0A0F1D] border border-slate-800 text-xs font-semibold text-slate-200 flex items-center gap-2"
                   >
-                    <User className="w-4 h-4 text-brand-violet" />
+                    <User className="w-4 h-4 text-blue-400" />
                     Sign In to Account
                   </button>
                 )}
@@ -309,7 +307,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
               <div className="pt-3 border-t border-slate-800 mt-2 flex flex-col gap-2">
                 <Button
-                  variant="gradient"
+                  variant="primary"
                   size="md"
                   onClick={() => {
                     setIsMobileMenuOpen(false);
@@ -321,7 +319,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   Register for Upcoming Batch
                 </Button>
                 <div className="flex items-center justify-center gap-1.5 text-xs text-slate-400 pt-1">
-                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                  <ShieldCheck className="w-3.5 h-3.5 text-blue-400" />
                   100% Money-Back Guarantee
                 </div>
               </div>
@@ -332,4 +330,3 @@ export const Navbar: React.FC<NavbarProps> = ({
     </header>
   );
 };
-

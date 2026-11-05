@@ -21,17 +21,17 @@ export const FAQSection: React.FC = () => {
   };
 
   return (
-    <section id="faq" className="py-20 bg-navy-900/40 relative scroll-mt-20">
+    <section id="faq" className="py-20 bg-[#0A0F1D] relative scroll-mt-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto space-y-4">
-          <Badge variant="cyan" size="md">
+          <Badge variant="primary" size="md">
             Clear Answers
           </Badge>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
             Frequently Asked Questions
           </h2>
-          <p className="text-slate-300 text-sm sm:text-base leading-relaxed">
+          <p className="text-slate-400 text-sm sm:text-base leading-relaxed">
             Everything you need to know about batch logistics, prerequisite hardware, recordings, and certificate verification.
           </p>
         </div>
@@ -44,8 +44,8 @@ export const FAQSection: React.FC = () => {
               onClick={() => setSelectedCategory(cat)}
               className={`px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-medium transition-all ${
                 selectedCategory === cat
-                  ? 'bg-brand-violet text-white shadow-md shadow-purple-500/25'
-                  : 'bg-navy-900 border border-slate-800 text-slate-400 hover:text-slate-200'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-[#111827] border border-[#1E293B] text-slate-400 hover:text-white'
               }`}
             >
               {cat}
@@ -61,7 +61,7 @@ export const FAQSection: React.FC = () => {
             return (
               <Card
                 key={faq.id}
-                className="border-slate-800 transition-all hover:border-slate-700"
+                className="border-[#1E293B] bg-[#111827] transition-all hover:border-blue-600/40"
               >
                 <button
                   onClick={() => toggleFaq(faq.id)}
@@ -69,12 +69,12 @@ export const FAQSection: React.FC = () => {
                   aria-expanded={isOpen}
                 >
                   <div className="flex items-start sm:items-center gap-3">
-                    <HelpCircle className="w-5 h-5 text-brand-cyan shrink-0 mt-0.5 sm:mt-0" />
+                    <HelpCircle className="w-5 h-5 text-blue-500 shrink-0 mt-0.5 sm:mt-0" />
                     <span className="text-base sm:text-lg font-bold text-white">
                       {faq.question}
                     </span>
                   </div>
-                  <div className="p-1.5 rounded-lg bg-navy-800 text-slate-400 shrink-0">
+                  <div className="p-1.5 rounded-lg bg-[#0A0F1D] text-slate-400 shrink-0">
                     <ChevronDown
                       className={`w-4 h-4 transition-transform duration-200 ${
                         isOpen ? 'rotate-180 text-white' : ''
@@ -84,10 +84,10 @@ export const FAQSection: React.FC = () => {
                 </button>
 
                 {isOpen && (
-                  <div className="px-5 pb-6 sm:px-6 pt-1 text-slate-300 text-sm sm:text-base leading-relaxed border-t border-slate-800/60 animate-in fade-in-50 duration-200">
+                  <div className="px-5 pb-6 sm:px-6 pt-1 text-slate-400 text-sm sm:text-base leading-relaxed border-t border-[#1E293B] animate-in fade-in-50 duration-200">
                     <p className="mt-3">{faq.answer}</p>
                     <div className="mt-3 flex items-center gap-2">
-                      <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-navy-800 text-indigo-300 border border-indigo-500/20">
+                      <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-[#0A0F1D] text-blue-400 border border-blue-600/30">
                         Category: {faq.category}
                       </span>
                     </div>
@@ -103,7 +103,7 @@ export const FAQSection: React.FC = () => {
           <span>Have an unanswered question? Email our lead academic advisor at </span>
           <a
             href={`mailto:${WORKSHOP_CONFIG.supportEmail}`}
-            className="text-brand-cyan font-semibold hover:underline inline-flex items-center gap-1 ml-1"
+            className="text-blue-500 font-semibold hover:underline inline-flex items-center gap-1 ml-1"
           >
             <Mail className="w-3.5 h-3.5" />
             {WORKSHOP_CONFIG.supportEmail}

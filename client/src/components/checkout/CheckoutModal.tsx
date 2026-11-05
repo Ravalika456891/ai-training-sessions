@@ -201,17 +201,17 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-black/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in-50 duration-200">
-      <div className="relative w-full max-w-3xl bg-navy-950 border border-indigo-500/30 rounded-3xl shadow-2xl overflow-hidden my-8">
+      <div className="relative w-full max-w-3xl bg-[#111827] border border-[#1E293B] rounded-3xl shadow-2xl overflow-hidden my-8">
         {/* Header Bar */}
-        <div className="p-5 sm:p-6 bg-navy-900 border-b border-slate-800 flex items-center justify-between">
+        <div className="p-5 sm:p-6 bg-[#0A0F1D] border-b border-[#1E293B] flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-xl bg-blue-600/15 text-blue-400 flex items-center justify-center">
               <Lock className="w-4 h-4" />
             </div>
             <div>
               <h3 className="text-base sm:text-lg font-bold text-white flex items-center gap-2">
                 Secure Checkout & Payment
-                <Badge variant="cyan" size="sm">
+                <Badge variant="primary" size="sm">
                   Razorpay Verified
                 </Badge>
               </h3>
@@ -235,46 +235,46 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
           {paymentResult ? (
             /* Successful Payment Confirmation Receipt */
             <div className="text-center py-6 space-y-6 animate-in zoom-in-95 duration-300">
-              <div className="w-20 h-20 rounded-full bg-emerald-500/20 text-emerald-400 mx-auto flex items-center justify-center border-2 border-emerald-500/40 shadow-xl shadow-emerald-500/20">
+              <div className="w-20 h-20 rounded-full bg-blue-600/15 text-blue-400 mx-auto flex items-center justify-center border-2 border-blue-600/40">
                 <CheckCircle2 className="w-10 h-10" />
               </div>
 
               <div className="space-y-1.5">
-                <Badge variant="success" size="md">
+                <Badge variant="primary" size="md">
                   Payment Captured & Verified
                 </Badge>
                 <h3 className="text-2xl sm:text-3xl font-extrabold text-white">
                   You are Officially Enrolled!
                 </h3>
-                <p className="text-slate-300 text-sm max-w-md mx-auto">
+                <p className="text-slate-400 text-sm max-w-md mx-auto">
                   A receipt and calendar invite have been dispatched to your registered email.
                 </p>
               </div>
 
               {/* Receipt Breakdown Card */}
-              <div className="max-w-md mx-auto bg-navy-900 border border-slate-700/80 rounded-2xl p-5 text-left text-xs space-y-3 shadow-lg">
-                <div className="flex justify-between pb-2 border-b border-slate-800">
+              <div className="max-w-md mx-auto bg-[#0A0F1D] border border-[#1E293B] rounded-2xl p-5 text-left text-xs space-y-3 shadow-lg">
+                <div className="flex justify-between pb-2 border-b border-[#1E293B]">
                   <span className="text-slate-400">Enrollment ID:</span>
-                  <span className="font-mono font-bold text-brand-cyan">{paymentResult.enrollmentId}</span>
+                  <span className="font-mono font-bold text-blue-400">{paymentResult.enrollmentId}</span>
                 </div>
-                <div className="flex justify-between pb-2 border-b border-slate-800">
+                <div className="flex justify-between pb-2 border-b border-[#1E293B]">
                   <span className="text-slate-400">Payment ID:</span>
                   <span className="font-mono text-white">{paymentResult.paymentId}</span>
                 </div>
-                <div className="flex justify-between pb-2 border-b border-slate-800">
+                <div className="flex justify-between pb-2 border-b border-[#1E293B]">
                   <span className="text-slate-400">Razorpay Order ID:</span>
                   <span className="font-mono text-slate-300">{paymentResult.orderId}</span>
                 </div>
                 <div className="flex justify-between pt-1 text-sm font-bold">
                   <span className="text-white">Amount Paid:</span>
-                  <span className="text-emerald-400">
+                  <span className="text-white font-bold">
                     ₹{paymentResult.amount?.toLocaleString('en-IN') || orderData?.breakdown.totalAmount.toLocaleString('en-IN')} (incl. GST)
                   </span>
                 </div>
               </div>
 
               <div className="pt-2">
-                <Button variant="gradient" size="md" onClick={onClose}>
+                <Button variant="primary" size="md" onClick={onClose}>
                   Done & Return to Workshop
                 </Button>
               </div>
@@ -282,7 +282,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
           ) : isLoadingOrder ? (
             /* Loading Order State */
             <div className="py-16 text-center space-y-4">
-              <Loader2 className="w-10 h-10 animate-spin text-brand-cyan mx-auto" />
+              <Loader2 className="w-10 h-10 animate-spin text-blue-500 mx-auto" />
               <p className="text-sm text-slate-300">
                 Validating workshop reservation & calculating pricing with Razorpay...
               </p>
@@ -293,7 +293,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
               {/* Left Column: Workshop & Attendee Details */}
               <div className="md:col-span-6 space-y-6">
                 <div>
-                  <span className="text-[11px] uppercase font-bold tracking-wider text-indigo-400">
+                  <span className="text-[11px] uppercase font-bold tracking-wider text-blue-400">
                     Workshop Cohort
                   </span>
                   <h4 className="text-lg font-bold text-white mt-1">
@@ -301,23 +301,23 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                   </h4>
                   <div className="mt-2 space-y-1 text-xs text-slate-300">
                     <div className="flex items-center gap-2">
-                      <Calendar className="w-3.5 h-3.5 text-brand-cyan" />
+                      <Calendar className="w-3.5 h-3.5 text-blue-500" />
                       <span>{orderData.workshop.dateRange}</span>
                       <span className="text-slate-500">•</span>
-                      <span className="font-mono text-brand-cyan font-bold">
+                      <span className="font-mono text-blue-400 font-bold">
                         {orderData.workshop.batchCode}
                       </span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Clock className="w-3.5 h-3.5 text-brand-violet" />
+                      <Clock className="w-3.5 h-3.5 text-blue-500" />
                       <span>{orderData.workshop.timings}</span>
                     </div>
                   </div>
                 </div>
 
                 {/* Learner Details Card */}
-                <div className="p-4 rounded-xl bg-navy-900 border border-slate-800 space-y-2 text-xs">
-                  <span className="font-semibold text-slate-400 block border-b border-slate-800 pb-1.5">
+                <div className="p-4 rounded-xl bg-[#0A0F1D] border border-[#1E293B] space-y-2 text-xs">
+                  <span className="font-semibold text-slate-400 block border-b border-[#1E293B] pb-1.5">
                     Registered Attendee Information
                   </span>
                   <div className="flex items-center gap-2 text-slate-200">
@@ -337,15 +337,15 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                 {/* Guaranteed Inclusions */}
                 <div className="space-y-1.5 text-xs text-slate-400">
                   <div className="flex items-center gap-2 text-slate-300">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                    <CheckCircle2 className="w-3.5 h-3.5 text-blue-500 shrink-0" />
                     <span>Lifetime Recording & Starter Repositories</span>
                   </div>
                   <div className="flex items-center gap-2 text-slate-300">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                    <CheckCircle2 className="w-3.5 h-3.5 text-blue-500 shrink-0" />
                     <span>Verified Cryptographic Certificate</span>
                   </div>
                   <div className="flex items-center gap-2 text-slate-300">
-                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                    <ShieldCheck className="w-3.5 h-3.5 text-blue-500 shrink-0" />
                     <span>100% Money-Back Satisfaction Guarantee</span>
                   </div>
                 </div>
@@ -356,7 +356,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                 {/* Coupon Code Input */}
                 <form onSubmit={handleApplyCoupon} className="space-y-2">
                   <label className="text-xs font-semibold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
-                    <Tag className="w-3.5 h-3.5 text-brand-cyan" />
+                    <Tag className="w-3.5 h-3.5 text-blue-500" />
                     <span>Have a Coupon Code?</span>
                   </label>
                   <div className="flex gap-2">
@@ -365,7 +365,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                       placeholder="e.g., LAUNCH10 or EARLYBIRD"
                       value={couponCode}
                       onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
-                      className="flex-1 bg-navy-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white uppercase placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-violet"
+                      className="flex-1 bg-[#0A0F1D] border border-[#1E293B] rounded-xl px-3.5 py-2.5 text-xs text-white uppercase placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-600"
                     />
                     <Button
                       type="submit"
@@ -384,7 +384,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                     </p>
                   )}
                   {couponSuccess && (
-                    <p className="text-[11px] text-emerald-400 flex items-center gap-1">
+                    <p className="text-[11px] text-blue-400 flex items-center gap-1">
                       <CheckCircle2 className="w-3 h-3" />
                       {couponSuccess}
                     </p>
@@ -392,7 +392,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                 </form>
 
                 {/* Amount Summary Table (Validated by Server) */}
-                <Card className="p-4 sm:p-5 border-slate-800 bg-navy-900/90 space-y-2.5 text-xs">
+                <Card className="p-4 sm:p-5 border-[#1E293B] bg-[#0A0F1D] space-y-2.5 text-xs">
                   <div className="flex justify-between text-slate-300">
                     <span>Workshop Registration Fee:</span>
                     <span className="font-semibold text-white">
@@ -401,7 +401,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                   </div>
 
                   {orderData.breakdown.discountAmount > 0 && (
-                    <div className="flex justify-between text-emerald-400 font-medium">
+                    <div className="flex justify-between text-blue-400 font-medium">
                       <span>Discount ({orderData.breakdown.couponCode}):</span>
                       <span>-₹{orderData.breakdown.discountAmount.toLocaleString('en-IN')}</span>
                     </div>
@@ -414,10 +414,10 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                     </span>
                   </div>
 
-                  <div className="pt-3 border-t border-slate-800 flex justify-between items-baseline">
+                  <div className="pt-3 border-t border-[#1E293B] flex justify-between items-baseline">
                     <span className="text-sm font-bold text-white">Total Amount:</span>
                     <div className="text-right">
-                      <span className="text-xl sm:text-2xl font-black text-emerald-400">
+                      <span className="text-xl sm:text-2xl font-black text-white">
                         ₹{orderData.breakdown.totalAmount.toLocaleString('en-IN')}
                       </span>
                       <span className="text-[10px] text-slate-400 block font-normal">
@@ -440,11 +440,11 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                 {/* Pay Button Action */}
                 <div className="space-y-3 pt-2">
                   <Button
-                    variant="gradient"
+                    variant="primary"
                     size="lg"
                     isLoading={isProcessingPayment}
                     onClick={handlePaySecurely}
-                    className="w-full text-base py-4 shadow-xl shadow-indigo-600/30"
+                    className="w-full text-base py-4"
                     rightIcon={<ArrowRight className="w-5 h-5" />}
                   >
                     Pay Securely ₹{orderData.breakdown.totalAmount.toLocaleString('en-IN')}
@@ -455,14 +455,14 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                       type="button"
                       onClick={handleSimulatedPayment}
                       disabled={isProcessingPayment}
-                      className="text-[11px] text-slate-400 hover:text-indigo-300 underline font-medium transition-colors"
+                      className="text-[11px] text-slate-400 hover:text-blue-400 underline font-medium transition-colors"
                     >
                       (Test Sandbox: Simulate Instant Verified Payment)
                     </button>
                   </div>
 
                   <div className="flex items-center justify-center gap-2 text-[11px] text-slate-500">
-                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                    <ShieldCheck className="w-3.5 h-3.5 text-blue-500" />
                     <span>Authorized by Razorpay Payment Gateway • PCI-DSS Level 1 Compliant</span>
                   </div>
                 </div>

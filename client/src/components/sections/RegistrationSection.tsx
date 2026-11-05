@@ -130,52 +130,52 @@ export const RegistrationSection: React.FC<RegistrationSectionProps> = ({
   const totalAmount = selectedBatch.pricing.basePrice + taxAmount;
 
   return (
-    <section id="register" className="py-20 bg-navy-950 relative scroll-mt-20">
+    <section id="register" className="py-20 bg-[#0A0F1D] relative scroll-mt-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto space-y-4">
-          <Badge variant="purple" size="md">
+          <Badge variant="primary" size="md">
             Direct Enrollment
           </Badge>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
             Reserve Your Seat in AI Launchpad
           </h2>
-          <p className="text-slate-300 text-sm sm:text-base leading-relaxed">
+          <p className="text-slate-400 text-sm sm:text-base leading-relaxed">
             Fill in your participant details below. Live session links and calendar invites will be dispatched to your registered email.
           </p>
         </div>
 
         <div className="mt-12 max-w-4xl mx-auto">
-          <Card glow className="p-6 sm:p-10 border-indigo-500/30">
+          <Card className="p-6 sm:p-10 border-[#1E293B] bg-[#111827]">
             {enrollmentResult ? (
               <div className="text-center py-8 space-y-6 animate-in fade-in-50 duration-300">
-                <div className="w-16 h-16 rounded-full bg-emerald-500/20 text-emerald-400 mx-auto flex items-center justify-center border border-emerald-500/30 shadow-lg shadow-emerald-500/20">
+                <div className="w-16 h-16 rounded-full bg-blue-600/15 text-blue-400 mx-auto flex items-center justify-center border border-blue-600/30">
                   <CheckCircle2 className="w-9 h-9" />
                 </div>
                 
                 <div className="space-y-2">
-                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-semibold">
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-600/15 border border-blue-600/30 text-blue-400 text-xs font-semibold">
                     <Sparkles className="w-3.5 h-3.5" />
                     <span>MongoDB Atomic Reservation Confirmed</span>
                   </div>
                   <h3 className="text-2xl sm:text-3xl font-extrabold text-white">
                     Registration Successfully Recorded!
                   </h3>
-                  <p className="text-slate-300 text-sm max-w-lg mx-auto leading-relaxed">
+                  <p className="text-slate-400 text-sm max-w-lg mx-auto leading-relaxed">
                     Welcome aboard, <strong className="text-white">{enrollmentResult.enrollment.attendeeDetails.fullName}</strong>. Your seat has been allocated in the database.
                   </p>
                 </div>
 
                 {/* Enrollment Summary Card */}
-                <div className="p-6 rounded-2xl bg-navy-900 border border-slate-700/80 text-left max-w-xl mx-auto space-y-4 shadow-xl">
-                  <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+                <div className="p-6 rounded-2xl bg-[#0A0F1D] border border-[#1E293B] text-left max-w-xl mx-auto space-y-4 shadow-xl">
+                  <div className="flex items-center justify-between pb-3 border-b border-[#1E293B]">
                     <div>
                       <span className="text-[11px] uppercase font-bold text-slate-400">Enrollment ID</span>
-                      <div className="text-lg font-mono font-bold text-brand-cyan">
+                      <div className="text-lg font-mono font-bold text-blue-400">
                         {enrollmentResult.enrollment.enrollmentId}
                       </div>
                     </div>
-                    <Badge variant={enrollmentResult.paymentRequired ? 'warning' : 'success'} size="md">
+                    <Badge variant="primary" size="md">
                       {enrollmentResult.paymentRequired ? 'Seat Reserved (15 Min Hold)' : 'Confirmed'}
                     </Badge>
                   </div>
@@ -195,23 +195,23 @@ export const RegistrationSection: React.FC<RegistrationSectionProps> = ({
                     </div>
                     <div>
                       <span className="text-slate-400 block">Total Investment:</span>
-                      <span className="text-emerald-400 font-bold text-sm">
+                      <span className="text-white font-bold text-sm">
                         ₹{enrollmentResult.orderSummary.totalAmount.toLocaleString('en-IN')} (incl. GST)
                       </span>
                     </div>
                   </div>
 
                   {enrollmentResult.paymentRequired && (
-                    <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-200 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div className="p-3.5 rounded-xl bg-blue-600/10 border border-blue-600/30 text-slate-300 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                       <div className="flex items-start gap-2.5">
-                        <Clock className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+                        <Clock className="w-4 h-4 text-blue-400 shrink-0 mt-0.5" />
                         <div>
-                          <strong>15-Minute Seat Hold Active:</strong> Finalize checkout with Razorpay to secure your confirmed seat.
+                          <strong className="text-white">15-Minute Seat Hold Active:</strong> Finalize checkout with Razorpay to secure your confirmed seat.
                         </div>
                       </div>
                       {onOpenCheckout && (
                         <Button
-                          variant="gradient"
+                          variant="primary"
                           size="sm"
                           onClick={() => onOpenCheckout(enrollmentResult.enrollment.enrollmentId)}
                           rightIcon={<ArrowRight className="w-3.5 h-3.5" />}
@@ -227,7 +227,7 @@ export const RegistrationSection: React.FC<RegistrationSectionProps> = ({
                 <div className="pt-2 flex flex-wrap items-center justify-center gap-3">
                   {enrollmentResult.paymentRequired && onOpenCheckout && (
                     <Button
-                      variant="gradient"
+                      variant="primary"
                       size="md"
                       onClick={() => onOpenCheckout(enrollmentResult.enrollment.enrollmentId)}
                       rightIcon={<ArrowRight className="w-4 h-4" />}
@@ -263,7 +263,7 @@ export const RegistrationSection: React.FC<RegistrationSectionProps> = ({
                 {/* Cohort Selection Selector */}
                 <div className="space-y-2">
                   <label className="text-xs font-semibold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
-                    <Calendar className="w-4 h-4 text-brand-violet" />
+                    <Calendar className="w-4 h-4 text-blue-500" />
                     <span>Select Workshop Cohort</span>
                     <span className="text-rose-400">*</span>
                   </label>
@@ -273,7 +273,7 @@ export const RegistrationSection: React.FC<RegistrationSectionProps> = ({
                       setFormData({ ...formData, selectedBatchId: e.target.value });
                       onSelectBatch(e.target.value);
                     }}
-                    className="w-full bg-navy-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-brand-violet focus:border-transparent transition-all"
+                    className="w-full bg-[#0A0F1D] border border-[#1E293B] rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all"
                   >
                     {batches.map((batch) => (
                       <option key={batch.id} value={batch.id}>
@@ -293,7 +293,7 @@ export const RegistrationSection: React.FC<RegistrationSectionProps> = ({
                   {/* Full Name */}
                   <div className="space-y-2">
                     <label className="text-xs font-semibold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
-                      <UserIcon className="w-4 h-4 text-brand-cyan" />
+                      <UserIcon className="w-4 h-4 text-blue-500" />
                       <span>Full Legal Name</span>
                       <span className="text-rose-400">*</span>
                     </label>
@@ -302,9 +302,9 @@ export const RegistrationSection: React.FC<RegistrationSectionProps> = ({
                       placeholder="e.g., Rajesh Kumar"
                       value={formData.fullName}
                       onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                      className={`w-full bg-navy-900 border ${
-                        errors.fullName ? 'border-rose-500' : 'border-slate-700'
-                      } rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-violet focus:border-transparent transition-all`}
+                      className={`w-full bg-[#0A0F1D] border ${
+                        errors.fullName ? 'border-rose-500' : 'border-[#1E293B]'
+                      } rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all`}
                     />
                     {errors.fullName && (
                       <p className="text-xs text-rose-400 flex items-center gap-1 mt-1">
@@ -317,7 +317,7 @@ export const RegistrationSection: React.FC<RegistrationSectionProps> = ({
                   {/* Email */}
                   <div className="space-y-2">
                     <label className="text-xs font-semibold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
-                      <Mail className="w-4 h-4 text-indigo-400" />
+                      <Mail className="w-4 h-4 text-blue-500" />
                       <span>Email Address</span>
                       <span className="text-rose-400">*</span>
                     </label>
@@ -326,9 +326,9 @@ export const RegistrationSection: React.FC<RegistrationSectionProps> = ({
                       placeholder="rajesh@company.com"
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      className={`w-full bg-navy-900 border ${
-                        errors.email ? 'border-rose-500' : 'border-slate-700'
-                      } rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-violet focus:border-transparent transition-all`}
+                      className={`w-full bg-[#0A0F1D] border ${
+                        errors.email ? 'border-rose-500' : 'border-[#1E293B]'
+                      } rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all`}
                     />
                     {errors.email && (
                       <p className="text-xs text-rose-400 flex items-center gap-1 mt-1">
@@ -343,7 +343,7 @@ export const RegistrationSection: React.FC<RegistrationSectionProps> = ({
                   {/* Phone with Country Code */}
                   <div className="space-y-2">
                     <label className="text-xs font-semibold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
-                      <Phone className="w-4 h-4 text-emerald-400" />
+                      <Phone className="w-4 h-4 text-blue-500" />
                       <span>WhatsApp / Mobile Number</span>
                       <span className="text-rose-400">*</span>
                     </label>
@@ -351,7 +351,7 @@ export const RegistrationSection: React.FC<RegistrationSectionProps> = ({
                       <select
                         value={formData.phoneCountryCode}
                         onChange={(e) => setFormData({ ...formData, phoneCountryCode: e.target.value })}
-                        className="bg-navy-900 border border-slate-700 rounded-xl px-2.5 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-brand-violet shrink-0"
+                        className="bg-[#0A0F1D] border border-[#1E293B] rounded-xl px-2.5 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-600 shrink-0"
                       >
                         <option value="+91">🇮🇳 +91</option>
                         <option value="+1">🇺🇸 +1</option>
@@ -364,9 +364,9 @@ export const RegistrationSection: React.FC<RegistrationSectionProps> = ({
                         placeholder="98765 43210"
                         value={formData.phoneNumber}
                         onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
-                        className={`flex-1 bg-navy-900 border ${
-                          errors.phoneNumber ? 'border-rose-500' : 'border-slate-700'
-                        } rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-violet focus:border-transparent transition-all`}
+                        className={`flex-1 bg-[#0A0F1D] border ${
+                          errors.phoneNumber ? 'border-rose-500' : 'border-[#1E293B]'
+                        } rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all`}
                       />
                     </div>
                     {errors.phoneNumber && (
@@ -380,13 +380,13 @@ export const RegistrationSection: React.FC<RegistrationSectionProps> = ({
                   {/* Persona Category */}
                   <div className="space-y-2">
                     <label className="text-xs font-semibold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
-                      <Briefcase className="w-4 h-4 text-purple-400" />
+                      <Briefcase className="w-4 h-4 text-blue-500" />
                       <span>Current Profile Category</span>
                     </label>
                     <select
                       value={formData.userCategory}
                       onChange={(e) => setFormData({ ...formData, userCategory: e.target.value })}
-                      className="w-full bg-navy-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-brand-violet transition-all"
+                      className="w-full bg-[#0A0F1D] border border-[#1E293B] rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-600 transition-all"
                     >
                       <option value="working_professional">Working Professional (Product, Eng, Mktg)</option>
                       <option value="student">Student / Fresh Graduate</option>
@@ -401,7 +401,7 @@ export const RegistrationSection: React.FC<RegistrationSectionProps> = ({
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-2">
                   <div className="space-y-2">
                     <label className="text-xs font-semibold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
-                      <Layers className="w-4 h-4 text-brand-cyan" />
+                      <Layers className="w-4 h-4 text-blue-500" />
                       <span>Current AI Exposure Level</span>
                     </label>
                     <div className="grid grid-cols-3 gap-2">
@@ -412,8 +412,8 @@ export const RegistrationSection: React.FC<RegistrationSectionProps> = ({
                           onClick={() => setFormData({ ...formData, experienceLevel: lvl })}
                           className={`py-2 px-2 text-xs font-semibold capitalize rounded-xl border transition-all ${
                             formData.experienceLevel === lvl
-                              ? 'bg-brand-violet/20 border-brand-violet text-white'
-                              : 'bg-navy-900 border-slate-700 text-slate-400 hover:text-white'
+                              ? 'bg-blue-600 border-blue-600 text-white'
+                              : 'bg-[#0A0F1D] border-[#1E293B] text-slate-400 hover:text-white'
                           }`}
                         >
                           {lvl}
@@ -423,7 +423,7 @@ export const RegistrationSection: React.FC<RegistrationSectionProps> = ({
                   </div>
 
                   {/* Summary Box */}
-                  <div className="p-3.5 rounded-xl bg-navy-900/90 border border-slate-700 flex flex-col justify-between">
+                  <div className="p-3.5 rounded-xl bg-[#0A0F1D] border border-[#1E293B] flex flex-col justify-between">
                     <div className="flex items-center justify-between text-xs text-slate-400">
                       <span>Base Registration:</span>
                       <span className="font-semibold text-white">₹{selectedBatch.pricing.basePrice}</span>
@@ -432,9 +432,9 @@ export const RegistrationSection: React.FC<RegistrationSectionProps> = ({
                       <span>GST (18%):</span>
                       <span className="font-semibold text-white">₹{taxAmount}</span>
                     </div>
-                    <div className="flex items-center justify-between text-sm font-bold text-white pt-2 border-t border-slate-700/80 mt-1">
+                    <div className="flex items-center justify-between text-sm font-bold text-white pt-2 border-t border-[#1E293B] mt-1">
                       <span>Total Payable:</span>
-                      <span className="text-emerald-400 text-base">₹{totalAmount.toLocaleString('en-IN')}</span>
+                      <span className="text-white text-base">₹{totalAmount.toLocaleString('en-IN')}</span>
                     </div>
                   </div>
                 </div>
@@ -446,10 +446,10 @@ export const RegistrationSection: React.FC<RegistrationSectionProps> = ({
                       type="checkbox"
                       checked={formData.acceptTerms}
                       onChange={(e) => setFormData({ ...formData, acceptTerms: e.target.checked })}
-                      className="mt-1 w-4 h-4 rounded bg-navy-900 border-slate-700 text-brand-violet focus:ring-brand-violet"
+                      className="mt-1 w-4 h-4 rounded bg-[#0A0F1D] border-[#1E293B] text-blue-600 focus:ring-blue-600"
                     />
                     <span className="text-xs text-slate-300 leading-relaxed">
-                      I agree to the <span className="text-brand-cyan hover:underline">Terms of Service</span>, <span className="text-brand-cyan hover:underline">Privacy Policy</span>, and <span className="text-brand-cyan hover:underline">100% Refund Policy</span>. <span className="text-rose-400">*</span>
+                      I agree to the <span className="text-blue-400 hover:underline">Terms of Service</span>, <span className="text-blue-400 hover:underline">Privacy Policy</span>, and <span className="text-blue-400 hover:underline">100% Refund Policy</span>. <span className="text-rose-400">*</span>
                     </span>
                   </label>
                   {errors.acceptTerms && (
@@ -464,7 +464,7 @@ export const RegistrationSection: React.FC<RegistrationSectionProps> = ({
                       type="checkbox"
                       checked={formData.marketingConsent}
                       onChange={(e) => setFormData({ ...formData, marketingConsent: e.target.checked })}
-                      className="mt-1 w-4 h-4 rounded bg-navy-900 border-slate-700 text-brand-violet focus:ring-brand-violet"
+                      className="mt-1 w-4 h-4 rounded bg-[#0A0F1D] border-[#1E293B] text-blue-600 focus:ring-blue-600"
                     />
                     <span className="text-xs text-slate-400 leading-relaxed">
                       Send me cohort preparation reminders and prompt engineering cheat-sheets via WhatsApp/Email. (Optional, unsubscribe anytime).
@@ -476,16 +476,16 @@ export const RegistrationSection: React.FC<RegistrationSectionProps> = ({
                 <div className="pt-4">
                   <Button
                     type="submit"
-                    variant="gradient"
+                    variant="primary"
                     size="lg"
                     isLoading={isSubmitting}
-                    className="w-full text-base py-4 shadow-xl shadow-indigo-600/30"
+                    className="w-full text-base py-4"
                     rightIcon={<ArrowRight className="w-5 h-5" />}
                   >
                     Proceed to Reserve Seat (₹{totalAmount.toLocaleString('en-IN')})
                   </Button>
                   <div className="flex items-center justify-center gap-2 text-xs text-slate-400 mt-3">
-                    <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                    <ShieldCheck className="w-4 h-4 text-blue-500" />
                     <span>256-Bit SSL Encrypted • 100% Satisfaction Guarantee</span>
                   </div>
                 </div>

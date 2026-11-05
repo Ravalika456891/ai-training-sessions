@@ -102,31 +102,24 @@ const MainApp: React.FC = () => {
   const currentNextBatch = batches[0] || BATCH_OPTIONS[0];
 
   return (
-    <div className="min-h-screen bg-[#030712] text-slate-100 flex flex-col font-sans selection:bg-brand-violet selection:text-white relative">
-      {/* Ambient Global Background Mesh */}
-      <div className="fixed inset-0 pointer-events-none -z-10">
-        <div className="absolute top-0 left-1/4 w-[650px] h-[450px] bg-gradient-to-br from-violet-600/12 to-indigo-600/6 rounded-full blur-[140px]" />
-        <div className="absolute top-1/2 right-1/4 w-[550px] h-[450px] bg-gradient-to-bl from-cyan-500/10 to-blue-600/6 rounded-full blur-[130px]" />
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff04_1px,transparent_1px),linear-gradient(to_bottom,#ffffff04_1px,transparent_1px)] bg-[size:4rem_4rem]" />
-      </div>
-
-      {/* High-Converting Promotional Announcement Banner */}
+    <div className="min-h-screen bg-[#0A0F1D] text-slate-100 flex flex-col font-sans selection:bg-blue-600 selection:text-white relative">
+      {/* High-Converting Clean Announcement Banner */}
       {showSampleBanner && (
         <aside
           aria-label="Upcoming Cohort Announcement"
-          className="bg-gradient-to-r from-violet-900/60 via-indigo-900/50 to-cyan-900/60 border-b border-indigo-500/20 py-2.5 px-4 text-xs text-slate-200 backdrop-blur-md relative z-50 shadow-sm"
+          className="bg-[#111827] border-b border-slate-800 py-2.5 px-4 text-xs text-slate-200 relative z-50"
         >
           <div className="max-w-7xl mx-auto flex items-center justify-between gap-3">
             <div className="flex items-center gap-2.5 flex-wrap mx-auto text-center sm:text-left">
-              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wide bg-brand-cyan/20 text-brand-cyan border border-brand-cyan/30">
-                <span className={`w-1.5 h-1.5 rounded-full ${backendSynced ? 'bg-emerald-400' : 'bg-brand-cyan'} animate-pulse`} />
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide bg-blue-600/15 text-blue-400 border border-blue-600/30">
+                <span className={`w-1.5 h-1.5 rounded-full ${backendSynced ? 'bg-blue-400' : 'bg-blue-500'} animate-pulse`} />
                 Live Cohort Open
               </span>
               <p className="font-medium text-slate-200">
                 <strong>Next Weekend Masterclass:</strong> Limited to 25 learners per cohort for personalized code reviews & labs.
               </p>
               {user && (
-                <span className="hidden md:inline-flex px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 font-semibold text-[11px] border border-emerald-500/30">
+                <span className="hidden md:inline-flex px-2 py-0.5 rounded-md bg-blue-600/15 text-blue-300 font-semibold text-[11px] border border-blue-600/30">
                   Signed in: {user.name} ({user.role})
                 </span>
               )}
@@ -240,7 +233,7 @@ const MainApp: React.FC = () => {
 
       {/* Mobile Sticky Register Pill (Floating on mobile viewports) */}
       <div className="sm:hidden fixed bottom-4 left-4 right-4 z-40">
-        <div className="p-2.5 rounded-2xl bg-navy-900/95 backdrop-blur-lg border border-indigo-500/30 shadow-2xl flex items-center justify-between gap-3">
+        <div className="p-2.5 rounded-2xl bg-[#111827] border border-slate-800 shadow-xl flex items-center justify-between gap-3">
           <div>
             <div className="text-[11px] text-slate-400 font-medium">
               Next Cohort:{' '}
@@ -248,16 +241,16 @@ const MainApp: React.FC = () => {
                 {currentNextBatch.dateRange.split('–')[0]}
               </span>
             </div>
-            <div className="text-xs font-black text-emerald-400">
+            <div className="text-xs font-black text-blue-400">
               ₹{currentNextBatch.pricing.basePrice}{' '}
               <span className="text-[10px] text-slate-400 font-normal">+ GST</span>
             </div>
           </div>
           <Button
-            variant="gradient"
+            variant="primary"
             size="sm"
             onClick={scrollToRegister}
-            className="text-xs py-2 px-4 shadow-lg shadow-indigo-600/30"
+            className="text-xs py-2 px-4"
             rightIcon={<ArrowRight className="w-3.5 h-3.5" />}
           >
             Claim Seat

@@ -55,17 +55,17 @@ export const CertificateVerifyModal: React.FC<CertificateVerifyModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-black/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in-50 duration-200">
-      <div className="relative w-full max-w-2xl bg-navy-950 border border-indigo-500/30 rounded-3xl shadow-2xl overflow-hidden my-8">
+      <div className="relative w-full max-w-2xl bg-[#111827] border border-[#1E293B] rounded-3xl shadow-2xl overflow-hidden my-8">
         {/* Header */}
-        <div className="p-5 sm:p-6 bg-navy-900 border-b border-slate-800 flex items-center justify-between">
+        <div className="p-5 sm:p-6 bg-[#0A0F1D] border-b border-[#1E293B] flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-xl bg-blue-600/15 text-blue-400 flex items-center justify-center">
               <Award className="w-4 h-4" />
             </div>
             <div>
               <h3 className="text-base font-bold text-white flex items-center gap-2">
                 Public Certificate Verification
-                <Badge variant="cyan" size="sm">
+                <Badge variant="primary" size="sm">
                   Official Registry
                 </Badge>
               </h3>
@@ -99,10 +99,10 @@ export const CertificateVerifyModal: React.FC<CertificateVerifyModalProps> = ({
                 placeholder="Enter Certificate Serial (e.g. AILP-CERT-2026-X841)"
                 value={serialInput}
                 onChange={(e) => setSerialInput(e.target.value.toUpperCase())}
-                className="w-full bg-navy-900 border border-slate-700 rounded-xl pl-10 pr-4 py-2.5 text-xs sm:text-sm text-white font-mono uppercase focus:outline-none focus:ring-2 focus:ring-brand-violet"
+                className="w-full bg-[#0A0F1D] border border-[#1E293B] rounded-xl pl-10 pr-4 py-2.5 text-xs sm:text-sm text-white font-mono uppercase focus:outline-none focus:ring-2 focus:ring-blue-600"
               />
             </div>
-            <Button type="submit" variant="gradient" size="sm" isLoading={isLoading} className="shrink-0">
+            <Button type="submit" variant="primary" size="sm" isLoading={isLoading} className="shrink-0">
               Verify
             </Button>
           </form>
@@ -115,15 +115,15 @@ export const CertificateVerifyModal: React.FC<CertificateVerifyModalProps> = ({
           )}
 
           {certData && (
-            <div className="p-6 rounded-2xl bg-navy-900 border border-emerald-500/30 space-y-4 animate-in zoom-in-95 duration-200">
-              <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+            <div className="p-6 rounded-2xl bg-[#0A0F1D] border border-blue-600/30 space-y-4 animate-in zoom-in-95 duration-200">
+              <div className="flex items-center justify-between pb-3 border-b border-[#1E293B]">
                 <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-5 h-5 text-emerald-400" />
-                  <span className="text-emerald-400 font-bold text-sm">
+                  <CheckCircle2 className="w-5 h-5 text-blue-400" />
+                  <span className="text-white font-bold text-sm">
                     {certData.isValid ? 'Authentic Verified Credential' : 'Revoked'}
                   </span>
                 </div>
-                <span className="font-mono text-xs font-bold text-brand-cyan">
+                <span className="font-mono text-xs font-bold text-blue-400">
                   {certData.serialNumber}
                 </span>
               </div>
@@ -132,7 +132,7 @@ export const CertificateVerifyModal: React.FC<CertificateVerifyModalProps> = ({
                 <div>
                   <span className="text-slate-400 block text-[11px]">Awarded To:</span>
                   <span className="text-base font-bold text-white flex items-center gap-1.5 mt-0.5">
-                    <User className="w-4 h-4 text-brand-violet" />
+                    <User className="w-4 h-4 text-blue-500" />
                     {certData.recipientName}
                   </span>
                 </div>
@@ -144,7 +144,7 @@ export const CertificateVerifyModal: React.FC<CertificateVerifyModalProps> = ({
                   </span>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4 pt-2 border-t border-slate-800/80">
+                <div className="grid grid-cols-2 gap-4 pt-2 border-t border-[#1E293B]">
                   <div>
                     <span className="text-slate-400 block text-[11px]">Completion Date:</span>
                     <span className="text-slate-200 font-medium">
@@ -163,7 +163,7 @@ export const CertificateVerifyModal: React.FC<CertificateVerifyModalProps> = ({
                   <span className="text-[10px] text-slate-500 font-mono block mb-1">
                     Cryptographic Verification Hash:
                   </span>
-                  <div className="p-2.5 rounded-lg bg-navy-950 border border-slate-800 font-mono text-[10px] text-slate-400 break-all select-all">
+                  <div className="p-2.5 rounded-lg bg-[#111827] border border-[#1E293B] font-mono text-[10px] text-slate-400 break-all select-all">
                     {certData.verificationHash}
                   </div>
                 </div>
