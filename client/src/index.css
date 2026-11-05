@@ -9,7 +9,7 @@
   }
 
   body {
-    @apply bg-[#0A0F1D] text-slate-100 antialiased selection:bg-blue-600 selection:text-white min-h-screen;
+    @apply bg-[#F8FAFC] text-[#0F172A] antialiased selection:bg-blue-600 selection:text-white min-h-screen;
     overflow-x: hidden;
   }
 }
@@ -20,11 +20,11 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: #0A0F1D;
+  background: #F1F5F9;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #1E293B;
+  background: #CBD5E1;
   border-radius: 4px;
 }
 
@@ -34,8 +34,8 @@
 
 /* Solid card styling */
 .solid-panel {
-  background: #111827;
-  border: 1px solid #1E293B;
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
 }
 
 .solid-panel:hover {

@@ -21,17 +21,17 @@ export const FAQSection: React.FC = () => {
   };
 
   return (
-    <section id="faq" className="py-20 bg-[#0A0F1D] relative scroll-mt-20">
+    <section id="faq" className="py-20 bg-[#F8FAFC] relative scroll-mt-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto space-y-4">
           <Badge variant="primary" size="md">
             Clear Answers
           </Badge>
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+          <h2 className="text-3xl sm:text-4xl font-extrabold text-[#0F172A] tracking-tight">
             Frequently Asked Questions
           </h2>
-          <p className="text-slate-400 text-sm sm:text-base leading-relaxed">
+          <p className="text-[#475569] text-sm sm:text-base leading-relaxed">
             Everything you need to know about batch logistics, prerequisite hardware, recordings, and certificate verification.
           </p>
         </div>
@@ -44,8 +44,8 @@ export const FAQSection: React.FC = () => {
               onClick={() => setSelectedCategory(cat)}
               className={`px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-medium transition-all ${
                 selectedCategory === cat
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-[#111827] border border-[#1E293B] text-slate-400 hover:text-white'
+                  ? 'bg-blue-600 text-white shadow-sm'
+                  : 'bg-white border border-slate-200 text-[#475569] hover:text-[#0F172A]'
               }`}
             >
               {cat}
@@ -61,7 +61,7 @@ export const FAQSection: React.FC = () => {
             return (
               <Card
                 key={faq.id}
-                className="border-[#1E293B] bg-[#111827] transition-all hover:border-blue-600/40"
+                className="border-slate-200 bg-white shadow-sm transition-all hover:border-slate-300"
               >
                 <button
                   onClick={() => toggleFaq(faq.id)}
@@ -69,25 +69,25 @@ export const FAQSection: React.FC = () => {
                   aria-expanded={isOpen}
                 >
                   <div className="flex items-start sm:items-center gap-3">
-                    <HelpCircle className="w-5 h-5 text-blue-500 shrink-0 mt-0.5 sm:mt-0" />
-                    <span className="text-base sm:text-lg font-bold text-white">
+                    <HelpCircle className="w-5 h-5 text-blue-600 shrink-0 mt-0.5 sm:mt-0" />
+                    <span className="text-base sm:text-lg font-bold text-[#0F172A]">
                       {faq.question}
                     </span>
                   </div>
-                  <div className="p-1.5 rounded-lg bg-[#0A0F1D] text-slate-400 shrink-0">
+                  <div className="p-1.5 rounded-lg bg-slate-100 text-slate-500 shrink-0">
                     <ChevronDown
                       className={`w-4 h-4 transition-transform duration-200 ${
-                        isOpen ? 'rotate-180 text-white' : ''
+                        isOpen ? 'rotate-180 text-[#0F172A]' : ''
                       }`}
                     />
                   </div>
                 </button>
 
                 {isOpen && (
-                  <div className="px-5 pb-6 sm:px-6 pt-1 text-slate-400 text-sm sm:text-base leading-relaxed border-t border-[#1E293B] animate-in fade-in-50 duration-200">
+                  <div className="px-5 pb-6 sm:px-6 pt-1 text-[#475569] text-sm sm:text-base leading-relaxed border-t border-slate-100 animate-in fade-in-50 duration-200">
                     <p className="mt-3">{faq.answer}</p>
                     <div className="mt-3 flex items-center gap-2">
-                      <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-[#0A0F1D] text-blue-400 border border-blue-600/30">
+                      <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200 font-medium">
                         Category: {faq.category}
                       </span>
                     </div>
@@ -99,11 +99,11 @@ export const FAQSection: React.FC = () => {
         </div>
 
         {/* Still have questions? */}
-        <div className="mt-12 text-center text-xs sm:text-sm text-slate-400">
+        <div className="mt-12 text-center text-xs sm:text-sm text-slate-500">
           <span>Have an unanswered question? Email our lead academic advisor at </span>
           <a
             href={`mailto:${WORKSHOP_CONFIG.supportEmail}`}
-            className="text-blue-500 font-semibold hover:underline inline-flex items-center gap-1 ml-1"
+            className="text-blue-600 font-semibold hover:underline inline-flex items-center gap-1 ml-1"
           >
             <Mail className="w-3.5 h-3.5" />
             {WORKSHOP_CONFIG.supportEmail}

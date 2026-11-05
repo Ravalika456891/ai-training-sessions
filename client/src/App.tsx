@@ -102,31 +102,31 @@ const MainApp: React.FC = () => {
   const currentNextBatch = batches[0] || BATCH_OPTIONS[0];
 
   return (
-    <div className="min-h-screen bg-[#0A0F1D] text-slate-100 flex flex-col font-sans selection:bg-blue-600 selection:text-white relative">
+    <div className="min-h-screen bg-[#F8FAFC] text-[#0F172A] flex flex-col font-sans selection:bg-blue-600 selection:text-white relative">
       {/* High-Converting Clean Announcement Banner */}
       {showSampleBanner && (
         <aside
           aria-label="Upcoming Cohort Announcement"
-          className="bg-[#111827] border-b border-slate-800 py-2.5 px-4 text-xs text-slate-200 relative z-50"
+          className="bg-white border-b border-slate-200 py-2.5 px-4 text-xs text-slate-700 relative z-50 shadow-sm"
         >
           <div className="max-w-7xl mx-auto flex items-center justify-between gap-3">
             <div className="flex items-center gap-2.5 flex-wrap mx-auto text-center sm:text-left">
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide bg-blue-600/15 text-blue-400 border border-blue-600/30">
-                <span className={`w-1.5 h-1.5 rounded-full ${backendSynced ? 'bg-blue-400' : 'bg-blue-500'} animate-pulse`} />
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide bg-blue-50 text-blue-700 border border-blue-200">
+                <span className={`w-1.5 h-1.5 rounded-full ${backendSynced ? 'bg-blue-600' : 'bg-blue-500'} animate-pulse`} />
                 Live Cohort Open
               </span>
-              <p className="font-medium text-slate-200">
-                <strong>Next Weekend Masterclass:</strong> Limited to 25 learners per cohort for personalized code reviews & labs.
+              <p className="font-medium text-slate-700">
+                <strong className="text-[#0F172A]">Next Weekend Masterclass:</strong> Limited to 25 learners per cohort for personalized code reviews & labs.
               </p>
               {user && (
-                <span className="hidden md:inline-flex px-2 py-0.5 rounded-md bg-blue-600/15 text-blue-300 font-semibold text-[11px] border border-blue-600/30">
+                <span className="hidden md:inline-flex px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 font-semibold text-[11px] border border-blue-200">
                   Signed in: {user.name} ({user.role})
                 </span>
               )}
             </div>
             <button
               onClick={() => setShowSampleBanner(false)}
-              className="text-slate-400 hover:text-white p-1 rounded transition-colors shrink-0"
+              className="text-slate-400 hover:text-slate-700 p-1 rounded transition-colors shrink-0"
               aria-label="Dismiss banner"
             >
               <X className="w-4 h-4" />
@@ -233,17 +233,17 @@ const MainApp: React.FC = () => {
 
       {/* Mobile Sticky Register Pill (Floating on mobile viewports) */}
       <div className="sm:hidden fixed bottom-4 left-4 right-4 z-40">
-        <div className="p-2.5 rounded-2xl bg-[#111827] border border-slate-800 shadow-xl flex items-center justify-between gap-3">
+        <div className="p-2.5 rounded-2xl bg-white border border-slate-200 shadow-xl flex items-center justify-between gap-3">
           <div>
-            <div className="text-[11px] text-slate-400 font-medium">
+            <div className="text-[11px] text-slate-500 font-medium">
               Next Cohort:{' '}
-              <span className="text-white font-bold">
+              <span className="text-[#0F172A] font-bold">
                 {currentNextBatch.dateRange.split('–')[0]}
               </span>
             </div>
-            <div className="text-xs font-black text-blue-400">
+            <div className="text-xs font-black text-blue-600">
               ₹{currentNextBatch.pricing.basePrice}{' '}
-              <span className="text-[10px] text-slate-400 font-normal">+ GST</span>
+              <span className="text-[10px] text-slate-500 font-normal">+ GST</span>
             </div>
           </div>
           <Button
