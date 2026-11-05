@@ -67,21 +67,21 @@ export const Navbar: React.FC<NavbarProps> = ({
               e.preventDefault();
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
-            className="flex items-center gap-3 group cursor-pointer select-none"
+            className="flex items-center gap-2 sm:gap-3 group cursor-pointer select-none shrink-0"
           >
-            <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-sm shrink-0 group-hover:bg-blue-700 transition-colors">
-              <Sparkles className="w-5 h-5 text-white" />
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-sm shrink-0 group-hover:bg-blue-700 transition-colors">
+              <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
             </div>
             <div>
-              <div className="flex items-center gap-2">
-                <span className="font-extrabold text-lg tracking-tight text-[#0F172A]">
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <span className="font-extrabold text-base sm:text-lg tracking-tight text-[#0F172A]">
                   AI Launchpad
                 </span>
-                <span className="text-[10px] uppercase font-extrabold tracking-wider px-2 py-0.5 rounded-md bg-blue-600 text-white shadow-sm">
+                <span className="hidden sm:inline-block text-[10px] uppercase font-extrabold tracking-wider px-2 py-0.5 rounded-md bg-blue-600 text-white shadow-sm">
                   Bootcamp
                 </span>
               </div>
-              <span className="text-[11px] block text-[#475569] font-medium -mt-0.5">
+              <span className="text-[10px] sm:text-[11px] hidden sm:block text-[#475569] font-medium -mt-0.5">
                 2-Day Hands-On Masterclass
               </span>
             </div>
@@ -212,19 +212,33 @@ export const Navbar: React.FC<NavbarProps> = ({
             </Button>
           </div>
 
-          {/* Mobile Menu Button */}
-          <div className="flex md:hidden items-center gap-2">
+          {/* Mobile Action Controls: Verify Cert + Register + Menu */}
+          <div className="flex md:hidden items-center gap-1.5 sm:gap-2">
+            {/* Mobile Verify Cert Button */}
+            <button
+              onClick={onOpenVerifyModal}
+              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-white hover:bg-blue-50 border border-slate-300 hover:border-blue-600 text-xs font-bold text-[#0F172A] shadow-xs active:scale-95 transition-all cursor-pointer shrink-0"
+              title="Official public certificate registry"
+            >
+              <div className="w-4 h-4 rounded-full bg-blue-600 text-white flex items-center justify-center shrink-0">
+                <Award className="w-2.5 h-2.5" />
+              </div>
+              <span className="hidden xs:inline sm:inline">Verify</span>
+              <span className="xs:hidden">Verify</span>
+            </button>
+
             <Button
               variant="primary"
               size="sm"
               onClick={onRegisterClick}
-              className="text-xs px-3 py-1.5"
+              className="text-xs px-2.5 sm:px-3 py-1.5 font-bold shrink-0"
             >
               Register
             </Button>
+
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="p-2 rounded-lg bg-white border border-slate-200 text-[#475569] hover:text-[#0F172A] focus:outline-none focus:ring-2 focus:ring-blue-600 shadow-sm"
+              className="p-1.5 sm:p-2 rounded-lg bg-white border border-slate-200 text-[#475569] hover:text-[#0F172A] focus:outline-none focus:ring-2 focus:ring-blue-600 shadow-sm cursor-pointer shrink-0"
               aria-label="Toggle Navigation Menu"
             >
               {isMobileMenuOpen ? (
