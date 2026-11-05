@@ -73,3 +73,4 @@ const registrationSchema = new Schema<IRegistration>(
 registrationSchema.index({ email: 1, batchId: 1 }, { unique: true });
 
 export const Registration = mongoose.model<IRegistration>('Registration', registrationSchema);
+

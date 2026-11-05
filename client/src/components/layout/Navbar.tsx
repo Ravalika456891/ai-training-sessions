@@ -1,5 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import { Sparkles, Menu, X, ArrowRight, ShieldCheck, User, LogOut, Award, ShieldAlert, LayoutDashboard } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import {
+  Sparkles,
+  Menu,
+  X,
+  ArrowRight,
+  ShieldCheck,
+  User,
+  LogOut,
+  Award,
+  ShieldAlert,
+  LayoutDashboard,
+  ChevronDown,
+} from 'lucide-react';
 import { Button } from '../common/Button';
 import { useAuth } from '../../context/AuthContext';
 
@@ -22,6 +34,38 @@ export const Navbar: React.FC<NavbarProps> = ({
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const userMenuRef = useRef<HTMLDivElement>(null);
+
+  // Close user dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
+        setIsUserMenuOpen(false);
+      }
+    };
+    if (isUserMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isUserMenuOpen]);
+
+  const getDisplayName = (name?: string) => {
+    if (!name) return 'Learner';
+    const clean = name.trim();
+    if (clean.toLowerCase() === 'google learner') return 'Learner';
+    if (clean.toLowerCase().startsWith('google ')) {
+      const rest = clean.replace(/^google\s+/i, '');
+      return rest || 'Learner';
+    }
+    return clean.split(' ')[0];
+  };
+
+  const getInitial = (name?: string) => {
+    const display = getDisplayName(name);
+    return display.charAt(0).toUpperCase();
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -115,74 +159,111 @@ export const Navbar: React.FC<NavbarProps> = ({
 
             {/* Authenticated User Menu or Sign In */}
             {user ? (
-              <div className="flex items-center gap-2">
-                {user.role === 'admin' && (
+              <div className="flex items-center gap-2 shrink-0">
+                {user.role === 'admin' ? (
                   <button
                     onClick={onOpenAdminConsole}
-                    className="text-xs font-semibold text-blue-700 hover:text-blue-800 px-2.5 py-1.5 rounded-lg border border-blue-200 bg-blue-50 hover:bg-blue-100 flex items-center gap-1.5 transition-all"
+                    className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-blue-200 bg-blue-50 hover:bg-blue-100 text-xs font-semibold text-blue-700 transition-all shadow-xs active:scale-95 cursor-pointer whitespace-nowrap shrink-0"
                   >
-                    <ShieldAlert className="w-3.5 h-3.5 text-blue-600" />
+                    <ShieldAlert className="w-3.5 h-3.5 text-blue-600 shrink-0" />
                     <span>Admin Ops</span>
+                  </button>
+                ) : (
+                  <button
+                    onClick={onOpenLearnerDashboard}
+                    className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-blue-200 bg-blue-50 hover:bg-blue-100 text-xs font-semibold text-blue-700 transition-all shadow-xs active:scale-95 cursor-pointer whitespace-nowrap shrink-0"
+                    title="Open Learner Dashboard"
+                  >
+                    <LayoutDashboard className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                    <span>Dashboard</span>
                   </button>
                 )}
 
-                <button
-                  onClick={onOpenLearnerDashboard}
-                  className="text-xs font-semibold text-blue-700 hover:text-blue-800 px-2.5 py-1.5 rounded-lg border border-blue-200 bg-blue-50 hover:bg-blue-100 flex items-center gap-1.5 transition-all"
-                >
-                  <LayoutDashboard className="w-3.5 h-3.5 text-blue-600" />
-                  <span>Dashboard</span>
-                </button>
-
-                <div className="relative">
+                <div className="relative" ref={userMenuRef}>
                   <button
                     onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                    className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-xs text-[#0F172A] hover:border-slate-300 transition-colors shadow-sm"
+                    className={`inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-white hover:bg-slate-50 border ${
+                      isUserMenuOpen
+                        ? 'border-blue-600 ring-2 ring-blue-600/10'
+                        : 'border-slate-200 hover:border-slate-300'
+                    } text-xs font-semibold text-[#0F172A] transition-all shadow-xs active:scale-95 cursor-pointer whitespace-nowrap shrink-0 group`}
+                    aria-label="User Account Menu"
+                    aria-expanded={isUserMenuOpen}
                   >
-                    <div className="w-5 h-5 rounded-full bg-blue-600 flex items-center justify-center text-[10px] font-bold text-white uppercase">
-                      {user.name.charAt(0)}
+                    <div className="w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center text-[10px] font-bold shrink-0 shadow-xs">
+                      {getInitial(user.name)}
                     </div>
-                    <span className="font-medium max-w-[90px] truncate">{user.name.split(' ')[0]}</span>
+                    <span className="font-semibold text-xs text-[#0F172A] max-w-[100px] truncate">
+                      {getDisplayName(user.name)}
+                    </span>
+                    <ChevronDown
+                      className={`w-3.5 h-3.5 text-slate-400 group-hover:text-slate-600 transition-transform ${
+                        isUserMenuOpen ? 'rotate-180 text-blue-600' : ''
+                      }`}
+                    />
                   </button>
 
                   {isUserMenuOpen && (
-                    <div className="absolute right-0 mt-2 w-48 rounded-xl bg-white border border-slate-200 shadow-xl py-1 z-50">
-                      <div className="px-3 py-2 border-b border-slate-100">
-                        <p className="text-xs font-semibold text-[#0F172A] truncate">{user.name}</p>
-                        <p className="text-[10px] text-slate-500 truncate">{user.email}</p>
+                    <div className="absolute right-0 mt-2 w-52 rounded-2xl bg-white border border-slate-200 shadow-xl py-1.5 z-50 animate-in fade-in-50 duration-150">
+                      <div className="px-3.5 py-2.5 border-b border-slate-100 bg-slate-50/60 rounded-t-xl">
+                        <div className="flex items-center justify-between gap-1.5">
+                          <p className="text-xs font-bold text-[#0F172A] truncate">{user.name}</p>
+                          <span className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md bg-blue-50 text-blue-600 border border-blue-200 shrink-0">
+                            {user.role}
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-slate-500 truncate mt-0.5">{user.email}</p>
                       </div>
-                      <button
-                        onClick={() => {
-                          setIsUserMenuOpen(false);
-                          if (onOpenLearnerDashboard) onOpenLearnerDashboard();
-                        }}
-                        className="w-full text-left px-3 py-2 text-xs text-[#475569] hover:text-[#0F172A] hover:bg-slate-50 flex items-center gap-2"
-                      >
-                        <LayoutDashboard className="w-3.5 h-3.5 text-blue-600" />
-                        My Dashboard
-                      </button>
-                      {user.role === 'admin' && (
+
+                      <div className="p-1 space-y-0.5">
                         <button
                           onClick={() => {
                             setIsUserMenuOpen(false);
-                            if (onOpenAdminConsole) onOpenAdminConsole();
+                            if (onOpenLearnerDashboard) onOpenLearnerDashboard();
                           }}
-                          className="w-full text-left px-3 py-2 text-xs text-blue-700 hover:text-blue-800 hover:bg-blue-50 flex items-center gap-2"
+                          className="w-full text-left px-3 py-2 text-xs font-medium text-[#475569] hover:text-blue-600 hover:bg-blue-50/50 rounded-lg flex items-center gap-2 transition-colors cursor-pointer"
                         >
-                          <ShieldAlert className="w-3.5 h-3.5 text-blue-600" />
-                          Admin Console
+                          <LayoutDashboard className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                          <span>My Dashboard</span>
                         </button>
-                      )}
-                      <button
-                        onClick={async () => {
-                          setIsUserMenuOpen(false);
-                          await logout();
-                        }}
-                        className="w-full text-left px-3 py-2 text-xs text-slate-500 hover:text-red-600 hover:bg-slate-50 flex items-center gap-2 border-t border-slate-100"
-                      >
-                        <LogOut className="w-3.5 h-3.5" />
-                        Sign Out
-                      </button>
+
+                        <button
+                          onClick={() => {
+                            setIsUserMenuOpen(false);
+                            if (onOpenVerifyModal) onOpenVerifyModal();
+                          }}
+                          className="w-full text-left px-3 py-2 text-xs font-medium text-[#475569] hover:text-blue-600 hover:bg-blue-50/50 rounded-lg flex items-center gap-2 transition-colors cursor-pointer"
+                        >
+                          <Award className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                          <span>Verify Certificate</span>
+                        </button>
+
+                        {user.role === 'admin' && (
+                          <button
+                            onClick={() => {
+                              setIsUserMenuOpen(false);
+                              if (onOpenAdminConsole) onOpenAdminConsole();
+                            }}
+                            className="w-full text-left px-3 py-2 text-xs font-semibold text-blue-700 hover:bg-blue-50 rounded-lg flex items-center gap-2 transition-colors cursor-pointer"
+                          >
+                            <ShieldAlert className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                            <span>Admin Console</span>
+                          </button>
+                        )}
+                      </div>
+
+                      <div className="pt-1 mt-1 border-t border-slate-100 p-1">
+                        <button
+                          onClick={async () => {
+                            setIsUserMenuOpen(false);
+                            await logout();
+                          }}
+                          className="w-full text-left px-3 py-2 text-xs font-medium text-rose-600 hover:bg-rose-50 rounded-lg flex items-center gap-2 transition-colors cursor-pointer"
+                        >
+                          <LogOut className="w-3.5 h-3.5 shrink-0" />
+                          <span>Sign Out</span>
+                        </button>
+                      </div>
                     </div>
                   )}
                 </div>
@@ -284,7 +365,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                       className="w-full text-left px-3 py-2 rounded-lg bg-blue-50 border border-blue-200 text-xs font-semibold text-blue-700 flex items-center gap-2"
                     >
                       <LayoutDashboard className="w-4 h-4 text-blue-600" />
-                      Learner Dashboard ({user.name.split(' ')[0]})
+                      Learner Dashboard ({getDisplayName(user.name)})
                     </button>
                     {user.role === 'admin' && (
                       <button

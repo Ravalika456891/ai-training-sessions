@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Lock, Mail, User, AlertCircle, ArrowRight, ShieldCheck, Check, Sparkles } from 'lucide-react';
+import { X, Lock, Mail, User, AlertCircle, ArrowRight, ShieldCheck, Sparkles } from 'lucide-react';
 import { Button } from '../common/Button';
 import { useAuth } from '../../context/AuthContext';
 import { api } from '../../services/api';
@@ -211,22 +211,24 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 {/* 1-Click Fast Google Profile */}
                 <button
                   type="button"
-                  onClick={() => handleConfirmGoogleAuth('learner.demo@gmail.com', 'Google Learner')}
+                  onClick={() => handleConfirmGoogleAuth('learner.demo@gmail.com', 'Alex Rivera')}
                   disabled={isGoogleLoading}
                   className="w-full flex items-center justify-between p-3 rounded-xl bg-white border border-slate-200 hover:border-blue-600 hover:bg-blue-50/40 text-left transition-colors shadow-sm group cursor-pointer"
                 >
                   <div className="flex items-center gap-2.5">
                     <div className="w-8 h-8 rounded-full bg-blue-600 text-white font-bold text-xs flex items-center justify-center">
-                      G
+                      A
                     </div>
                     <div>
                       <div className="text-xs font-bold text-[#0F172A] group-hover:text-blue-600">
-                        Google Learner
+                        Alex Rivera (Student Demo)
                       </div>
                       <div className="text-[11px] text-slate-500">learner.demo@gmail.com</div>
                     </div>
                   </div>
-                  <Check className="w-4 h-4 text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <span className="text-[10px] font-bold text-blue-600 bg-blue-50 border border-blue-200 rounded-md px-2 py-0.5 shrink-0">
+                    1-Click Sign In
+                  </span>
                 </button>
               </div>
 

@@ -23,3 +23,4 @@ export const createRegistrationSchema = z.object({
 });
 
 export type CreateRegistrationInput = z.infer<typeof createRegistrationSchema>;
+

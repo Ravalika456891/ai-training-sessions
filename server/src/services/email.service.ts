@@ -196,3 +196,4 @@ If you have any questions, reach out to admissions@ailaunchpad.edu.
     };
   }
 }
+

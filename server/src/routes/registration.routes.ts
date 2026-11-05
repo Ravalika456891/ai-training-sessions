@@ -18,3 +18,4 @@ router.post(
 router.get('/', RegistrationController.getRegistrations);
 
 export default router;
+
