@@ -65,7 +65,7 @@ export const BATCH_OPTIONS: BatchOption[] = [
     availableSeats: 58,
     status: 'Open',
     pricing: {
-      basePrice: 2499,
+      basePrice: 1999,
       currency: 'INR',
       taxPercentage: 18,
     }

@@ -114,15 +114,15 @@ export const Navbar: React.FC<NavbarProps> = ({
               <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
             </div>
             <div>
-              <div className="flex items-center gap-2">
-                <span className="font-extrabold text-base sm:text-lg tracking-tight text-[#0F172A]">
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <span className="font-extrabold text-sm sm:text-base md:text-lg tracking-tight text-[#0F172A] whitespace-nowrap">
                   AI Launchpad
                 </span>
-                <span className="inline-block text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-lg bg-blue-50 text-blue-600 border border-blue-200">
+                <span className="hidden xs:inline-block text-[10px] uppercase font-bold tracking-wider px-1.5 sm:px-2 py-0.5 rounded-lg bg-blue-50 text-blue-600 border border-blue-200 shrink-0">
                   BOOTCAMP
                 </span>
               </div>
-              <span className="text-[10px] sm:text-[11px] block text-[#475569] font-medium -mt-0.5">
+              <span className="text-[10px] sm:text-[11px] hidden sm:block text-[#475569] font-medium -mt-0.5">
                 2-Day Hands-On Masterclass
               </span>
             </div>
@@ -143,7 +143,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           </nav>
 
           {/* Action CTAs */}
-          <div className="hidden md:flex items-center gap-2 xl:gap-3 shrink-0">
+          <div className="hidden lg:flex items-center gap-2 xl:gap-3 shrink-0">
             {/* Authenticated User Menu or Sign In */}
             {user ? (
               <div className="flex items-center gap-2 shrink-0">
@@ -264,8 +264,8 @@ export const Navbar: React.FC<NavbarProps> = ({
             </Button>
           </div>
 
-          {/* Mobile Action Controls: Register + Menu */}
-          <div className="flex md:hidden items-center gap-2">
+          {/* Mobile & Tablet Action Controls: Register + Menu */}
+          <div className="flex lg:hidden items-center gap-2">
             <Button
               variant="primary"
               size="sm"
@@ -289,9 +289,9 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
         </div>
 
-        {/* Mobile Navigation Drawer */}
+        {/* Mobile & Tablet Navigation Drawer */}
         {isMobileMenuOpen && (
-          <div className="md:hidden mt-3 pt-3 pb-4 border-t border-slate-200 bg-white rounded-2xl p-4 shadow-xl">
+          <div className="lg:hidden mt-3 pt-3 pb-4 border-t border-slate-200 bg-white rounded-2xl p-4 shadow-xl">
             <div className="flex flex-col gap-1.5">
               {navLinks.map((link) => (
                 <a

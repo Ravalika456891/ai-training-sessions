@@ -96,7 +96,7 @@ export const seedDatabase = async (): Promise<void> => {
           enrolledCount: 2,
           reservedCount: 0,
           price: {
-            basePrice: 2499,
+            basePrice: 1999,
             currency: 'INR',
             taxPercentage: 18,
             isFree: false,
