@@ -40,7 +40,11 @@ router.post(
   import_auth_controller.AuthController.login
 );
 router.post("/google", import_rateLimit_middleware.authRateLimiter, import_auth_controller.AuthController.googleAuth);
+router.post("/forgot-password", import_rateLimit_middleware.authRateLimiter, import_auth_controller.AuthController.forgotPassword);
+router.post("/reset-password", import_rateLimit_middleware.authRateLimiter, import_auth_controller.AuthController.resetPassword);
 router.post("/logout", import_auth_controller.AuthController.logout);
 router.get("/me", import_auth_middleware.authenticate, import_auth_controller.AuthController.getMe);
+router.put("/profile", import_auth_middleware.authenticate, import_auth_controller.AuthController.updateProfile);
+router.put("/change-password", import_auth_middleware.authenticate, import_auth_controller.AuthController.changePassword);
 var auth_routes_default = router;
 //# sourceMappingURL=auth.routes.js.map

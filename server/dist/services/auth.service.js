@@ -31,6 +31,7 @@ __export(auth_service_exports, {
 });
 module.exports = __toCommonJS(auth_service_exports);
 var import_bcryptjs = __toESM(require("bcryptjs"));
+var import_crypto = __toESM(require("crypto"));
 var import_User = require("../models/User.js");
 var import_apiError = require("../utils/apiError.js");
 var import_jwt = require("../utils/jwt.js");
@@ -311,6 +312,130 @@ class AuthService {
       };
     }
     throw import_apiError.ApiError.notFound("User not found.");
+  }
+  static async forgotPassword(email) {
+    const normalizedEmail = email.toLowerCase().trim();
+    const rawToken = import_crypto.default.randomBytes(32).toString("hex");
+    const hashedToken = import_crypto.default.createHash("sha256").update(rawToken).digest("hex");
+    const expiry = new Date(Date.now() + 60 * 60 * 1e3);
+    if ((0, import_db.isDBConnected)()) {
+      try {
+        const user = await import_User.User.findOne({ email: normalizedEmail });
+        if (user) {
+          user.resetPasswordToken = hashedToken;
+          user.resetPasswordExpires = expiry;
+          await user.save();
+        }
+      } catch (err) {
+        console.warn("[MongoDB forgotPassword fallback]", err);
+      }
+    }
+    const memUser = await import_memoryStore.memoryStore.findUserByEmail(normalizedEmail);
+    if (memUser) {
+      memUser.resetPasswordToken = hashedToken;
+      memUser.resetPasswordExpires = expiry;
+    }
+    return {
+      message: "If an account exists for this email, password reset instructions have been generated.",
+      resetToken: rawToken
+    };
+  }
+  static async resetPassword(token, newPassword) {
+    if (!token || !newPassword) {
+      throw import_apiError.ApiError.badRequest("Reset token and new password are required.");
+    }
+    if (newPassword.length < 8) {
+      throw import_apiError.ApiError.badRequest("Password must be at least 8 characters with letters and numbers.");
+    }
+    const hashedToken = import_crypto.default.createHash("sha256").update(token.trim()).digest("hex");
+    const passwordHash = await import_bcryptjs.default.hash(newPassword, 10);
+    if ((0, import_db.isDBConnected)()) {
+      try {
+        const user = await import_User.User.findOne({
+          resetPasswordToken: hashedToken,
+          resetPasswordExpires: { $gt: /* @__PURE__ */ new Date() }
+        });
+        if (user) {
+          user.passwordHash = passwordHash;
+          user.resetPasswordToken = void 0;
+          user.resetPasswordExpires = void 0;
+          await user.save();
+          return { message: "Password has been reset successfully. You can now sign in." };
+        }
+      } catch (err) {
+        if (err.statusCode) throw err;
+      }
+    }
+    const memUser = import_memoryStore.memoryStore.users.find(
+      (u) => u.resetPasswordToken === hashedToken && u.resetPasswordExpires && new Date(u.resetPasswordExpires) > /* @__PURE__ */ new Date()
+    );
+    if (!memUser) {
+      throw import_apiError.ApiError.badRequest("Password reset token is invalid or has expired.");
+    }
+    memUser.passwordHash = passwordHash;
+    delete memUser.resetPasswordToken;
+    delete memUser.resetPasswordExpires;
+    return { message: "Password has been reset successfully. You can now sign in." };
+  }
+  static async updateProfile(userId, data) {
+    if ((0, import_db.isDBConnected)() && import_mongoose.default.Types.ObjectId.isValid(userId)) {
+      try {
+        const user = await import_User.User.findById(userId);
+        if (user) {
+          if (data.name) user.name = data.name.trim();
+          if (data.phone) user.phone = data.phone;
+          if (data.experienceLevel) user.experienceLevel = data.experienceLevel;
+          if (data.userCategory) user.userCategory = data.userCategory;
+          await user.save();
+          return this.getMe(userId);
+        }
+      } catch (err) {
+        console.warn("[MongoDB updateProfile fallback]", err);
+      }
+    }
+    const memUser = await import_memoryStore.memoryStore.findUserById(userId);
+    if (memUser) {
+      if (data.name) memUser.name = data.name.trim();
+      if (data.phone) memUser.phone = data.phone;
+      if (data.experienceLevel) memUser.experienceLevel = data.experienceLevel;
+      if (data.userCategory) memUser.userCategory = data.userCategory;
+      return this.getMe(userId);
+    }
+    throw import_apiError.ApiError.notFound("User not found.");
+  }
+  static async changePassword(userId, currentPassword, newPassword) {
+    if (!currentPassword || !newPassword) {
+      throw import_apiError.ApiError.badRequest("Current password and new password are required.");
+    }
+    if (newPassword.length < 8) {
+      throw import_apiError.ApiError.badRequest("New password must be at least 8 characters.");
+    }
+    if ((0, import_db.isDBConnected)() && import_mongoose.default.Types.ObjectId.isValid(userId)) {
+      try {
+        const user = await import_User.User.findById(userId).select("+passwordHash");
+        if (user && user.passwordHash) {
+          const isMatch = await import_bcryptjs.default.compare(currentPassword, user.passwordHash);
+          if (!isMatch) {
+            throw import_apiError.ApiError.badRequest("Incorrect current password.");
+          }
+          user.passwordHash = await import_bcryptjs.default.hash(newPassword, 10);
+          await user.save();
+          return { message: "Password changed successfully." };
+        }
+      } catch (err) {
+        if (err.statusCode) throw err;
+      }
+    }
+    const memUser = await import_memoryStore.memoryStore.findUserById(userId);
+    if (memUser && memUser.passwordHash) {
+      const isMatch = await import_bcryptjs.default.compare(currentPassword, memUser.passwordHash);
+      if (!isMatch) {
+        throw import_apiError.ApiError.badRequest("Incorrect current password.");
+      }
+      memUser.passwordHash = await import_bcryptjs.default.hash(newPassword, 10);
+      return { message: "Password changed successfully." };
+    }
+    throw import_apiError.ApiError.badRequest("Password could not be updated for this account.");
   }
 }
 // Annotate the CommonJS export names for ESM import in node:

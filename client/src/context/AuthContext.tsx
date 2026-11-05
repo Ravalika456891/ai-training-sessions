@@ -6,6 +6,13 @@ interface AuthContextType {
   isLoading: boolean;
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
+  registerUser: (data: {
+    name: string;
+    email: string;
+    password?: string;
+    phone?: { countryCode: string; number: string };
+  }) => Promise<void>;
+  googleLogin: (payload: { email: string; name: string }) => Promise<void>;
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
 }
@@ -47,6 +54,35 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const registerUser = async (data: {
+    name: string;
+    email: string;
+    password?: string;
+    phone?: { countryCode: string; number: string };
+  }) => {
+    setIsLoading(true);
+    try {
+      const res = await api.register(data);
+      if (res.success && res.data?.user) {
+        setUser(res.data.user);
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const googleLogin = async (payload: { email: string; name: string }) => {
+    setIsLoading(true);
+    try {
+      const res = await api.googleAuth(payload);
+      if (res.success && res.data?.user) {
+        setUser(res.data.user);
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const logout = async () => {
     try {
       await api.logout();
@@ -62,6 +98,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isLoading,
         isAuthenticated: Boolean(user),
         login,
+        registerUser,
+        googleLogin,
         logout,
         refreshUser,
       }}

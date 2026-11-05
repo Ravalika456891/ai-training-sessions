@@ -402,4 +402,73 @@ export const api = {
     });
     return res.json();
   },
+
+  async forgotPassword(email: string): Promise<{ success: boolean; message: string; resetToken?: string }> {
+    const res = await fetch(`${API_BASE}/auth/forgot-password`, {
+      method: 'POST',
+      headers: customHeaders,
+      credentials: 'include',
+      body: JSON.stringify({ email }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || 'Failed to request password reset.');
+    return data;
+  },
+
+  async resetPassword(token: string, newPassword: string): Promise<{ success: boolean; message: string }> {
+    const res = await fetch(`${API_BASE}/auth/reset-password`, {
+      method: 'POST',
+      headers: customHeaders,
+      credentials: 'include',
+      body: JSON.stringify({ token, newPassword }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || 'Failed to reset password.');
+    return data;
+  },
+
+  async updateProfile(profileData: {
+    name?: string;
+    phone?: { countryCode: string; number: string };
+    experienceLevel?: string;
+    userCategory?: string;
+  }): Promise<{ success: boolean; data: { user: ApiUser } }> {
+    const res = await fetch(`${API_BASE}/auth/profile`, {
+      method: 'PUT',
+      headers: customHeaders,
+      credentials: 'include',
+      body: JSON.stringify(profileData),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || 'Failed to update profile.');
+    return data;
+  },
+
+  async changePassword(currentPassword: string, newPassword: string): Promise<{ success: boolean; message: string }> {
+    const res = await fetch(`${API_BASE}/auth/change-password`, {
+      method: 'PUT',
+      headers: customHeaders,
+      credentials: 'include',
+      body: JSON.stringify({ currentPassword, newPassword }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || 'Failed to change password.');
+    return data;
+  },
+
+  async getLearnerPayments(): Promise<{ success: boolean; data: any[] }> {
+    const res = await fetch(`${API_BASE}/learners/payments`, {
+      headers: customHeaders,
+      credentials: 'include',
+    });
+    return res.json();
+  },
+
+  async getLearnerProgress(): Promise<{ success: boolean; data: any[] }> {
+    const res = await fetch(`${API_BASE}/learners/progress`, {
+      headers: customHeaders,
+      credentials: 'include',
+    });
+    return res.json();
+  },
 };

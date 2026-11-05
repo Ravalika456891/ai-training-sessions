@@ -1,4 +1,5 @@
 import bcrypt from 'bcryptjs';
+import crypto from 'crypto';
 import { User, IUser } from '../models/User.js';
 import { ApiError } from '../utils/apiError.js';
 import { signToken } from '../utils/jwt.js';
@@ -326,5 +327,153 @@ export class AuthService {
     }
 
     throw ApiError.notFound('User not found.');
+  }
+
+  static async forgotPassword(email: string): Promise<{ message: string; resetToken?: string }> {
+    const normalizedEmail = email.toLowerCase().trim();
+    const rawToken = crypto.randomBytes(32).toString('hex');
+    const hashedToken = crypto.createHash('sha256').update(rawToken).digest('hex');
+    const expiry = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+
+    if (isDBConnected()) {
+      try {
+        const user = await User.findOne({ email: normalizedEmail });
+        if (user) {
+          user.resetPasswordToken = hashedToken;
+          user.resetPasswordExpires = expiry;
+          await user.save();
+        }
+      } catch (err) {
+        console.warn('[MongoDB forgotPassword fallback]', err);
+      }
+    }
+
+    const memUser = await memoryStore.findUserByEmail(normalizedEmail);
+    if (memUser) {
+      memUser.resetPasswordToken = hashedToken;
+      memUser.resetPasswordExpires = expiry;
+    }
+
+    return {
+      message: 'If an account exists for this email, password reset instructions have been generated.',
+      resetToken: rawToken,
+    };
+  }
+
+  static async resetPassword(token: string, newPassword: string): Promise<{ message: string }> {
+    if (!token || !newPassword) {
+      throw ApiError.badRequest('Reset token and new password are required.');
+    }
+    if (newPassword.length < 8) {
+      throw ApiError.badRequest('Password must be at least 8 characters with letters and numbers.');
+    }
+
+    const hashedToken = crypto.createHash('sha256').update(token.trim()).digest('hex');
+    const passwordHash = await bcrypt.hash(newPassword, 10);
+
+    if (isDBConnected()) {
+      try {
+        const user = await User.findOne({
+          resetPasswordToken: hashedToken,
+          resetPasswordExpires: { $gt: new Date() },
+        });
+
+        if (user) {
+          user.passwordHash = passwordHash;
+          user.resetPasswordToken = undefined;
+          user.resetPasswordExpires = undefined;
+          await user.save();
+
+          return { message: 'Password has been reset successfully. You can now sign in.' };
+        }
+      } catch (err: any) {
+        if (err.statusCode) throw err;
+      }
+    }
+
+    // Memory store fallback
+    const memUser = memoryStore.users.find(
+      (u: any) =>
+        u.resetPasswordToken === hashedToken &&
+        u.resetPasswordExpires &&
+        new Date(u.resetPasswordExpires) > new Date()
+    );
+
+    if (!memUser) {
+      throw ApiError.badRequest('Password reset token is invalid or has expired.');
+    }
+
+    memUser.passwordHash = passwordHash;
+    delete memUser.resetPasswordToken;
+    delete memUser.resetPasswordExpires;
+
+    return { message: 'Password has been reset successfully. You can now sign in.' };
+  }
+
+  static async updateProfile(userId: string, data: { name?: string; phone?: any; experienceLevel?: any; userCategory?: any }): Promise<any> {
+    if (isDBConnected() && mongoose.Types.ObjectId.isValid(userId)) {
+      try {
+        const user = await User.findById(userId);
+        if (user) {
+          if (data.name) user.name = data.name.trim();
+          if (data.phone) user.phone = data.phone;
+          if (data.experienceLevel) user.experienceLevel = data.experienceLevel;
+          if (data.userCategory) user.userCategory = data.userCategory;
+          await user.save();
+          return this.getMe(userId);
+        }
+      } catch (err) {
+        console.warn('[MongoDB updateProfile fallback]', err);
+      }
+    }
+
+    const memUser = await memoryStore.findUserById(userId);
+    if (memUser) {
+      if (data.name) memUser.name = data.name.trim();
+      if (data.phone) memUser.phone = data.phone;
+      if (data.experienceLevel) memUser.experienceLevel = data.experienceLevel;
+      if (data.userCategory) memUser.userCategory = data.userCategory;
+      return this.getMe(userId);
+    }
+
+    throw ApiError.notFound('User not found.');
+  }
+
+  static async changePassword(userId: string, currentPassword: string, newPassword: string): Promise<{ message: string }> {
+    if (!currentPassword || !newPassword) {
+      throw ApiError.badRequest('Current password and new password are required.');
+    }
+    if (newPassword.length < 8) {
+      throw ApiError.badRequest('New password must be at least 8 characters.');
+    }
+
+    if (isDBConnected() && mongoose.Types.ObjectId.isValid(userId)) {
+      try {
+        const user = await User.findById(userId).select('+passwordHash');
+        if (user && user.passwordHash) {
+          const isMatch = await bcrypt.compare(currentPassword, user.passwordHash);
+          if (!isMatch) {
+            throw ApiError.badRequest('Incorrect current password.');
+          }
+          user.passwordHash = await bcrypt.hash(newPassword, 10);
+          await user.save();
+          return { message: 'Password changed successfully.' };
+        }
+      } catch (err: any) {
+        if (err.statusCode) throw err;
+      }
+    }
+
+    const memUser = await memoryStore.findUserById(userId);
+    if (memUser && memUser.passwordHash) {
+      const isMatch = await bcrypt.compare(currentPassword, memUser.passwordHash);
+      if (!isMatch) {
+        throw ApiError.badRequest('Incorrect current password.');
+      }
+      memUser.passwordHash = await bcrypt.hash(newPassword, 10);
+      return { message: 'Password changed successfully.' };
+    }
+
+    throw ApiError.badRequest('Password could not be updated for this account.');
   }
 }

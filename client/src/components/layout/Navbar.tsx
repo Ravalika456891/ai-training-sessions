@@ -79,15 +79,26 @@ export const Navbar: React.FC<NavbarProps> = ({
     { label: 'Mentors', href: '#mentors' },
     { label: 'Reviews', href: '#reviews' },
     { label: 'Pricing', href: '#pricing' },
+    { label: 'Contact', href: '/contact' },
     { label: 'FAQ', href: '#faq' },
   ];
 
   const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-    e.preventDefault();
     setIsMobileMenuOpen(false);
+    if (href.startsWith('/')) {
+      // Direct page navigation
+      return;
+    }
+    e.preventDefault();
+    if (window.location.pathname !== '/') {
+      window.location.href = `/${href}`;
+      return;
+    }
     const target = document.querySelector(href);
     if (target) {
       target.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      window.location.href = `/${href}`;
     }
   };
 

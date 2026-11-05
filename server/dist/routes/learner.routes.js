@@ -29,5 +29,7 @@ router.get("/dashboard", import_learner_controller.LearnerController.getDashboar
 router.post("/submissions", import_learner_controller.LearnerController.submitProject);
 router.get("/submissions", import_learner_controller.LearnerController.getMySubmissions);
 router.get("/certificates", import_learner_controller.LearnerController.getMyCertificates);
+router.get("/payments", import_learner_controller.LearnerController.getPayments);
+router.get("/progress", import_learner_controller.LearnerController.getProgress);
 var learner_routes_default = router;
 //# sourceMappingURL=learner.routes.js.map

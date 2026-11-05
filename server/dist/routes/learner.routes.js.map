@@ -1,7 +1,7 @@
 {
   "version": 3,
   "sources": ["../../src/routes/learner.routes.ts"],
-  "sourcesContent": ["import { Router } from 'express';\nimport { LearnerController } from '../controllers/learner.controller.js';\nimport { authenticate } from '../middleware/auth.middleware.js';\n\nconst router = Router();\n\nrouter.use(authenticate);\n\nrouter.get('/dashboard', LearnerController.getDashboard);\nrouter.post('/submissions', LearnerController.submitProject);\nrouter.get('/submissions', LearnerController.getMySubmissions);\nrouter.get('/certificates', LearnerController.getMyCertificates);\n\nexport default router;\n\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,qBAAuB;AACvB,gCAAkC;AAClC,6BAA6B;AAE7B,MAAM,aAAS,uBAAO;AAEtB,OAAO,IAAI,mCAAY;AAEvB,OAAO,IAAI,cAAc,4CAAkB,YAAY;AACvD,OAAO,KAAK,gBAAgB,4CAAkB,aAAa;AAC3D,OAAO,IAAI,gBAAgB,4CAAkB,gBAAgB;AAC7D,OAAO,IAAI,iBAAiB,4CAAkB,iBAAiB;AAE/D,IAAO,yBAAQ;",
+  "sourcesContent": ["import { Router } from 'express';\nimport { LearnerController } from '../controllers/learner.controller.js';\nimport { authenticate } from '../middleware/auth.middleware.js';\n\nconst router = Router();\n\nrouter.use(authenticate);\n\nrouter.get('/dashboard', LearnerController.getDashboard);\nrouter.post('/submissions', LearnerController.submitProject);\nrouter.get('/submissions', LearnerController.getMySubmissions);\nrouter.get('/certificates', LearnerController.getMyCertificates);\nrouter.get('/payments', LearnerController.getPayments);\nrouter.get('/progress', LearnerController.getProgress);\n\nexport default router;\n\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,qBAAuB;AACvB,gCAAkC;AAClC,6BAA6B;AAE7B,MAAM,aAAS,uBAAO;AAEtB,OAAO,IAAI,mCAAY;AAEvB,OAAO,IAAI,cAAc,4CAAkB,YAAY;AACvD,OAAO,KAAK,gBAAgB,4CAAkB,aAAa;AAC3D,OAAO,IAAI,gBAAgB,4CAAkB,gBAAgB;AAC7D,OAAO,IAAI,iBAAiB,4CAAkB,iBAAiB;AAC/D,OAAO,IAAI,aAAa,4CAAkB,WAAW;AACrD,OAAO,IAAI,aAAa,4CAAkB,WAAW;AAErD,IAAO,yBAAQ;",
   "names": []
 }

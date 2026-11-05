@@ -86,6 +86,14 @@ const UserSchema = new import_mongoose.Schema(
     marketingConsent: {
       type: Boolean,
       default: false
+    },
+    resetPasswordToken: {
+      type: String,
+      select: false
+    },
+    resetPasswordExpires: {
+      type: Date,
+      select: false
     }
   },
   {

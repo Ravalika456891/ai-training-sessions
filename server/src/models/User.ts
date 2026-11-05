@@ -16,6 +16,8 @@ export interface IUser extends Document {
   userCategory?: 'student' | 'working_professional' | 'founder' | 'creator' | 'other';
   experienceLevel?: 'beginner' | 'intermediate' | 'advanced';
   marketingConsent: boolean;
+  resetPasswordToken?: string;
+  resetPasswordExpires?: Date;
   createdAt: Date;
   updatedAt: Date;
   comparePassword(candidatePassword: string): Promise<boolean>;
@@ -74,6 +76,14 @@ const UserSchema = new Schema<IUser>(
     marketingConsent: {
       type: Boolean,
       default: false,
+    },
+    resetPasswordToken: {
+      type: String,
+      select: false,
+    },
+    resetPasswordExpires: {
+      type: Date,
+      select: false,
     },
   },
   {
