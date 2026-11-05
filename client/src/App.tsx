@@ -141,10 +141,6 @@ const MainApp: React.FC = () => {
         onOpenAuthModal={() => setIsAuthModalOpen(true)}
         onOpenLearnerDashboard={() => setIsLearnerDashboardOpen(true)}
         onOpenAdminConsole={() => setIsAdminConsoleOpen(true)}
-        onOpenVerifyModal={() => {
-          setVerifySerial('');
-          setIsVerifyModalOpen(true);
-        }}
       />
 
       {/* Main Page Content */}
