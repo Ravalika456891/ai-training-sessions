@@ -7,6 +7,8 @@ export interface IMemoryUser {
   email: string;
   passwordHash?: string;
   phone?: { countryCode: string; number: string };
+  googleId?: string;
+  avatarUrl?: string;
   role: 'learner' | 'instructor' | 'admin' | 'support';
   userCategory?: 'student' | 'working_professional' | 'founder' | 'creator' | 'other';
   experienceLevel?: 'beginner' | 'intermediate' | 'advanced';
@@ -215,6 +217,8 @@ class MemoryStoreService {
     email: string;
     password?: string;
     phone?: { countryCode: string; number: string };
+    googleId?: string;
+    avatarUrl?: string;
     userCategory?: any;
     experienceLevel?: any;
     marketingConsent?: boolean;
@@ -233,6 +237,8 @@ class MemoryStoreService {
       email: userData.email.toLowerCase().trim(),
       passwordHash,
       phone: userData.phone || { countryCode: '+91', number: '' },
+      googleId: userData.googleId,
+      avatarUrl: userData.avatarUrl,
       role: userData.role || 'learner',
       userCategory: userData.userCategory || 'working_professional',
       experienceLevel: userData.experienceLevel || 'beginner',
@@ -347,3 +353,4 @@ class MemoryStoreService {
 }
 
 export const memoryStore = new MemoryStoreService();
+

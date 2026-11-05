@@ -173,6 +173,123 @@ export class AuthService {
     };
   }
 
+  static async googleAuth(input: {
+    credential?: string;
+    email?: string;
+    name?: string;
+    googleId?: string;
+    avatarUrl?: string;
+  }): Promise<{ user: any; token: string }> {
+    let payload: any = null;
+
+    // Decode Google ID token JWT if supplied
+    if (input.credential) {
+      try {
+        const parts = input.credential.split('.');
+        if (parts.length === 3) {
+          const jsonStr = Buffer.from(parts[1], 'base64url').toString('utf8');
+          payload = JSON.parse(jsonStr);
+        }
+      } catch (err) {
+        console.warn('[Google JWT Parse Warning]', err);
+      }
+    }
+
+    const email = (payload?.email || input.email || '').toLowerCase().trim();
+    if (!email) {
+      throw ApiError.badRequest('A valid email address is required for Google Sign-In.');
+    }
+
+    const name = payload?.name || input.name || email.split('@')[0];
+    const googleId = payload?.sub || input.googleId || `g_${Date.now()}`;
+    const avatarUrl = payload?.picture || input.avatarUrl;
+
+    // 1. Try MongoDB if connected
+    if (isDBConnected()) {
+      try {
+        let user = await User.findOne({
+          $or: [{ email }, { googleId }],
+        });
+
+        if (user) {
+          if (!user.googleId) {
+            user.googleId = googleId;
+            if (avatarUrl && !user.avatarUrl) user.avatarUrl = avatarUrl;
+            await user.save();
+          }
+        } else {
+          user = await User.create({
+            name,
+            email,
+            googleId,
+            avatarUrl,
+            role: 'learner',
+            userCategory: 'working_professional',
+            experienceLevel: 'beginner',
+            marketingConsent: true,
+          });
+        }
+
+        const token = signToken({
+          userId: user._id.toString(),
+          email: user.email,
+          role: user.role,
+        });
+
+        return {
+          user: {
+            _id: user._id.toString(),
+            name: user.name,
+            email: user.email,
+            phone: user.phone,
+            avatarUrl: user.avatarUrl,
+            role: user.role,
+            userCategory: user.userCategory,
+            experienceLevel: user.experienceLevel,
+            createdAt: user.createdAt,
+          },
+          token,
+        };
+      } catch (dbErr: any) {
+        console.warn('[MongoDB Google Auth Fallback]', dbErr.message);
+      }
+    }
+
+    // 2. Fallback to Memory Store
+    let memUser = await memoryStore.findUserByEmail(email);
+    if (!memUser) {
+      memUser = await memoryStore.createUser({
+        name,
+        email,
+        googleId,
+        avatarUrl,
+        role: 'learner',
+        marketingConsent: true,
+      });
+    }
+
+    const token = signToken({
+      userId: memUser._id,
+      email: memUser.email,
+      role: memUser.role,
+    });
+
+    return {
+      user: {
+        _id: memUser._id,
+        name: memUser.name,
+        email: memUser.email,
+        phone: memUser.phone,
+        avatarUrl: memUser.avatarUrl,
+        role: memUser.role,
+        userCategory: memUser.userCategory,
+        experienceLevel: memUser.experienceLevel,
+        createdAt: memUser.createdAt,
+      },
+      token,
+    };
+  }
+
   static async getMe(userId: string): Promise<any> {
     if (isDBConnected() && mongoose.Types.ObjectId.isValid(userId)) {
       try {

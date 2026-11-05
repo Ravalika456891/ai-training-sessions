@@ -10,6 +10,8 @@ export interface IUser extends Document {
     countryCode: string;
     number: string;
   };
+  googleId?: string;
+  avatarUrl?: string;
   role: 'learner' | 'instructor' | 'admin' | 'support';
   userCategory?: 'student' | 'working_professional' | 'founder' | 'creator' | 'other';
   experienceLevel?: 'beginner' | 'intermediate' | 'advanced';
@@ -44,6 +46,14 @@ const UserSchema = new Schema<IUser>(
     phone: {
       countryCode: { type: String, default: '+91' },
       number: { type: String, trim: true },
+    },
+    googleId: {
+      type: String,
+      sparse: true,
+      index: true,
+    },
+    avatarUrl: {
+      type: String,
     },
     role: {
       type: String,

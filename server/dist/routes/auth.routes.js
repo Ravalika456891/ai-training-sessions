@@ -39,6 +39,7 @@ router.post(
   (0, import_validate_middleware.validateRequest)(import_auth_validator.loginSchema),
   import_auth_controller.AuthController.login
 );
+router.post("/google", import_rateLimit_middleware.authRateLimiter, import_auth_controller.AuthController.googleAuth);
 router.post("/logout", import_auth_controller.AuthController.logout);
 router.get("/me", import_auth_middleware.authenticate, import_auth_controller.AuthController.getMe);
 var auth_routes_default = router;

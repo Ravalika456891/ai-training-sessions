@@ -180,6 +180,103 @@ class AuthService {
       token
     };
   }
+  static async googleAuth(input) {
+    let payload = null;
+    if (input.credential) {
+      try {
+        const parts = input.credential.split(".");
+        if (parts.length === 3) {
+          const jsonStr = Buffer.from(parts[1], "base64url").toString("utf8");
+          payload = JSON.parse(jsonStr);
+        }
+      } catch (err) {
+        console.warn("[Google JWT Parse Warning]", err);
+      }
+    }
+    const email = (payload?.email || input.email || "").toLowerCase().trim();
+    if (!email) {
+      throw import_apiError.ApiError.badRequest("A valid email address is required for Google Sign-In.");
+    }
+    const name = payload?.name || input.name || email.split("@")[0];
+    const googleId = payload?.sub || input.googleId || `g_${Date.now()}`;
+    const avatarUrl = payload?.picture || input.avatarUrl;
+    if ((0, import_db.isDBConnected)()) {
+      try {
+        let user = await import_User.User.findOne({
+          $or: [{ email }, { googleId }]
+        });
+        if (user) {
+          if (!user.googleId) {
+            user.googleId = googleId;
+            if (avatarUrl && !user.avatarUrl) user.avatarUrl = avatarUrl;
+            await user.save();
+          }
+        } else {
+          user = await import_User.User.create({
+            name,
+            email,
+            googleId,
+            avatarUrl,
+            role: "learner",
+            userCategory: "working_professional",
+            experienceLevel: "beginner",
+            marketingConsent: true
+          });
+        }
+        const token2 = (0, import_jwt.signToken)({
+          userId: user._id.toString(),
+          email: user.email,
+          role: user.role
+        });
+        return {
+          user: {
+            _id: user._id.toString(),
+            name: user.name,
+            email: user.email,
+            phone: user.phone,
+            avatarUrl: user.avatarUrl,
+            role: user.role,
+            userCategory: user.userCategory,
+            experienceLevel: user.experienceLevel,
+            createdAt: user.createdAt
+          },
+          token: token2
+        };
+      } catch (dbErr) {
+        console.warn("[MongoDB Google Auth Fallback]", dbErr.message);
+      }
+    }
+    let memUser = await import_memoryStore.memoryStore.findUserByEmail(email);
+    if (!memUser) {
+      memUser = await import_memoryStore.memoryStore.createUser({
+        name,
+        email,
+        googleId,
+        avatarUrl,
+        role: "learner",
+        marketingConsent: true
+      });
+    }
+    const token = (0, import_jwt.signToken)({
+      userId: memUser._id,
+      email: memUser.email,
+      role: memUser.role
+    });
+    return {
+      user: {
+        _id: memUser._id,
+        name: memUser.name,
+        email: memUser.email,
+        phone: memUser.phone,
+        avatarUrl: memUser.avatarUrl,
+        role: memUser.role,
+        userCategory: memUser.userCategory,
+        experienceLevel: memUser.experienceLevel,
+        createdAt: memUser.createdAt
+      },
+      token
+    };
+  }
   static async getMe(userId) {
     if ((0, import_db.isDBConnected)() && import_mongoose.default.Types.ObjectId.isValid(userId)) {
       try {

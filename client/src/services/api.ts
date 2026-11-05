@@ -313,6 +313,26 @@ export const api = {
     return data;
   },
 
+  async googleAuth(payload: {
+    credential?: string;
+    email?: string;
+    name?: string;
+    googleId?: string;
+    avatarUrl?: string;
+  }): Promise<{ success: boolean; data: { user: ApiUser } }> {
+    const res = await fetch(`${API_BASE}/auth/google`, {
+      method: 'POST',
+      headers: customHeaders,
+      credentials: 'include',
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      throw new Error(data.message || 'Google authentication failed');
+    }
+    return data;
+  },
+
   async logout(): Promise<{ success: boolean; message: string }> {
     const res = await fetch(`${API_BASE}/auth/logout`, {
       method: 'POST',

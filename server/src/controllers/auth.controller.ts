@@ -33,6 +33,21 @@ export class AuthController {
     }
   }
 
+  static async googleAuth(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { user, token } = await AuthService.googleAuth(req.body);
+      setAuthCookie(res, token);
+
+      res.status(200).json({
+        success: true,
+        message: 'Signed in with Google successfully.',
+        data: { user },
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
   static async logout(_req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       clearAuthCookie(res);

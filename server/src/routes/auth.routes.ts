@@ -21,6 +21,8 @@ router.post(
   AuthController.login
 );
 
+router.post('/google', authRateLimiter, AuthController.googleAuth);
+
 router.post('/logout', AuthController.logout);
 
 router.get('/me', authenticate, AuthController.getMe);

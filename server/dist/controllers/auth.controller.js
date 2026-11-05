@@ -49,6 +49,19 @@ class AuthController {
       next(error);
     }
   }
+  static async googleAuth(req, res, next) {
+    try {
+      const { user, token } = await import_auth_service.AuthService.googleAuth(req.body);
+      (0, import_jwt.setAuthCookie)(res, token);
+      res.status(200).json({
+        success: true,
+        message: "Signed in with Google successfully.",
+        data: { user }
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
   static async logout(_req, res, next) {
     try {
       (0, import_jwt.clearAuthCookie)(res);

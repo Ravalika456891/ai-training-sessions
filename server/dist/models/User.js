@@ -59,6 +59,14 @@ const UserSchema = new import_mongoose.Schema(
       countryCode: { type: String, default: "+91" },
       number: { type: String, trim: true }
     },
+    googleId: {
+      type: String,
+      sparse: true,
+      index: true
+    },
+    avatarUrl: {
+      type: String
+    },
     role: {
       type: String,
       enum: ["learner", "instructor", "admin", "support"],

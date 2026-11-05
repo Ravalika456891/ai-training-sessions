@@ -179,6 +179,8 @@ class MemoryStoreService {
       email: userData.email.toLowerCase().trim(),
       passwordHash,
       phone: userData.phone || { countryCode: "+91", number: "" },
+      googleId: userData.googleId,
+      avatarUrl: userData.avatarUrl,
       role: userData.role || "learner",
       userCategory: userData.userCategory || "working_professional",
       experienceLevel: userData.experienceLevel || "beginner",
