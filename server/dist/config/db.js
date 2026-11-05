@@ -52,6 +52,7 @@ const connectDB = async () => {
   }
   try {
     import_mongoose.default.set("strictQuery", true);
+    import_mongoose.default.set("bufferCommands", false);
     await import_mongoose.default.connect(import_env.env.MONGODB_URI, {
       serverSelectionTimeoutMS: 4e3,
       connectTimeoutMS: 4e3,

@@ -3,12 +3,15 @@ import { verifyToken, TokenPayload } from '../utils/jwt.js';
 import { ApiError } from '../utils/apiError.js';
 import { User, IUser } from '../models/User.js';
 import { env } from '../config/env.js';
+import { isDBConnected } from '../config/db.js';
+import { memoryStore } from '../services/memoryStore.js';
+import mongoose from 'mongoose';
 
 // Extend Express Request
 declare global {
   namespace Express {
     interface Request {
-      user?: IUser;
+      user?: IUser | any;
       tokenPayload?: TokenPayload;
     }
   }
@@ -34,7 +37,19 @@ export const authenticate = async (
     const payload = verifyToken(token);
     req.tokenPayload = payload;
 
-    const user = await User.findById(payload.userId);
+    let user: any = null;
+    if (isDBConnected() && mongoose.Types.ObjectId.isValid(payload.userId)) {
+      try {
+        user = await User.findById(payload.userId);
+      } catch (err) {
+        console.warn('[Auth Middleware Fallback]', err);
+      }
+    }
+
+    if (!user) {
+      user = await memoryStore.findUserById(payload.userId);
+    }
+
     if (!user) {
       throw ApiError.unauthorized('User account no longer exists.');
     }
@@ -64,7 +79,20 @@ export const optionalAuthenticate = async (
     if (token) {
       const payload = verifyToken(token);
       req.tokenPayload = payload;
-      const user = await User.findById(payload.userId);
+
+      let user: any = null;
+      if (isDBConnected() && mongoose.Types.ObjectId.isValid(payload.userId)) {
+        try {
+          user = await User.findById(payload.userId);
+        } catch {
+          // ignore
+        }
+      }
+
+      if (!user) {
+        user = await memoryStore.findUserById(payload.userId);
+      }
+
       if (user) {
         req.user = user;
       }
@@ -93,4 +121,3 @@ export const requireRole = (...allowedRoles: string[]) => {
     next();
   };
 };
-

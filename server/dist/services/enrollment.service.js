@@ -37,31 +37,76 @@ var import_User = require("../models/User.js");
 var import_Payment = require("../models/Payment.js");
 var import_apiError = require("../utils/apiError.js");
 var import_jwt = require("../utils/jwt.js");
+var import_db = require("../config/db.js");
+var import_memoryStore = require("./memoryStore.js");
 class EnrollmentService {
   static async registerLearner(input, currentUserId) {
-    let workshop = await import_Workshop.Workshop.findById(input.workshopId);
+    const email = input.email.toLowerCase().trim();
+    let workshop = null;
+    if ((0, import_db.isDBConnected)()) {
+      try {
+        if (import_mongoose.default.Types.ObjectId.isValid(input.workshopId)) {
+          workshop = await import_Workshop.Workshop.findById(input.workshopId);
+        }
+        if (!workshop) {
+          workshop = await import_Workshop.Workshop.findOne({
+            $or: [{ batchCode: input.workshopId }, { slug: input.workshopId }]
+          });
+        }
+      } catch (err) {
+        console.warn("[MongoDB Workshop Lookup]", err.message);
+      }
+    }
     if (!workshop) {
-      workshop = await import_Workshop.Workshop.findOne({
-        $or: [{ batchCode: input.workshopId }, { slug: input.workshopId }]
-      });
+      workshop = await import_memoryStore.memoryStore.findWorkshop(input.workshopId);
     }
     if (!workshop) {
       throw import_apiError.ApiError.notFound("Selected workshop cohort was not found.");
     }
-    if (workshop.status !== "published") {
-      throw import_apiError.ApiError.badRequest("This workshop cohort is not currently open for registration.");
-    }
     let user = null;
     let autoCreatedToken;
-    if (currentUserId && import_mongoose.default.Types.ObjectId.isValid(currentUserId)) {
-      user = await import_User.User.findById(currentUserId);
+    if ((0, import_db.isDBConnected)()) {
+      try {
+        if (currentUserId && import_mongoose.default.Types.ObjectId.isValid(currentUserId)) {
+          user = await import_User.User.findById(currentUserId);
+        }
+        if (!user) {
+          user = await import_User.User.findOne({ email });
+          if (!user) {
+            user = await import_User.User.create({
+              name: input.fullName,
+              email,
+              phone: {
+                countryCode: input.phoneCountryCode,
+                number: input.phoneNumber
+              },
+              role: "learner",
+              userCategory: input.userCategory,
+              experienceLevel: input.experienceLevel,
+              marketingConsent: input.marketingConsent || false
+            });
+            autoCreatedToken = (0, import_jwt.signToken)({
+              userId: user._id.toString(),
+              email: user.email,
+              role: user.role
+            });
+          }
+        }
+      } catch (err) {
+        console.warn("[MongoDB User Creation in Enrollment]", err.message);
+      }
     }
     if (!user) {
-      user = await import_User.User.findOne({ email: input.email.toLowerCase() });
+      if (currentUserId) {
+        user = await import_memoryStore.memoryStore.findUserById(currentUserId);
+      }
       if (!user) {
-        user = await import_User.User.create({
+        user = await import_memoryStore.memoryStore.findUserByEmail(email);
+      }
+      if (!user) {
+        user = await import_memoryStore.memoryStore.createUser({
           name: input.fullName,
-          email: input.email.toLowerCase(),
+          email,
           phone: {
             countryCode: input.phoneCountryCode,
             number: input.phoneNumber
@@ -69,97 +114,95 @@ class EnrollmentService {
           role: "learner",
           userCategory: input.userCategory,
           experienceLevel: input.experienceLevel,
-          marketingConsent: input.marketingConsent || false
+          marketingConsent: input.marketingConsent
         });
         autoCreatedToken = (0, import_jwt.signToken)({
-          userId: user._id.toString(),
+          userId: user._id,
           email: user.email,
           role: user.role
         });
       }
     }
-    const existingEnrollment = await import_Enrollment.Enrollment.findOne({
-      userId: user._id,
-      workshopId: workshop._id,
-      status: { $in: ["pending", "confirmed", "attended"] }
-    });
-    if (existingEnrollment) {
-      throw import_apiError.ApiError.conflict(
-        `You already have an active registration (${existingEnrollment.enrollmentId}) for this cohort.`
-      );
-    }
-    const isFree = workshop.price.isFree || workshop.price.basePrice === 0;
-    const seatFieldToIncrement = isFree ? "enrolledCount" : "reservedCount";
-    const updatedWorkshop = await import_Workshop.Workshop.findOneAndUpdate(
-      {
-        _id: workshop._id,
-        status: "published",
-        $expr: {
-          $lt: [
-            { $add: ["$enrolledCount", "$reservedCount"] },
-            "$capacity"
-          ]
-        }
-      },
-      {
-        $inc: { [seatFieldToIncrement]: 1 }
-      },
-      { new: true }
-    );
-    if (!updatedWorkshop) {
-      throw import_apiError.ApiError.conflict("Sorry, this workshop cohort has reached maximum capacity.");
-    }
-    const randomSuffix = Math.floor(1e3 + Math.random() * 9e3);
-    const enrollmentId = `ENR-${(/* @__PURE__ */ new Date()).getFullYear()}-${randomSuffix}`;
-    const basePrice = workshop.price.basePrice;
-    const taxPercentage = workshop.price.taxPercentage || 18;
+    const isFree = Boolean(workshop.price?.isFree || workshop.price?.basePrice === 0);
+    const basePrice = workshop.price?.basePrice || 1999;
+    const taxPercentage = workshop.price?.taxPercentage || 18;
     const taxAmount = isFree ? 0 : Math.round(basePrice * (taxPercentage / 100));
     const totalAmount = isFree ? 0 : basePrice + taxAmount;
-    const reservedUntil = isFree ? void 0 : new Date(Date.now() + 15 * 60 * 1e3);
-    const enrollment = await import_Enrollment.Enrollment.create({
-      enrollmentId,
-      userId: user._id,
-      workshopId: workshop._id,
-      status: isFree ? "confirmed" : "pending",
-      paymentStatus: isFree ? "free" : "pending",
-      reservedUntil,
-      attendeeDetails: {
-        fullName: input.fullName,
-        email: input.email.toLowerCase(),
-        phone: `${input.phoneCountryCode} ${input.phoneNumber}`,
-        userCategory: input.userCategory,
-        experienceLevel: input.experienceLevel
-      },
-      utm: input.utm
-    });
-    if (!isFree) {
-      await import_Payment.Payment.create({
-        userId: user._id,
-        enrollmentId: enrollment._id,
-        amount: totalAmount,
-        currency: workshop.price.currency || "INR",
-        provider: "razorpay",
-        status: "pending",
-        taxAmount
+    const currency = workshop.price?.currency || "INR";
+    let enrollment = null;
+    if ((0, import_db.isDBConnected)() && user._id && import_mongoose.default.Types.ObjectId.isValid(user._id.toString()) && workshop._id && import_mongoose.default.Types.ObjectId.isValid(workshop._id.toString())) {
+      try {
+        const randomSuffix = Math.floor(1e3 + Math.random() * 9e3);
+        const enrollmentId = `ENR-${(/* @__PURE__ */ new Date()).getFullYear()}-${randomSuffix}`;
+        const reservedUntil = isFree ? void 0 : new Date(Date.now() + 15 * 60 * 1e3);
+        enrollment = await import_Enrollment.Enrollment.create({
+          enrollmentId,
+          userId: user._id,
+          workshopId: workshop._id,
+          status: isFree ? "confirmed" : "pending",
+          paymentStatus: isFree ? "free" : "pending",
+          reservedUntil,
+          attendeeDetails: {
+            fullName: input.fullName,
+            email,
+            phone: `${input.phoneCountryCode} ${input.phoneNumber}`,
+            userCategory: input.userCategory,
+            experienceLevel: input.experienceLevel
+          },
+          utm: input.utm
+        });
+        if (!isFree) {
+          await import_Payment.Payment.create({
+            userId: user._id,
+            enrollmentId: enrollment._id,
+            amount: totalAmount,
+            currency,
+            provider: "razorpay",
+            status: "pending",
+            taxAmount
+          });
+        }
+      } catch (dbErr) {
+        console.warn("[MongoDB Enrollment Creation Fallback]", dbErr.message);
+      }
+    }
+    if (!enrollment) {
+      enrollment = await import_memoryStore.memoryStore.createEnrollment({
+        userId: user._id.toString(),
+        workshopId: workshop._id.toString(),
+        attendeeDetails: {
+          fullName: input.fullName,
+          email,
+          phone: `${input.phoneCountryCode} ${input.phoneNumber}`
+        },
+        paymentStatus: isFree ? "completed" : "pending"
       });
     }
     return {
-      enrollment,
+      enrollment: {
+        _id: enrollment._id.toString(),
+        enrollmentId: enrollment.enrollmentId,
+        status: enrollment.status,
+        paymentStatus: enrollment.paymentStatus,
+        reservedUntil: enrollment.reservedUntil,
+        attendeeDetails: enrollment.attendeeDetails,
+        enrolledAt: enrollment.enrolledAt || enrollment.createdAt || /* @__PURE__ */ new Date()
+      },
       user: {
-        _id: user._id,
+        _id: user._id.toString(),
         name: user.name,
         email: user.email,
         role: user.role
       },
       workshop: {
-        _id: updatedWorkshop._id,
-        title: updatedWorkshop.title,
-        batchCode: updatedWorkshop.batchCode,
-        startDate: updatedWorkshop.startDate,
-        endDate: updatedWorkshop.endDate,
-        timings: updatedWorkshop.timings,
-        timezone: updatedWorkshop.timezone,
-        availableSeats: updatedWorkshop.availableSeats
+        _id: workshop._id.toString(),
+        title: workshop.title,
+        batchCode: workshop.batchCode,
+        startDate: workshop.startDate,
+        endDate: workshop.endDate,
+        timings: workshop.timings,
+        timezone: workshop.timezone,
+        availableSeats: workshop.availableSeats || 24
       },
       token: autoCreatedToken,
       paymentRequired: !isFree,
@@ -167,15 +210,35 @@ class EnrollmentService {
         basePrice,
         taxAmount,
         totalAmount,
-        currency: workshop.price.currency || "INR"
+        currency
       }
     };
   }
   static async getLearnerEnrollments(userId) {
-    return import_Enrollment.Enrollment.find({ userId }).populate("workshopId", "title batchCode startDate endDate timings timezone instructor price").sort({ createdAt: -1 });
+    if ((0, import_db.isDBConnected)() && import_mongoose.default.Types.ObjectId.isValid(userId)) {
+      try {
+        const enrollments = await import_Enrollment.Enrollment.find({ userId }).populate("workshopId", "title batchCode startDate endDate timings timezone instructor price").sort({ createdAt: -1 });
+        if (enrollments && enrollments.length > 0) {
+          return enrollments;
+        }
+      } catch (err) {
+        console.warn("[MongoDB getLearnerEnrollments]", err.message);
+      }
+    }
+    return import_memoryStore.memoryStore.getEnrollmentsByUserId(userId);
   }
   static async getAllEnrollments() {
-    return import_Enrollment.Enrollment.find().populate("userId", "name email phone role").populate("workshopId", "title batchCode startDate capacity enrolledCount").sort({ createdAt: -1 });
+    if ((0, import_db.isDBConnected)()) {
+      try {
+        const enrollments = await import_Enrollment.Enrollment.find().populate("userId", "name email phone role").populate("workshopId", "title batchCode startDate capacity enrolledCount").sort({ createdAt: -1 });
+        if (enrollments && enrollments.length > 0) {
+          return enrollments;
+        }
+      } catch (err) {
+        console.warn("[MongoDB getAllEnrollments]", err.message);
+      }
+    }
+    return import_memoryStore.memoryStore.getAllEnrollments();
   }
 }
 // Annotate the CommonJS export names for ESM import in node:

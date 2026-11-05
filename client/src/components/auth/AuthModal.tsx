@@ -41,23 +41,18 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       } else {
         // Direct registration
         const payload: any = {
-          name,
-          email,
+          name: name.trim(),
+          email: email.trim(),
           password,
-          phone: { countryCode: '+91', number: phoneNumber },
         };
-        const res = await fetch('/api/auth/register', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
-          credentials: 'include',
-          body: JSON.stringify(payload),
-        });
-        const data = await res.json();
-        if (!res.ok) {
-          throw new Error(data.message || 'Registration failed.');
+        if (phoneNumber.trim()) {
+          payload.phone = { countryCode: '+91', number: phoneNumber.trim() };
         }
-        await refreshUser();
-        onClose();
+        const res = await api.register(payload);
+        if (res.success) {
+          await refreshUser();
+          onClose();
+        }
       }
     } catch (err: any) {
       setError(err.message || 'Authentication failed. Please check credentials.');

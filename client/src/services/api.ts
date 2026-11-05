@@ -294,6 +294,25 @@ export const api = {
     return data;
   },
 
+  async register(userData: {
+    name: string;
+    email: string;
+    password?: string;
+    phone?: { countryCode: string; number: string };
+  }): Promise<{ success: boolean; data: { user: ApiUser } }> {
+    const res = await fetch(`${API_BASE}/auth/register`, {
+      method: 'POST',
+      headers: customHeaders,
+      credentials: 'include',
+      body: JSON.stringify(userData),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      throw new Error(data.message || 'Registration failed');
+    }
+    return data;
+  },
+
   async logout(): Promise<{ success: boolean; message: string }> {
     const res = await fetch(`${API_BASE}/auth/logout`, {
       method: 'POST',

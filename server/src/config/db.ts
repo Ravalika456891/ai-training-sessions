@@ -27,6 +27,7 @@ export const connectDB = async (): Promise<boolean> => {
 
   try {
     mongoose.set('strictQuery', true);
+    mongoose.set('bufferCommands', false);
     
     // Connect with 4s timeout so serverless invocations don't freeze
     await mongoose.connect(env.MONGODB_URI, {

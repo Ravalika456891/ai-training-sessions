@@ -1,6 +1,8 @@
+var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __getOwnPropNames = Object.getOwnPropertyNames;
+var __getProtoOf = Object.getPrototypeOf;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
 var __export = (target, all) => {
   for (var name in all)
@@ -14,6 +16,14 @@ var __copyProps = (to, from, except, desc) => {
   }
   return to;
 };
+var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
+  // If the importer is in node compatibility mode or this is not an ESM
+  // file that has been converted to a CommonJS file using a Babel-
+  // compatible transform (i.e. "__esModule" has not been set), then set
+  // "default" to the CommonJS "module.exports" for node compatibility.
+  isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
+  mod
+));
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 var auth_middleware_exports = {};
 __export(auth_middleware_exports, {
@@ -26,6 +36,9 @@ var import_jwt = require("../utils/jwt.js");
 var import_apiError = require("../utils/apiError.js");
 var import_User = require("../models/User.js");
 var import_env = require("../config/env.js");
+var import_db = require("../config/db.js");
+var import_memoryStore = require("../services/memoryStore.js");
+var import_mongoose = __toESM(require("mongoose"));
 const authenticate = async (req, _res, next) => {
   try {
     let token = req.cookies?.[import_env.env.COOKIE_NAME];
@@ -37,7 +50,17 @@ const authenticate = async (req, _res, next) => {
     }
     const payload = (0, import_jwt.verifyToken)(token);
     req.tokenPayload = payload;
-    const user = await import_User.User.findById(payload.userId);
+    let user = null;
+    if ((0, import_db.isDBConnected)() && import_mongoose.default.Types.ObjectId.isValid(payload.userId)) {
+      try {
+        user = await import_User.User.findById(payload.userId);
+      } catch (err) {
+        console.warn("[Auth Middleware Fallback]", err);
+      }
+    }
+    if (!user) {
+      user = await import_memoryStore.memoryStore.findUserById(payload.userId);
+    }
     if (!user) {
       throw import_apiError.ApiError.unauthorized("User account no longer exists.");
     }
@@ -60,7 +83,16 @@ const optionalAuthenticate = async (req, _res, next) => {
     if (token) {
       const payload = (0, import_jwt.verifyToken)(token);
       req.tokenPayload = payload;
-      const user = await import_User.User.findById(payload.userId);
+      let user = null;
+      if ((0, import_db.isDBConnected)() && import_mongoose.default.Types.ObjectId.isValid(payload.userId)) {
+        try {
+          user = await import_User.User.findById(payload.userId);
+        } catch {
+        }
+      }
+      if (!user) {
+        user = await import_memoryStore.memoryStore.findUserById(payload.userId);
+      }
       if (user) {
         req.user = user;
       }

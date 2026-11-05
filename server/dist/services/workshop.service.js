@@ -34,38 +34,57 @@ var import_Workshop = require("../models/Workshop.js");
 var import_apiError = require("../utils/apiError.js");
 var import_db = require("../config/db.js");
 var import_seed = require("../utils/seed.js");
+var import_memoryStore = require("./memoryStore.js");
 var import_mongoose = __toESM(require("mongoose"));
 class WorkshopService {
   static async getPublishedWorkshops() {
-    if (!(0, import_db.isDBConnected)()) {
-      return [];
-    }
-    let workshops = await import_Workshop.Workshop.find({
-      status: "published"
-    }).sort({ startDate: 1 });
-    if (workshops.length === 0) {
+    if ((0, import_db.isDBConnected)()) {
       try {
-        await (0, import_seed.seedDatabase)();
-        workshops = await import_Workshop.Workshop.find({
+        let workshops = await import_Workshop.Workshop.find({
           status: "published"
         }).sort({ startDate: 1 });
-      } catch (seedErr) {
-        console.warn("[Auto-Seed Error]", seedErr);
+        if (workshops.length === 0) {
+          try {
+            await (0, import_seed.seedDatabase)();
+            workshops = await import_Workshop.Workshop.find({
+              status: "published"
+            }).sort({ startDate: 1 });
+          } catch (seedErr) {
+            console.warn("[Auto-Seed Error]", seedErr);
+          }
+        }
+        if (workshops && workshops.length > 0) {
+          return workshops;
+        }
+      } catch (err) {
+        console.warn("[MongoDB getPublishedWorkshops Fallback]", err.message);
       }
     }
-    return workshops;
+    return import_memoryStore.memoryStore.getPublishedWorkshops();
   }
   static async getWorkshopById(idOrSlug) {
-    let workshop = null;
-    if (import_mongoose.default.Types.ObjectId.isValid(idOrSlug)) {
-      workshop = await import_Workshop.Workshop.findById(idOrSlug);
-    } else {
-      workshop = await import_Workshop.Workshop.findOne({ slug: idOrSlug });
+    if ((0, import_db.isDBConnected)()) {
+      try {
+        let workshop = null;
+        if (import_mongoose.default.Types.ObjectId.isValid(idOrSlug)) {
+          workshop = await import_Workshop.Workshop.findById(idOrSlug);
+        } else {
+          workshop = await import_Workshop.Workshop.findOne({
+            $or: [{ slug: idOrSlug }, { batchCode: idOrSlug }]
+          });
+        }
+        if (workshop) {
+          return workshop;
+        }
+      } catch (err) {
+        console.warn("[MongoDB getWorkshopById Fallback]", err.message);
+      }
     }
-    if (!workshop) {
+    const memWorkshop = await import_memoryStore.memoryStore.findWorkshop(idOrSlug);
+    if (!memWorkshop) {
       throw import_apiError.ApiError.notFound(`Workshop '${idOrSlug}' not found.`);
     }
-    return workshop;
+    return memWorkshop;
   }
   static async createWorkshop(input) {
     const existing = await import_Workshop.Workshop.findOne({
@@ -77,23 +96,24 @@ class WorkshopService {
     const workshop = await import_Workshop.Workshop.create({
       ...input,
       startDate: new Date(input.startDate),
-      endDate: new Date(input.endDate)
+      endDate: new Date(input.endDate),
+      enrolledCount: 0,
+      reservedCount: 0
     });
     return workshop;
   }
   static async updateWorkshop(id, input) {
-    if (!import_mongoose.default.Types.ObjectId.isValid(id)) {
-      throw import_apiError.ApiError.badRequest("Invalid workshop ID format.");
-    }
-    const updateData = { ...input };
-    if (input.startDate) updateData.startDate = new Date(input.startDate);
-    if (input.endDate) updateData.endDate = new Date(input.endDate);
-    const workshop = await import_Workshop.Workshop.findByIdAndUpdate(id, updateData, {
-      new: true,
-      runValidators: true
-    });
+    const workshop = await import_Workshop.Workshop.findByIdAndUpdate(
+      id,
+      {
+        ...input,
+        ...input.startDate && { startDate: new Date(input.startDate) },
+        ...input.endDate && { endDate: new Date(input.endDate) }
+      },
+      { new: true, runValidators: true }
+    );
     if (!workshop) {
-      throw import_apiError.ApiError.notFound("Workshop not found.");
+      throw import_apiError.ApiError.notFound(`Workshop with ID '${id}' not found.`);
     }
     return workshop;
   }

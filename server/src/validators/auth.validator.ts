@@ -5,10 +5,13 @@ export const registerSchema = z.object({
   email: z.string().email('Invalid email address').toLowerCase(),
   password: z.string().min(6, 'Password must be at least 6 characters').optional(),
   phone: z
-    .object({
-      countryCode: z.string().default('+91'),
-      number: z.string().min(7, 'Phone number must be at least 7 digits'),
-    })
+    .union([
+      z.object({
+        countryCode: z.string().default('+91'),
+        number: z.string().optional().default(''),
+      }),
+      z.string().transform((val) => ({ countryCode: '+91', number: val })),
+    ])
     .optional(),
   userCategory: z
     .enum(['student', 'working_professional', 'founder', 'creator', 'other'])

@@ -26,10 +26,13 @@ const registerSchema = import_zod.z.object({
   name: import_zod.z.string().min(2, "Name must be at least 2 characters").max(100),
   email: import_zod.z.string().email("Invalid email address").toLowerCase(),
   password: import_zod.z.string().min(6, "Password must be at least 6 characters").optional(),
-  phone: import_zod.z.object({
-    countryCode: import_zod.z.string().default("+91"),
-    number: import_zod.z.string().min(7, "Phone number must be at least 7 digits")
-  }).optional(),
+  phone: import_zod.z.union([
+    import_zod.z.object({
+      countryCode: import_zod.z.string().default("+91"),
+      number: import_zod.z.string().optional().default("")
+    }),
+    import_zod.z.string().transform((val) => ({ countryCode: "+91", number: val }))
+  ]).optional(),
   userCategory: import_zod.z.enum(["student", "working_professional", "founder", "creator", "other"]).optional(),
   experienceLevel: import_zod.z.enum(["beginner", "intermediate", "advanced"]).optional(),
   marketingConsent: import_zod.z.boolean().optional()
