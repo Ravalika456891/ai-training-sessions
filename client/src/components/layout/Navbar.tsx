@@ -67,18 +67,20 @@ export const Navbar: React.FC<NavbarProps> = ({
               e.preventDefault();
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
-            className="flex items-center gap-2.5 group cursor-pointer"
+            className="flex items-center gap-3 group cursor-pointer select-none"
           >
-            <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shadow-sm">
+            <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-sm shrink-0 group-hover:bg-blue-700 transition-colors">
               <Sparkles className="w-5 h-5 text-white" />
             </div>
             <div>
-              <span className="font-extrabold text-lg tracking-tight text-[#0F172A] flex items-center gap-1.5">
-                AI Launchpad
-                <span className="hidden sm:inline-block text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200">
+              <div className="flex items-center gap-2">
+                <span className="font-extrabold text-lg tracking-tight text-[#0F172A]">
+                  AI Launchpad
+                </span>
+                <span className="text-[10px] uppercase font-extrabold tracking-wider px-2 py-0.5 rounded-md bg-blue-600 text-white shadow-sm">
                   Bootcamp
                 </span>
-              </span>
+              </div>
               <span className="text-[11px] block text-[#475569] font-medium -mt-0.5">
                 2-Day Hands-On Masterclass
               </span>
