@@ -20,8 +20,8 @@
     "helmet": "^8.0.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.9.2",
+    "nodemailer": "^10.3.1",
     "razorpay": "^2.9.8",
     "zod": "^3.24.1"
   }
 }
-

@@ -47,6 +47,18 @@ export interface IMemoryWorkshop {
   status: 'draft' | 'published' | 'completed' | 'cancelled';
 }
 
+export interface IMemoryRegistration {
+  _id: string;
+  name: string;
+  email: string;
+  phone: string;
+  batchId: string;
+  registrationStatus: 'confirmed' | 'pending' | 'cancelled';
+  paymentStatus: 'unpaid' | 'pending' | 'paid' | 'waived';
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export interface IMemoryEnrollment {
   _id: string;
   enrollmentId: string;
@@ -69,6 +81,7 @@ class MemoryStoreService {
   private users: Map<string, IMemoryUser> = new Map();
   private workshops: Map<string, IMemoryWorkshop> = new Map();
   private enrollments: Map<string, IMemoryEnrollment> = new Map();
+  private registrations: Map<string, IMemoryRegistration> = new Map();
   private isInitialized = false;
 
   constructor() {
@@ -349,6 +362,49 @@ class MemoryStoreService {
       }
     }
     return null;
+  }
+
+  async findRegistration(email: string, batchId: string): Promise<IMemoryRegistration | null> {
+    await this.init();
+    const normalizedEmail = email.toLowerCase().trim();
+    for (const reg of this.registrations.values()) {
+      if (reg.email.toLowerCase() === normalizedEmail && reg.batchId === batchId) {
+        return reg;
+      }
+    }
+    return null;
+  }
+
+  async createRegistration(data: {
+    name: string;
+    email: string;
+    phone: string;
+    batchId: string;
+    registrationStatus?: 'confirmed' | 'pending' | 'cancelled';
+    paymentStatus?: 'unpaid' | 'pending' | 'paid' | 'waived';
+  }): Promise<IMemoryRegistration> {
+    await this.init();
+    const _id = 'reg_' + Date.now() + '_' + Math.floor(1000 + Math.random() * 9000);
+    const registration: IMemoryRegistration = {
+      _id,
+      name: data.name.trim(),
+      email: data.email.toLowerCase().trim(),
+      phone: data.phone.trim(),
+      batchId: data.batchId.trim(),
+      registrationStatus: data.registrationStatus || 'confirmed',
+      paymentStatus: data.paymentStatus || 'unpaid',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    this.registrations.set(_id, registration);
+    return registration;
+  }
+
+  async getAllRegistrations(): Promise<IMemoryRegistration[]> {
+    await this.init();
+    return Array.from(this.registrations.values()).sort(
+      (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
+    );
   }
 }
 

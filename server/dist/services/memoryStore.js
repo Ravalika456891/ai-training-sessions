@@ -36,6 +36,7 @@ class MemoryStoreService {
   users = /* @__PURE__ */ new Map();
   workshops = /* @__PURE__ */ new Map();
   enrollments = /* @__PURE__ */ new Map();
+  registrations = /* @__PURE__ */ new Map();
   isInitialized = false;
   constructor() {
     this.init();
@@ -263,6 +264,39 @@ class MemoryStoreService {
       }
     }
     return null;
+  }
+  async findRegistration(email, batchId) {
+    await this.init();
+    const normalizedEmail = email.toLowerCase().trim();
+    for (const reg of this.registrations.values()) {
+      if (reg.email.toLowerCase() === normalizedEmail && reg.batchId === batchId) {
+        return reg;
+      }
+    }
+    return null;
+  }
+  async createRegistration(data) {
+    await this.init();
+    const _id = "reg_" + Date.now() + "_" + Math.floor(1e3 + Math.random() * 9e3);
+    const registration = {
+      _id,
+      name: data.name.trim(),
+      email: data.email.toLowerCase().trim(),
+      phone: data.phone.trim(),
+      batchId: data.batchId.trim(),
+      registrationStatus: data.registrationStatus || "confirmed",
+      paymentStatus: data.paymentStatus || "unpaid",
+      createdAt: /* @__PURE__ */ new Date(),
+      updatedAt: /* @__PURE__ */ new Date()
+    };
+    this.registrations.set(_id, registration);
+    return registration;
+  }
+  async getAllRegistrations() {
+    await this.init();
+    return Array.from(this.registrations.values()).sort(
+      (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
+    );
   }
 }
 const memoryStore = new MemoryStoreService();

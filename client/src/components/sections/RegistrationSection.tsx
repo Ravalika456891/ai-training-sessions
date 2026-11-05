@@ -10,14 +10,13 @@ import {
   AlertCircle,
   ShieldCheck,
   ArrowRight,
-  Clock,
   Sparkles
 } from 'lucide-react';
 import { Card } from '../common/Card';
 import { Badge } from '../common/Badge';
 import { Button } from '../common/Button';
 import { BATCH_OPTIONS } from '../../data/workshopData';
-import { api, type EnrollmentApiResponse } from '../../services/api';
+import { api, type RegistrationApiResponse } from '../../services/api';
 import type { RegistrationFormData, FormErrors, BatchOption } from '../../types/workshop';
 import { useAuth } from '../../context/AuthContext';
 
@@ -32,7 +31,6 @@ export const RegistrationSection: React.FC<RegistrationSectionProps> = ({
   selectedBatchId,
   onSelectBatch,
   batches = BATCH_OPTIONS,
-  onOpenCheckout,
 }) => {
   const { user, refreshUser } = useAuth();
 
@@ -51,7 +49,8 @@ export const RegistrationSection: React.FC<RegistrationSectionProps> = ({
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
-  const [enrollmentResult, setEnrollmentResult] = useState<EnrollmentApiResponse['data'] | null>(null);
+  const [registrationResult, setRegistrationResult] = useState<RegistrationApiResponse['data'] | null>(null);
+  const [emailDispatched, setEmailDispatched] = useState<boolean>(false);
 
   // Sync batch if prop changes
   React.useEffect(() => {
@@ -109,13 +108,20 @@ export const RegistrationSection: React.FC<RegistrationSectionProps> = ({
 
     setIsSubmitting(true);
     try {
-      const response = await api.createEnrollment(formData);
+      const response = await api.createRegistration({
+        name: formData.fullName.trim(),
+        email: formData.email.trim(),
+        phone: `${formData.phoneCountryCode} ${formData.phoneNumber}`.trim(),
+        batchId: formData.selectedBatchId,
+      });
+
       if (response.success && response.data) {
-        setEnrollmentResult(response.data);
+        setRegistrationResult(response.data);
+        setEmailDispatched(Boolean(response.emailDispatched));
         await refreshUser();
       }
     } catch (err: any) {
-      setServerError(err.message || 'Registration failed. Please try again.');
+      setServerError(err.message || 'Registration failed. Please check your information and try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -125,9 +131,6 @@ export const RegistrationSection: React.FC<RegistrationSectionProps> = ({
     batches.find((b) => b.id === formData.selectedBatchId || b.batchCode === formData.selectedBatchId) ||
     batches[0] ||
     BATCH_OPTIONS[0];
-
-  const taxAmount = Math.round(selectedBatch.pricing.basePrice * (selectedBatch.pricing.taxPercentage / 100));
-  const totalAmount = selectedBatch.pricing.basePrice + taxAmount;
 
   return (
     <section id="register" className="py-20 bg-white relative scroll-mt-20">
@@ -147,103 +150,99 @@ export const RegistrationSection: React.FC<RegistrationSectionProps> = ({
 
         <div className="mt-12 max-w-4xl mx-auto">
           <Card className="p-6 sm:p-10 border-slate-200 bg-white shadow-md">
-            {enrollmentResult ? (
+            {registrationResult ? (
               <div className="text-center py-8 space-y-6 animate-in fade-in-50 duration-300">
-                <div className="w-16 h-16 rounded-full bg-blue-50 text-blue-600 mx-auto flex items-center justify-center border border-blue-200">
-                  <CheckCircle2 className="w-9 h-9" />
+                <div className="w-16 h-16 rounded-2xl bg-blue-50 text-blue-600 mx-auto flex items-center justify-center border border-blue-200 shadow-xs">
+                  <CheckCircle2 className="w-9 h-9 text-blue-600" />
                 </div>
                 
                 <div className="space-y-2">
                   <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-xs font-semibold">
                     <Sparkles className="w-3.5 h-3.5 text-blue-600" />
-                    <span>MongoDB Atomic Reservation Confirmed</span>
+                    <span>Official Registration Confirmed</span>
                   </div>
                   <h3 className="text-2xl sm:text-3xl font-extrabold text-[#0F172A]">
-                    Registration Successfully Recorded!
+                    Welcome Aboard, {registrationResult.name}!
                   </h3>
                   <p className="text-[#475569] text-sm max-w-lg mx-auto leading-relaxed">
-                    Welcome aboard, <strong className="text-[#0F172A]">{enrollmentResult.enrollment.attendeeDetails.fullName}</strong>. Your seat has been allocated in the database.
+                    Your registration for the upcoming <strong>AI Launchpad Bootcamp</strong> has been recorded in the database.
                   </p>
                 </div>
 
-                {/* Enrollment Summary Card */}
+                {/* Registration Details Card */}
                 <div className="p-6 rounded-2xl bg-slate-50 border border-slate-200 text-left max-w-xl mx-auto space-y-4 shadow-sm">
                   <div className="flex items-center justify-between pb-3 border-b border-slate-200">
                     <div>
-                      <span className="text-[11px] uppercase font-bold text-slate-500">Enrollment ID</span>
-                      <div className="text-lg font-mono font-bold text-blue-700">
-                        {enrollmentResult.enrollment.enrollmentId}
+                      <span className="text-[11px] uppercase font-bold text-slate-500">Registration ID</span>
+                      <div className="text-base sm:text-lg font-mono font-bold text-blue-600">
+                        {registrationResult.id}
                       </div>
                     </div>
                     <Badge variant="primary" size="md">
-                      {enrollmentResult.paymentRequired ? 'Seat Reserved (15 Min Hold)' : 'Confirmed'}
+                      {registrationResult.registrationStatus.toUpperCase()}
                     </Badge>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
                     <div>
-                      <span className="text-slate-500 block">Cohort Batch:</span>
-                      <span className="text-[#0F172A] font-semibold">{enrollmentResult.workshop.batchCode}</span>
+                      <span className="text-slate-500 block">Training Cohort:</span>
+                      <span className="text-[#0F172A] font-semibold">{selectedBatch.batchCode}</span>
                     </div>
                     <div>
                       <span className="text-slate-500 block">Registered Email:</span>
-                      <span className="text-[#0F172A] font-semibold">{enrollmentResult.enrollment.attendeeDetails.email}</span>
+                      <span className="text-[#0F172A] font-semibold">{registrationResult.email}</span>
+                    </div>
+                    <div>
+                      <span className="text-slate-500 block">Contact Phone:</span>
+                      <span className="text-[#0F172A] font-semibold">{registrationResult.phone}</span>
                     </div>
                     <div>
                       <span className="text-slate-500 block">Schedule & Timings:</span>
-                      <span className="text-[#0F172A] font-semibold">{enrollmentResult.workshop.timings}</span>
-                    </div>
-                    <div>
-                      <span className="text-slate-500 block">Total Investment:</span>
-                      <span className="text-blue-700 font-bold text-sm">
-                        ₹{enrollmentResult.orderSummary.totalAmount.toLocaleString('en-IN')} (incl. GST)
-                      </span>
+                      <span className="text-[#0F172A] font-semibold">{selectedBatch.dateRange} • {selectedBatch.timings}</span>
                     </div>
                   </div>
 
-                  {enrollmentResult.paymentRequired && (
-                    <div className="p-3.5 rounded-xl bg-blue-50 border border-blue-200 text-slate-700 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                      <div className="flex items-start gap-2.5">
-                        <Clock className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
-                        <div>
-                          <strong className="text-[#0F172A]">15-Minute Seat Hold Active:</strong> Finalize checkout with Razorpay to secure your confirmed seat.
-                        </div>
-                      </div>
-                      {onOpenCheckout && (
-                        <Button
-                          variant="primary"
-                          size="sm"
-                          onClick={() => onOpenCheckout(enrollmentResult.enrollment.enrollmentId)}
-                          rightIcon={<ArrowRight className="w-3.5 h-3.5" />}
-                          className="shrink-0"
-                        >
-                          Complete Payment
-                        </Button>
-                      )}
+                  {/* Confirmation Email Status */}
+                  <div className="p-3.5 rounded-xl bg-blue-50 border border-blue-200 text-slate-700 text-xs flex items-start gap-2.5">
+                    <Mail className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
+                    <div>
+                      <strong className="text-[#0F172A]">
+                        {emailDispatched ? 'Confirmation Email Dispatched:' : 'Confirmation Recorded:'}
+                      </strong>{' '}
+                      A detailed confirmation receipt, calendar invite, and session setup instructions have been logged for{' '}
+                      <span className="font-semibold text-blue-700">{registrationResult.email}</span>.
                     </div>
-                  )}
+                  </div>
                 </div>
 
                 <div className="pt-2 flex flex-wrap items-center justify-center gap-3">
-                  {enrollmentResult.paymentRequired && onOpenCheckout && (
-                    <Button
-                      variant="primary"
-                      size="md"
-                      onClick={() => onOpenCheckout(enrollmentResult.enrollment.enrollmentId)}
-                      rightIcon={<ArrowRight className="w-4 h-4" />}
-                    >
-                      Pay Securely via Razorpay (₹{enrollmentResult.orderSummary.totalAmount.toLocaleString('en-IN')})
-                    </Button>
-                  )}
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => {
-                      setEnrollmentResult(null);
+                      setRegistrationResult(null);
                       setServerError(null);
+                      setFormData((prev) => ({
+                        ...prev,
+                        fullName: '',
+                        email: '',
+                        phoneNumber: '',
+                        acceptTerms: false,
+                      }));
                     }}
                   >
                     Register Another Participant
+                  </Button>
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    onClick={() => {
+                      const curriculumEl = document.querySelector('#curriculum');
+                      if (curriculumEl) curriculumEl.scrollIntoView({ behavior: 'smooth' });
+                    }}
+                    rightIcon={<ArrowRight className="w-3.5 h-3.5" />}
+                  >
+                    Explore 2-Day Curriculum
                   </Button>
                 </div>
               </div>
@@ -425,16 +424,16 @@ export const RegistrationSection: React.FC<RegistrationSectionProps> = ({
                   {/* Summary Box */}
                   <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex flex-col justify-between">
                     <div className="flex items-center justify-between text-xs text-slate-500">
-                      <span>Base Registration:</span>
-                      <span className="font-semibold text-[#0F172A]">₹{selectedBatch.pricing.basePrice}</span>
+                      <span>Bootcamp Format:</span>
+                      <span className="font-semibold text-[#0F172A]">2-Day Hands-On Live Mentoring</span>
                     </div>
                     <div className="flex items-center justify-between text-xs text-slate-500 mt-1">
-                      <span>GST (18%):</span>
-                      <span className="font-semibold text-[#0F172A]">₹{taxAmount}</span>
+                      <span>Course Materials & Tools:</span>
+                      <span className="font-semibold text-emerald-600">Included</span>
                     </div>
                     <div className="flex items-center justify-between text-sm font-bold text-[#0F172A] pt-2 border-t border-slate-200 mt-1">
-                      <span>Total Payable:</span>
-                      <span className="text-blue-700 text-base">₹{totalAmount.toLocaleString('en-IN')}</span>
+                      <span>Registration:</span>
+                      <span className="text-blue-700 text-base font-extrabold">Instant Confirmation</span>
                     </div>
                   </div>
                 </div>
@@ -479,14 +478,14 @@ export const RegistrationSection: React.FC<RegistrationSectionProps> = ({
                     variant="primary"
                     size="lg"
                     isLoading={isSubmitting}
-                    className="w-full text-base py-4"
+                    className="w-full text-base py-4 font-bold"
                     rightIcon={<ArrowRight className="w-5 h-5" />}
                   >
-                    Proceed to Reserve Seat (₹{totalAmount.toLocaleString('en-IN')})
+                    {isSubmitting ? 'Confirming Your Registration...' : 'Confirm & Complete Registration'}
                   </Button>
                   <div className="flex items-center justify-center gap-2 text-xs text-slate-500 mt-3">
                     <ShieldCheck className="w-4 h-4 text-blue-600" />
-                    <span>256-Bit SSL Encrypted • 100% Satisfaction Guarantee</span>
+                    <span>256-Bit SSL Encrypted • Instant Email Confirmation</span>
                   </div>
                 </div>
               </form>

@@ -36,3 +36,15 @@ export const enrollmentRateLimiter = rateLimit({
   legacyHeaders: false,
 });
 
+// Registration rate limiter: 15 submissions per 15 minutes per IP to prevent spam and protect personal info
+export const registrationRateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 15,
+  message: {
+    success: false,
+    message: 'Too many registration attempts from this network. Please wait a few minutes before trying again.',
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+

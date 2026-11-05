@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../src/validators/registration.validator.ts"],
+  "sourcesContent": ["import { z } from 'zod';\n\nexport const createRegistrationSchema = z.object({\n  name: z\n    .string({ required_error: 'Full name is required' })\n    .trim()\n    .min(2, 'Full name must be at least 2 characters')\n    .max(100, 'Full name cannot exceed 100 characters'),\n  email: z\n    .string({ required_error: 'Email address is required' })\n    .trim()\n    .email('Please enter a valid email address')\n    .toLowerCase(),\n  phone: z\n    .string({ required_error: 'Phone number is required' })\n    .trim()\n    .min(7, 'Phone number must be at least 7 digits')\n    .max(25, 'Phone number cannot exceed 25 characters'),\n  batchId: z\n    .string({ required_error: 'Training batch ID is required' })\n    .trim()\n    .min(1, 'Please select a training batch'),\n});\n\nexport type CreateRegistrationInput = z.infer<typeof createRegistrationSchema>;\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,iBAAkB;AAEX,MAAM,2BAA2B,aAAE,OAAO;AAAA,EAC/C,MAAM,aACH,OAAO,EAAE,gBAAgB,wBAAwB,CAAC,EAClD,KAAK,EACL,IAAI,GAAG,yCAAyC,EAChD,IAAI,KAAK,wCAAwC;AAAA,EACpD,OAAO,aACJ,OAAO,EAAE,gBAAgB,4BAA4B,CAAC,EACtD,KAAK,EACL,MAAM,oCAAoC,EAC1C,YAAY;AAAA,EACf,OAAO,aACJ,OAAO,EAAE,gBAAgB,2BAA2B,CAAC,EACrD,KAAK,EACL,IAAI,GAAG,wCAAwC,EAC/C,IAAI,IAAI,0CAA0C;AAAA,EACrD,SAAS,aACN,OAAO,EAAE,gBAAgB,gCAAgC,CAAC,EAC1D,KAAK,EACL,IAAI,GAAG,gCAAgC;AAC5C,CAAC;",
+  "names": []
+}

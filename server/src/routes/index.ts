@@ -6,6 +6,7 @@ import paymentRoutes from './payment.routes.js';
 import learnerRoutes from './learner.routes.js';
 import adminRoutes from './admin.routes.js';
 import certificateRoutes from './certificate.routes.js';
+import registrationRoutes from './registration.routes.js';
 import { WorkshopController } from '../controllers/workshop.controller.js';
 import { EnrollmentController } from '../controllers/enrollment.controller.js';
 import { authenticate, requireRole } from '../middleware/auth.middleware.js';
@@ -31,6 +32,7 @@ router.use('/payments', paymentRoutes);
 router.use('/learners', learnerRoutes);
 router.use('/admin', adminRoutes);
 router.use('/certificates', certificateRoutes);
+router.use('/registrations', registrationRoutes);
 
 // Direct Admin Workshop endpoints
 router.post(

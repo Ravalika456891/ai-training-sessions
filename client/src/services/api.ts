@@ -41,6 +41,29 @@ export interface ApiWorkshop {
   status: string;
 }
 
+export interface RegistrationPayload {
+  name: string;
+  email: string;
+  phone: string;
+  batchId: string;
+}
+
+export interface RegistrationApiResponse {
+  success: boolean;
+  message: string;
+  data: {
+    id: string;
+    name: string;
+    email: string;
+    phone: string;
+    batchId: string;
+    registrationStatus: string;
+    paymentStatus: string;
+    createdAt: string;
+  };
+  emailDispatched?: boolean;
+}
+
 export interface EnrollmentApiResponse {
   success: boolean;
   message: string;
@@ -144,6 +167,44 @@ export const api = {
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
       throw new Error(err.message || 'Failed to fetch workshop details');
+    }
+    return res.json();
+  },
+
+  // Direct Student Registrations (POST /api/registrations)
+  async createRegistration(payload: RegistrationPayload): Promise<RegistrationApiResponse> {
+    const res = await fetch(`${API_BASE}/registrations`, {
+      method: 'POST',
+      headers: customHeaders,
+      credentials: 'include',
+      body: JSON.stringify(payload),
+    });
+
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      if (res.status === 409) {
+        throw new Error(data.message || 'You are already registered for this training batch with this email address.');
+      }
+      if (data.errors && Array.isArray(data.errors) && data.errors.length > 0) {
+        throw new Error(data.errors.map((e: any) => e.message).join('. '));
+      }
+      throw new Error(data.message || 'Registration failed. Please check your information and try again.');
+    }
+    return data;
+  },
+
+  async getRegistrations(params?: { email?: string; batchId?: string }): Promise<{ success: boolean; data: any[] }> {
+    const query = new URLSearchParams();
+    if (params?.email) query.set('email', params.email);
+    if (params?.batchId) query.set('batchId', params.batchId);
+    const queryString = query.toString() ? `?${query.toString()}` : '';
+
+    const res = await fetch(`${API_BASE}/registrations${queryString}`, {
+      headers: customHeaders,
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.message || 'Failed to fetch registrations');
     }
     return res.json();
   },

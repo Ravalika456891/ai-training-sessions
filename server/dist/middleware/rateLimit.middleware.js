@@ -29,7 +29,8 @@ var rateLimit_middleware_exports = {};
 __export(rateLimit_middleware_exports, {
   apiRateLimiter: () => apiRateLimiter,
   authRateLimiter: () => authRateLimiter,
-  enrollmentRateLimiter: () => enrollmentRateLimiter
+  enrollmentRateLimiter: () => enrollmentRateLimiter,
+  registrationRateLimiter: () => registrationRateLimiter
 });
 module.exports = __toCommonJS(rateLimit_middleware_exports);
 var import_express_rate_limit = __toESM(require("express-rate-limit"));
@@ -63,10 +64,21 @@ const enrollmentRateLimiter = (0, import_express_rate_limit.default)({
   standardHeaders: true,
   legacyHeaders: false
 });
+const registrationRateLimiter = (0, import_express_rate_limit.default)({
+  windowMs: 15 * 60 * 1e3,
+  max: 15,
+  message: {
+    success: false,
+    message: "Too many registration attempts from this network. Please wait a few minutes before trying again."
+  },
+  standardHeaders: true,
+  legacyHeaders: false
+});
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   apiRateLimiter,
   authRateLimiter,
-  enrollmentRateLimiter
+  enrollmentRateLimiter,
+  registrationRateLimiter
 });
 //# sourceMappingURL=rateLimit.middleware.js.map

@@ -38,6 +38,7 @@ var import_payment_routes = __toESM(require("./payment.routes.js"));
 var import_learner_routes = __toESM(require("./learner.routes.js"));
 var import_admin_routes = __toESM(require("./admin.routes.js"));
 var import_certificate_routes = __toESM(require("./certificate.routes.js"));
+var import_registration_routes = __toESM(require("./registration.routes.js"));
 var import_workshop_controller = require("../controllers/workshop.controller.js");
 var import_enrollment_controller = require("../controllers/enrollment.controller.js");
 var import_auth_middleware = require("../middleware/auth.middleware.js");
@@ -58,6 +59,7 @@ router.use("/payments", import_payment_routes.default);
 router.use("/learners", import_learner_routes.default);
 router.use("/admin", import_admin_routes.default);
 router.use("/certificates", import_certificate_routes.default);
+router.use("/registrations", import_registration_routes.default);
 router.post(
   "/admin/workshops",
   import_auth_middleware.authenticate,

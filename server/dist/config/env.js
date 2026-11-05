@@ -47,6 +47,12 @@ const env = {
   RAZORPAY_KEY_ID: process.env.RAZORPAY_KEY_ID || "rzp_test_YourTestKeyId",
   RAZORPAY_KEY_SECRET: process.env.RAZORPAY_KEY_SECRET || "YourTestKeySecret12345",
   RAZORPAY_WEBHOOK_SECRET: process.env.RAZORPAY_WEBHOOK_SECRET || "YourWebhookSecret67890",
+  SMTP_HOST: process.env.SMTP_HOST || "",
+  SMTP_PORT: parseInt(process.env.SMTP_PORT || "587", 10),
+  SMTP_SECURE: process.env.SMTP_SECURE === "true",
+  SMTP_USER: process.env.SMTP_USER || "",
+  SMTP_PASS: process.env.SMTP_PASS || "",
+  EMAIL_FROM: process.env.EMAIL_FROM || "AI Launchpad Admissions <admissions@ailaunchpad.edu>",
   isProduction: process.env.NODE_ENV === "production"
 };
 // Annotate the CommonJS export names for ESM import in node:
