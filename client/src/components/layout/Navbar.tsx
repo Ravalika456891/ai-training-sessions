@@ -176,22 +176,13 @@ export const Navbar: React.FC<NavbarProps> = ({
             {/* Authenticated User Menu or Sign In */}
             {user ? (
               <div className="flex items-center gap-2 shrink-0">
-                {user.role === 'admin' ? (
+                {user.role === 'admin' && (
                   <button
                     onClick={onOpenAdminConsole}
                     className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-blue-200 bg-blue-50 hover:bg-blue-100 text-xs font-semibold text-blue-700 transition-all shadow-xs active:scale-95 cursor-pointer whitespace-nowrap shrink-0"
                   >
                     <ShieldAlert className="w-3.5 h-3.5 text-blue-600 shrink-0" />
                     <span>Admin Ops</span>
-                  </button>
-                ) : (
-                  <button
-                    onClick={handleDashboardClick}
-                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-xs font-bold text-white transition-all shadow-sm active:scale-95 cursor-pointer whitespace-nowrap shrink-0"
-                    title="Open Student Portal Dashboard"
-                  >
-                    <LayoutDashboard className="w-3.5 h-3.5 text-white shrink-0" />
-                    <span>Student Dashboard</span>
                   </button>
                 )}
 
@@ -283,16 +274,14 @@ export const Navbar: React.FC<NavbarProps> = ({
               </button>
             )}
 
-            {!user && (
-              <Button
-                variant="primary"
-                size="sm"
-                onClick={onRegisterClick}
-                rightIcon={<ArrowRight className="w-3.5 h-3.5" />}
-              >
-                Register Now
-              </Button>
-            )}
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={onRegisterClick}
+              rightIcon={<ArrowRight className="w-3.5 h-3.5" />}
+            >
+              Register Now
+            </Button>
           </div>
 
           {/* Mobile & Tablet Action Controls: Register + Menu */}
