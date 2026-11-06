@@ -26,6 +26,8 @@ var import_auth_middleware = require("../middleware/auth.middleware.js");
 const router = (0, import_express.Router)();
 router.use(import_auth_middleware.authenticate);
 router.get("/dashboard", import_learner_controller.LearnerController.getDashboard);
+router.get("/materials", import_learner_controller.LearnerController.getAuthorizedMaterials);
+router.get("/live-classes", import_learner_controller.LearnerController.getAuthorizedLiveClasses);
 router.post("/submissions", import_learner_controller.LearnerController.submitProject);
 router.get("/submissions", import_learner_controller.LearnerController.getMySubmissions);
 router.get("/certificates", import_learner_controller.LearnerController.getMyCertificates);

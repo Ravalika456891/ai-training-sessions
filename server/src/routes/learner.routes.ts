@@ -7,6 +7,8 @@ const router = Router();
 router.use(authenticate);
 
 router.get('/dashboard', LearnerController.getDashboard);
+router.get('/materials', LearnerController.getAuthorizedMaterials);
+router.get('/live-classes', LearnerController.getAuthorizedLiveClasses);
 router.post('/submissions', LearnerController.submitProject);
 router.get('/submissions', LearnerController.getMySubmissions);
 router.get('/certificates', LearnerController.getMyCertificates);

@@ -20,19 +20,28 @@ import { Button } from '../../components/common/Button';
 import { useAuth } from '../../context/AuthContext';
 import { api, type ApiWorkshop } from '../../services/api';
 import type { BatchOption } from '../../types/workshop';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 export const HomePage: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const batchFromUrl = searchParams.get('batch');
   const [batches, setBatches] = useState<BatchOption[]>(BATCH_OPTIONS);
-  const [selectedBatchId, setSelectedBatchId] = useState<string>(BATCH_OPTIONS[0].id);
+  const [selectedBatchId, setSelectedBatchId] = useState<string>(
+    () => batchFromUrl || sessionStorage.getItem('ailp_selected_batch') || BATCH_OPTIONS[0].id
+  );
   const [showSampleBanner, setShowSampleBanner] = useState<boolean>(true);
   const [activeCheckoutEnrollmentId, setActiveCheckoutEnrollmentId] = useState<string | null>(null);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState<boolean>(false);
   const [isAdminConsoleOpen, setIsAdminConsoleOpen] = useState<boolean>(false);
   const [isVerifyModalOpen, setIsVerifyModalOpen] = useState<boolean>(false);
   const [verifySerial] = useState<string>('');
+
+  const updateSelectedBatch = (batchId: string) => {
+    setSelectedBatchId(batchId);
+    sessionStorage.setItem('ailp_selected_batch', batchId);
+  };
 
   // Fetch real workshop batches from MongoDB Atlas API on load
   useEffect(() => {
@@ -66,7 +75,11 @@ export const HomePage: React.FC = () => {
             },
           }));
           setBatches(apiBatches);
-          setSelectedBatchId(apiBatches[0].id);
+          const savedBatch = batchFromUrl || sessionStorage.getItem('ailp_selected_batch');
+          const matchedBatch = savedBatch
+            ? apiBatches.find((b) => b.id === savedBatch || b.batchCode === savedBatch)
+            : null;
+          setSelectedBatchId(matchedBatch ? matchedBatch.id : apiBatches[0].id);
         }
       })
       .catch(() => {});
@@ -74,7 +87,7 @@ export const HomePage: React.FC = () => {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [batchFromUrl]);
 
   const scrollToRegister = () => {
     const element = document.getElementById('register');
@@ -91,7 +104,7 @@ export const HomePage: React.FC = () => {
   };
 
   const handleSelectBatchAndProceed = (batchId: string) => {
-    setSelectedBatchId(batchId);
+    updateSelectedBatch(batchId);
     scrollToRegister();
   };
 
@@ -172,7 +185,7 @@ export const HomePage: React.FC = () => {
         <RegistrationSection
           batches={batches}
           selectedBatchId={selectedBatchId}
-          onSelectBatch={setSelectedBatchId}
+          onSelectBatch={updateSelectedBatch}
           onOpenCheckout={(enrollmentId: string) => {
             setActiveCheckoutEnrollmentId(enrollmentId);
           }}

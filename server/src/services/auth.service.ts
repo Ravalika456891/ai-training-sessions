@@ -392,20 +392,15 @@ export class AuthService {
     }
 
     // Memory store fallback
-    const memUser = memoryStore.users.find(
-      (u: any) =>
-        u.resetPasswordToken === hashedToken &&
-        u.resetPasswordExpires &&
-        new Date(u.resetPasswordExpires) > new Date()
-    );
+    const memUser = await memoryStore.findUserByResetToken(hashedToken);
 
     if (!memUser) {
       throw ApiError.badRequest('Password reset token is invalid or has expired.');
     }
 
     memUser.passwordHash = passwordHash;
-    delete memUser.resetPasswordToken;
-    delete memUser.resetPasswordExpires;
+    memUser.resetPasswordToken = undefined;
+    memUser.resetPasswordExpires = undefined;
 
     return { message: 'Password has been reset successfully. You can now sign in.' };
   }

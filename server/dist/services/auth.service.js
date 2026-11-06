@@ -366,15 +366,13 @@ class AuthService {
         if (err.statusCode) throw err;
       }
     }
-    const memUser = import_memoryStore.memoryStore.users.find(
-      (u) => u.resetPasswordToken === hashedToken && u.resetPasswordExpires && new Date(u.resetPasswordExpires) > /* @__PURE__ */ new Date()
-    );
+    const memUser = await import_memoryStore.memoryStore.findUserByResetToken(hashedToken);
     if (!memUser) {
       throw import_apiError.ApiError.badRequest("Password reset token is invalid or has expired.");
     }
     memUser.passwordHash = passwordHash;
-    delete memUser.resetPasswordToken;
-    delete memUser.resetPasswordExpires;
+    memUser.resetPasswordToken = void 0;
+    memUser.resetPasswordExpires = void 0;
     return { message: "Password has been reset successfully. You can now sign in." };
   }
   static async updateProfile(userId, data) {

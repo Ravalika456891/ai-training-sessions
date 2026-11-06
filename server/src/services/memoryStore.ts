@@ -13,6 +13,8 @@ export interface IMemoryUser {
   userCategory?: 'student' | 'working_professional' | 'founder' | 'creator' | 'other';
   experienceLevel?: 'beginner' | 'intermediate' | 'advanced';
   marketingConsent: boolean;
+  resetPasswordToken?: string;
+  resetPasswordExpires?: Date;
   createdAt: Date;
   updatedAt: Date;
   comparePassword(candidatePassword: string): Promise<boolean>;
@@ -223,6 +225,21 @@ class MemoryStoreService {
   async findUserById(id: string): Promise<IMemoryUser | null> {
     await this.init();
     return this.users.get(id) || null;
+  }
+
+  async findUserByResetToken(hashedToken: string): Promise<IMemoryUser | null> {
+    await this.init();
+    const now = new Date();
+    for (const user of this.users.values()) {
+      if (
+        user.resetPasswordToken === hashedToken &&
+        user.resetPasswordExpires &&
+        new Date(user.resetPasswordExpires) > now
+      ) {
+        return user;
+      }
+    }
+    return null;
   }
 
   async createUser(userData: {

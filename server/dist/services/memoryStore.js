@@ -167,6 +167,16 @@ class MemoryStoreService {
     await this.init();
     return this.users.get(id) || null;
   }
+  async findUserByResetToken(hashedToken) {
+    await this.init();
+    const now = /* @__PURE__ */ new Date();
+    for (const user of this.users.values()) {
+      if (user.resetPasswordToken === hashedToken && user.resetPasswordExpires && new Date(user.resetPasswordExpires) > now) {
+        return user;
+      }
+    }
+    return null;
+  }
   async createUser(userData) {
     await this.init();
     let passwordHash;

@@ -7,10 +7,18 @@ import { CheckCircle2, ShieldCheck, ArrowRight } from 'lucide-react';
 import { Button } from '../../components/common/Button';
 
 export const PricingPage: React.FC = () => {
-  const [selectedBatchId, setSelectedBatchId] = useState(BATCH_OPTIONS[0].id);
+  const [selectedBatchId, setSelectedBatchId] = useState(
+    () => sessionStorage.getItem('ailp_selected_batch') || BATCH_OPTIONS[0].id
+  );
+
+  const handleSelectBatch = (batchId: string) => {
+    setSelectedBatchId(batchId);
+    sessionStorage.setItem('ailp_selected_batch', batchId);
+  };
 
   const handleProceed = () => {
-    window.location.href = `/#register`;
+    sessionStorage.setItem('ailp_selected_batch', selectedBatchId);
+    window.location.href = `/?batch=${encodeURIComponent(selectedBatchId)}#register`;
   };
 
   return (
@@ -36,7 +44,7 @@ export const PricingPage: React.FC = () => {
         {/* The Pricing Section */}
         <PricingSection
           selectedBatchId={selectedBatchId}
-          onSelectBatch={setSelectedBatchId}
+          onSelectBatch={handleSelectBatch}
           onProceedToRegister={handleProceed}
         />
 
