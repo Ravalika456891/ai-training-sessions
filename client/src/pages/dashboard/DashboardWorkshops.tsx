@@ -184,7 +184,7 @@ export const DashboardWorkshops: React.FC = () => {
                         </Link>
                         <Link
                           to="/dashboard/live-classes"
-                          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white text-xs font-bold shadow-sm transition-all"
+                          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-sm transition-all"
                         >
                           <Video className="w-3.5 h-3.5" />
                           <span>Join Live Class</span>
@@ -193,7 +193,7 @@ export const DashboardWorkshops: React.FC = () => {
                     ) : (
                       <button
                         onClick={() => openCheckout(w.enrollmentId)}
-                        className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white text-xs font-bold shadow-sm transition-all cursor-pointer"
+                        className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-sm transition-all cursor-pointer"
                       >
                         <CreditCard className="w-3.5 h-3.5" />
                         <span>Complete Payment</span>

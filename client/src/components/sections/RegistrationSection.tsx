@@ -144,7 +144,7 @@ export const RegistrationSection: React.FC<RegistrationSectionProps> = ({
   const totalPayable = basePrice + gstAmount;
 
   return (
-    <section id="register" className="py-20 bg-slate-50 relative scroll-mt-20 border-t border-slate-200">
+    <section id="register" className="py-20 bg-[#F8FAFC] relative scroll-mt-20 border-t border-slate-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto space-y-4">

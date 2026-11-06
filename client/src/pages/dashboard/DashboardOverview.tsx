@@ -172,7 +172,7 @@ export const DashboardOverview: React.FC = () => {
 
             <button
               onClick={() => openCheckout(pendingWorkshop.enrollmentId)}
-              className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white text-xs font-bold shadow-md transition-all cursor-pointer shrink-0"
+              className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-sm transition-all cursor-pointer shrink-0"
             >
               <CreditCard className="w-4 h-4" />
               <span>Complete Payment Now</span>
@@ -297,7 +297,7 @@ export const DashboardOverview: React.FC = () => {
                     <button
                       disabled={isEnrolling}
                       onClick={() => enrollInBatch(batch._id)}
-                      className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white text-xs font-bold shadow-sm transition-all cursor-pointer disabled:opacity-60"
+                      className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-sm transition-all cursor-pointer disabled:opacity-60"
                     >
                       <span>{isFree ? 'Enroll for Free' : 'Enroll & Pay'}</span>
                       <ArrowRight className="w-3.5 h-3.5" />
@@ -463,7 +463,7 @@ export const DashboardOverview: React.FC = () => {
 
             <div className="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
               <div
-                className="bg-gradient-to-r from-indigo-600 to-purple-600 h-2.5 rounded-full transition-all"
+                className="bg-blue-600 h-2.5 rounded-full transition-all"
                 style={{ width: `${Math.max(15, currentProgress.percentage)}%` }}
               />
             </div>

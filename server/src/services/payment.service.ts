@@ -319,8 +319,6 @@ export class PaymentService {
 
       return {
         verified: true,
-        paymentStatus: 'captured',
-        enrollmentStatus: 'confirmed',
         message: 'Payment verified successfully. Your seat is confirmed!',
         paymentId: razorpay_payment_id,
         orderId: razorpay_order_id,
@@ -339,8 +337,6 @@ export class PaymentService {
       return {
         verified: true,
         alreadyProcessed: true,
-        paymentStatus: 'captured',
-        enrollmentStatus: 'confirmed',
         message: 'Payment already confirmed and processed.',
         paymentId: memPayment.providerPaymentId,
         orderId: memPayment.providerOrderId,
@@ -357,8 +353,6 @@ export class PaymentService {
 
     return {
       verified: true,
-      paymentStatus: 'captured',
-      enrollmentStatus: 'confirmed',
       message: 'Payment verified successfully. Your seat is confirmed!',
       paymentId: razorpay_payment_id,
       orderId: razorpay_order_id,

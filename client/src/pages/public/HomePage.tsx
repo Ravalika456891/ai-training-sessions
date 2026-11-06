@@ -113,12 +113,12 @@ export const HomePage: React.FC = () => {
     batches.find((b) => b.id === selectedBatchId) || batches[0] || BATCH_OPTIONS[0];
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] text-[#0F172A] flex flex-col font-sans selection:bg-indigo-600 selection:text-white relative">
+    <div className="min-h-screen bg-white text-[#0F172A] flex flex-col font-sans selection:bg-blue-600 selection:text-white relative">
       {/* Top Cohort & Signed-In Status Bar */}
       {showSampleBanner && (
         <aside
           aria-label="Upcoming Cohort Announcement"
-          className="bg-blue-50/90 border-b border-blue-100 py-2 px-4 text-xs text-slate-700 relative z-50"
+          className="bg-blue-50/80 border-b border-blue-100 py-2 px-4 text-xs text-slate-700 relative z-50"
         >
           <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
             <div className="flex items-center gap-2.5 overflow-hidden text-ellipsis whitespace-nowrap">

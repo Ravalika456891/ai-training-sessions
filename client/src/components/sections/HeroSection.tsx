@@ -31,7 +31,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   const fillPercentage = Math.round((seatsClaimed / currentBatch.totalSeats) * 100);
 
   return (
-    <section className="relative pt-14 pb-20 md:pt-20 md:pb-28 bg-gradient-to-b from-blue-50/60 via-white to-[#F8FAFC] text-[#0F172A] overflow-hidden border-b border-slate-200/70">
+    <section className="relative pt-14 pb-20 md:pt-20 md:pb-28 bg-gradient-to-b from-white via-[#F8FAFC] to-blue-50/40 text-[#0F172A] overflow-hidden border-b border-slate-200/70">
       <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center space-y-7">
           {/* 1. Status Pill Badge */}

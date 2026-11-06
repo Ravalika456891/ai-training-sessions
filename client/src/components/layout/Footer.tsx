@@ -4,7 +4,7 @@ import { WORKSHOP_CONFIG } from '../../data/workshopData';
 
 export const Footer: React.FC = () => {
   return (
-    <footer className="border-t border-slate-200 bg-slate-100 text-[#475569] text-xs sm:text-sm">
+    <footer className="border-t border-slate-200 bg-[#F8FAFC] text-[#475569] text-xs sm:text-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-12">
           {/* Brand Column */}

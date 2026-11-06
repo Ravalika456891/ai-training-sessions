@@ -166,7 +166,7 @@ async function main() {
     assert.equal(dashRes.body.data.hasConfirmedEnrollment, false);
     assert.ok(dashRes.body.data.availableWorkshops.length >= 2, 'Unpaid user sees available workshops');
     assert.ok(dashRes.body.data.availableWorkshops[0].sessionsPreview.length >= 2, 'Unpaid user sees live class schedule previews');
-    assert.equal(dashRes.body.data.availableWorkshops[0].sessionsPreview[0].liveSessionUrl, null, 'Preview liveSessionUrl must be null');
+    assert.equal(dashRes.body.data.availableWorkshops[0].sessionsPreview[0].joinUrl, null, 'Preview joinUrl must be null');
     assert.ok(dashRes.body.data.availableWorkshops[0].materialsPreview.length >= 4, 'Unpaid user sees learning material previews');
     assert.equal(dashRes.body.data.availableWorkshops[0].materialsPreview[0].downloadUrl, null, 'Preview downloadUrl must be null');
     assert.ok(dashRes.body.data.assignments.length >= 2, 'Unpaid user sees assignment descriptions');

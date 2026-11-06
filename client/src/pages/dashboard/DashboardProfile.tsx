@@ -213,7 +213,7 @@ export const DashboardProfile: React.FC = () => {
             <button
               type="submit"
               disabled={isUpdatingProfile}
-              className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-xs font-bold shadow-sm transition-all cursor-pointer disabled:opacity-60"
+              className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-sm transition-all cursor-pointer disabled:opacity-60"
             >
               {isUpdatingProfile ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -392,7 +392,7 @@ export const DashboardProfile: React.FC = () => {
                         {!w.isAuthorized ? (
                           <button
                             onClick={() => openCheckout(w.enrollmentId)}
-                            className="px-3 py-1 rounded-lg bg-indigo-600 text-white font-bold text-[11px] cursor-pointer"
+                            className="px-3 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-[11px] cursor-pointer"
                           >
                             Pay Now
                           </button>

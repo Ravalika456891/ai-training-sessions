@@ -268,7 +268,7 @@ export const DashboardCertificates: React.FC = () => {
 
                 <button
                   onClick={() => setSelectedCert(cert)}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-xs font-bold shadow-xs cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-xs cursor-pointer"
                 >
                   <ExternalLink className="w-3.5 h-3.5" />
                   <span>Download / View</span>
@@ -376,7 +376,7 @@ export const DashboardCertificates: React.FC = () => {
               </button>
               <button
                 onClick={() => window.print()}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-xs font-bold cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold cursor-pointer"
               >
                 <Download className="w-3.5 h-3.5" />
                 <span>Download / Print PDF</span>
