@@ -283,26 +283,38 @@ export const Navbar: React.FC<NavbarProps> = ({
               </button>
             )}
 
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={onRegisterClick}
-              rightIcon={<ArrowRight className="w-3.5 h-3.5" />}
-            >
-              Register Now
-            </Button>
+            {!user && (
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={onRegisterClick}
+                rightIcon={<ArrowRight className="w-3.5 h-3.5" />}
+              >
+                Register Now
+              </Button>
+            )}
           </div>
 
-          {/* Mobile & Tablet Action Controls: Register + Menu */}
+          {/* Mobile & Tablet Action Controls */}
           <div className="flex lg:hidden items-center gap-2">
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={onRegisterClick}
-              className="text-xs px-3 py-1.5 font-bold shrink-0"
-            >
-              Register
-            </Button>
+            {user ? (
+              <button
+                onClick={handleDashboardClick}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-blue-200 bg-blue-50 text-xs font-semibold text-blue-700 shrink-0 cursor-pointer"
+              >
+                <LayoutDashboard className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                <span>My Dashboard</span>
+              </button>
+            ) : (
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={onRegisterClick}
+                className="text-xs px-3 py-1.5 font-bold shrink-0"
+              >
+                Register
+              </Button>
+            )}
 
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -384,24 +396,26 @@ export const Navbar: React.FC<NavbarProps> = ({
                 )}
               </div>
 
-              <div className="pt-3 border-t border-slate-200 mt-2 flex flex-col gap-2">
-                <Button
-                  variant="primary"
-                  size="md"
-                  onClick={() => {
-                    setIsMobileMenuOpen(false);
-                    onRegisterClick();
-                  }}
-                  className="w-full"
-                  rightIcon={<ArrowRight className="w-4 h-4" />}
-                >
-                  Register for Upcoming Batch
-                </Button>
-                <div className="flex items-center justify-center gap-1.5 text-xs text-slate-500 pt-1">
-                  <ShieldCheck className="w-3.5 h-3.5 text-blue-600" />
-                  100% Money-Back Guarantee
+              {!user && (
+                <div className="pt-3 border-t border-slate-200 mt-2 flex flex-col gap-2">
+                  <Button
+                    variant="primary"
+                    size="md"
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      onRegisterClick();
+                    }}
+                    className="w-full"
+                    rightIcon={<ArrowRight className="w-4 h-4" />}
+                  >
+                    Register for Upcoming Batch
+                  </Button>
+                  <div className="flex items-center justify-center gap-1.5 text-xs text-slate-500 pt-1">
+                    <ShieldCheck className="w-3.5 h-3.5 text-blue-600" />
+                    100% Money-Back Guarantee
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
         )}
