@@ -17,11 +17,13 @@ import { CertificateVerifyModal } from '../../components/certificate/Certificate
 import { BATCH_OPTIONS } from '../../data/workshopData';
 import { ArrowRight, X } from 'lucide-react';
 import { Button } from '../../components/common/Button';
+import { useAuth } from '../../context/AuthContext';
 import { api, type ApiWorkshop } from '../../services/api';
 import type { BatchOption } from '../../types/workshop';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
 export const HomePage: React.FC = () => {
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const batchFromUrl = searchParams.get('batch');
@@ -123,6 +125,11 @@ export const HomePage: React.FC = () => {
                 Upcoming Cohort Starting{' '}
                 <span className="font-bold text-blue-700">{currentNextBatch.dateRange}</span> • Strictly Capped at 60 Seats
               </p>
+              {user && (
+                <span className="hidden md:inline-flex px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 font-semibold text-[11px] border border-blue-200">
+                  Signed in: {user.name} ({user.role})
+                </span>
+              )}
             </div>
             <button
               onClick={() => setShowSampleBanner(false)}
