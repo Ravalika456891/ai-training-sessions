@@ -57,4 +57,3 @@ class CertificateController {
 0 && (module.exports = {
   CertificateController
 });
-//# sourceMappingURL=certificate.controller.js.map

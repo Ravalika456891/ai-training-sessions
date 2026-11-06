@@ -31,4 +31,3 @@ const createRegistrationSchema = import_zod.z.object({
 0 && (module.exports = {
   createRegistrationSchema
 });
-//# sourceMappingURL=registration.validator.js.map

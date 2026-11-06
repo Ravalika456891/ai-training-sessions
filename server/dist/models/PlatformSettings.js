@@ -101,4 +101,3 @@ const PlatformSettings = import_mongoose.default.model(
 0 && (module.exports = {
   PlatformSettings
 });
-//# sourceMappingURL=PlatformSettings.js.map

@@ -59,4 +59,3 @@ router.get("/audit-logs", (0, import_auth_middleware.requireRole)("admin"), impo
 router.get("/roster/:workshopId", (0, import_auth_middleware.requireRole)("admin", "instructor"), import_admin_controller.AdminController.getRoster);
 router.post("/attendance", (0, import_auth_middleware.requireRole)("admin", "instructor"), import_admin_controller.AdminController.markAttendance);
 var admin_routes_default = router;
-//# sourceMappingURL=admin.routes.js.map

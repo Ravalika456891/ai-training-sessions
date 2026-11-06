@@ -61,4 +61,3 @@ const errorHandler = (err, _req, res, _next) => {
 0 && (module.exports = {
   errorHandler
 });
-//# sourceMappingURL=error.middleware.js.map

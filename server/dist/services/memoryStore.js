@@ -429,18 +429,27 @@ class MemoryStoreService {
   // --- Enrollment Operations ---
   async createEnrollment(data) {
     await this.init();
+    for (const existing of this.enrollments.values()) {
+      if (existing.user === data.userId && existing.workshop === data.workshopId && existing.status !== "cancelled" && existing.status !== "expired") {
+        if (existing.status !== "confirmed") {
+          existing.reservedUntil = new Date(Date.now() + 15 * 60 * 1e3);
+        }
+        return existing;
+      }
+    }
     const num = Math.floor(1e3 + Math.random() * 9e3);
     const enrollmentId = `AILP-${(/* @__PURE__ */ new Date()).getFullYear()}-${num}`;
-    const _id = "mem_enr_" + Date.now();
-    const isFreeConfirmed = data.paymentStatus === "completed";
+    const _id = "mem_enr_" + Date.now() + "_" + Math.floor(Math.random() * 1e3);
+    const isFreeConfirmed = data.paymentStatus === "completed" || data.paymentStatus === "captured" || data.paymentStatus === "free";
     const enrollment = {
       _id,
       enrollmentId,
       user: data.userId,
       workshop: data.workshopId,
-      status: isFreeConfirmed ? "confirmed" : "reserved",
-      paymentStatus: data.paymentStatus || "pending",
+      status: isFreeConfirmed ? "confirmed" : "pending_payment",
+      paymentStatus: isFreeConfirmed ? "free" : "created",
       reservedUntil: isFreeConfirmed ? new Date(Date.now() + 365 * 24 * 60 * 60 * 1e3) : new Date(Date.now() + 15 * 60 * 1e3),
+      confirmedAt: isFreeConfirmed ? /* @__PURE__ */ new Date() : void 0,
       attendeeDetails: data.attendeeDetails,
       day1Attended: false,
       day2Attended: false,
@@ -464,7 +473,8 @@ class MemoryStoreService {
     if (enr) {
       const wasConfirmed = enr.status === "confirmed";
       enr.status = "confirmed";
-      enr.paymentStatus = "completed";
+      enr.paymentStatus = "captured";
+      enr.confirmedAt = /* @__PURE__ */ new Date();
       if (!wasConfirmed) {
         const ws = this.workshops.get(enr.workshop);
         if (ws) {
@@ -725,4 +735,3 @@ const memoryStore = new MemoryStoreService();
 0 && (module.exports = {
   memoryStore
 });
-//# sourceMappingURL=memoryStore.js.map

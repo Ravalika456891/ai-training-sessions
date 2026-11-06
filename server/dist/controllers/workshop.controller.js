@@ -76,4 +76,3 @@ class WorkshopController {
 0 && (module.exports = {
   WorkshopController
 });
-//# sourceMappingURL=workshop.controller.js.map

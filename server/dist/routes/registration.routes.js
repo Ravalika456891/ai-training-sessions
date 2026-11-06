@@ -34,4 +34,3 @@ router.post(
 );
 router.get("/", import_registration_controller.RegistrationController.getRegistrations);
 var registration_routes_default = router;
-//# sourceMappingURL=registration.routes.js.map

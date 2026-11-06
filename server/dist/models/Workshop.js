@@ -158,4 +158,3 @@ const Workshop = import_mongoose.default.model("Workshop", WorkshopSchema);
 0 && (module.exports = {
   Workshop
 });
-//# sourceMappingURL=Workshop.js.map

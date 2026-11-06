@@ -81,4 +81,3 @@ router.get(
   import_enrollment_controller.EnrollmentController.getAllEnrollments
 );
 var routes_default = router;
-//# sourceMappingURL=index.js.map

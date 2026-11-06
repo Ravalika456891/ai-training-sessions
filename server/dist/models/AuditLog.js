@@ -85,4 +85,3 @@ const AuditLog = import_mongoose.default.model("AuditLog", AuditLogSchema);
 0 && (module.exports = {
   AuditLog
 });
-//# sourceMappingURL=AuditLog.js.map

@@ -53,22 +53,33 @@ const EnrollmentSchema = new import_mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["pending", "confirmed", "cancelled", "attended"],
-      default: "pending",
+      enum: ["pending_payment", "pending", "confirmed", "cancelled", "expired", "attended", "completed"],
+      default: "pending_payment",
       index: true
     },
     paymentStatus: {
       type: String,
-      enum: ["pending", "completed", "failed", "free"],
-      default: "pending",
+      enum: ["created", "authorized", "captured", "pending", "completed", "failed", "refunded", "free"],
+      default: "created",
       index: true
     },
     enrolledAt: {
       type: Date,
       default: Date.now
     },
+    confirmedAt: {
+      type: Date
+    },
     reservedUntil: {
       type: Date
+    },
+    day1Attended: {
+      type: Boolean,
+      default: false
+    },
+    day2Attended: {
+      type: Boolean,
+      default: false
     },
     attendeeDetails: {
       fullName: { type: String, required: true },
@@ -93,4 +104,3 @@ const Enrollment = import_mongoose.default.model("Enrollment", EnrollmentSchema)
 0 && (module.exports = {
   Enrollment
 });
-//# sourceMappingURL=Enrollment.js.map

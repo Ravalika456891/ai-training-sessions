@@ -5,10 +5,13 @@ export interface IEnrollment extends Document {
   enrollmentId: string;
   userId: mongoose.Types.ObjectId;
   workshopId: mongoose.Types.ObjectId;
-  status: 'pending' | 'confirmed' | 'cancelled' | 'attended';
-  paymentStatus: 'pending' | 'completed' | 'failed' | 'free';
+  status: 'pending_payment' | 'pending' | 'confirmed' | 'cancelled' | 'expired' | 'attended' | 'completed';
+  paymentStatus: 'created' | 'authorized' | 'captured' | 'pending' | 'completed' | 'failed' | 'refunded' | 'free';
   enrolledAt: Date;
+  confirmedAt?: Date;
   reservedUntil?: Date;
+  day1Attended?: boolean;
+  day2Attended?: boolean;
   attendeeDetails: {
     fullName: string;
     email: string;
@@ -47,22 +50,33 @@ const EnrollmentSchema = new Schema<IEnrollment>(
     },
     status: {
       type: String,
-      enum: ['pending', 'confirmed', 'cancelled', 'attended'],
-      default: 'pending',
+      enum: ['pending_payment', 'pending', 'confirmed', 'cancelled', 'expired', 'attended', 'completed'],
+      default: 'pending_payment',
       index: true,
     },
     paymentStatus: {
       type: String,
-      enum: ['pending', 'completed', 'failed', 'free'],
-      default: 'pending',
+      enum: ['created', 'authorized', 'captured', 'pending', 'completed', 'failed', 'refunded', 'free'],
+      default: 'created',
       index: true,
     },
     enrolledAt: {
       type: Date,
       default: Date.now,
     },
+    confirmedAt: {
+      type: Date,
+    },
     reservedUntil: {
       type: Date,
+    },
+    day1Attended: {
+      type: Boolean,
+      default: false,
+    },
+    day2Attended: {
+      type: Boolean,
+      default: false,
     },
     attendeeDetails: {
       fullName: { type: String, required: true },

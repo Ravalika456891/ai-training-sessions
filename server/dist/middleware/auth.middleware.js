@@ -141,4 +141,3 @@ const requireRole = (...allowedRoles) => {
   optionalAuthenticate,
   requireRole
 });
-//# sourceMappingURL=auth.middleware.js.map

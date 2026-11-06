@@ -76,4 +76,3 @@ const Assignment = import_mongoose.default.model("Assignment", AssignmentSchema)
 0 && (module.exports = {
   Assignment
 });
-//# sourceMappingURL=Assignment.js.map

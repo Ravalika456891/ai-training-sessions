@@ -44,4 +44,3 @@ const validateRequest = (schema) => {
 0 && (module.exports = {
   validateRequest
 });
-//# sourceMappingURL=validate.middleware.js.map

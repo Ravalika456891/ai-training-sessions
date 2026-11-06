@@ -8,8 +8,10 @@ export interface ILearningResource extends Document {
   url?: string;
   content?: string;
   workshopBatchCode?: string;
+  workshopId?: mongoose.Types.ObjectId;
   accessLevel: 'enrolled_only' | 'public';
   isPublished: boolean;
+  releaseAt?: Date;
   authorName?: string;
   authorRole?: string;
   createdBy?: string;
@@ -48,6 +50,11 @@ const LearningResourceSchema = new Schema<ILearningResource>(
       uppercase: true,
       index: true,
     },
+    workshopId: {
+      type: Schema.Types.ObjectId,
+      ref: 'Workshop',
+      index: true,
+    },
     accessLevel: {
       type: String,
       enum: ['enrolled_only', 'public'],
@@ -58,6 +65,9 @@ const LearningResourceSchema = new Schema<ILearningResource>(
       type: Boolean,
       default: true,
       index: true,
+    },
+    releaseAt: {
+      type: Date,
     },
     authorName: {
       type: String,

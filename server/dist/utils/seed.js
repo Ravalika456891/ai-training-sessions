@@ -142,4 +142,3 @@ const seedDatabase = async () => {
 0 && (module.exports = {
   seedDatabase
 });
-//# sourceMappingURL=seed.js.map

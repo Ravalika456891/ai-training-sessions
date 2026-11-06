@@ -58,4 +58,3 @@ class ApiError extends Error {
 0 && (module.exports = {
   ApiError
 });
-//# sourceMappingURL=apiError.js.map

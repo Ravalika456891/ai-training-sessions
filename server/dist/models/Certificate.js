@@ -95,4 +95,3 @@ const Certificate = import_mongoose.default.model("Certificate", CertificateSche
 0 && (module.exports = {
   Certificate
 });
-//# sourceMappingURL=Certificate.js.map

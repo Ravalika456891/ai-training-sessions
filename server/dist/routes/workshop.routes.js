@@ -43,4 +43,3 @@ router.patch(
   import_workshop_controller.WorkshopController.updateWorkshop
 );
 var workshop_routes_default = router;
-//# sourceMappingURL=workshop.routes.js.map

@@ -56,4 +56,3 @@ const updateWorkshopSchema = createWorkshopSchema.partial();
   createWorkshopSchema,
   updateWorkshopSchema
 });
-//# sourceMappingURL=workshop.validator.js.map

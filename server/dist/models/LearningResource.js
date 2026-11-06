@@ -62,6 +62,11 @@ const LearningResourceSchema = new import_mongoose.Schema(
       uppercase: true,
       index: true
     },
+    workshopId: {
+      type: import_mongoose.Schema.Types.ObjectId,
+      ref: "Workshop",
+      index: true
+    },
     accessLevel: {
       type: String,
       enum: ["enrolled_only", "public"],
@@ -72,6 +77,9 @@ const LearningResourceSchema = new import_mongoose.Schema(
       type: Boolean,
       default: true,
       index: true
+    },
+    releaseAt: {
+      type: Date
     },
     authorName: {
       type: String,
@@ -97,4 +105,3 @@ const LearningResource = import_mongoose.default.model(
 0 && (module.exports = {
   LearningResource
 });
-//# sourceMappingURL=LearningResource.js.map

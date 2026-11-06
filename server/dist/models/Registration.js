@@ -91,4 +91,3 @@ const Registration = import_mongoose.default.model("Registration", registrationS
 0 && (module.exports = {
   Registration
 });
-//# sourceMappingURL=Registration.js.map

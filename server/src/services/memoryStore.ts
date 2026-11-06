@@ -74,9 +74,10 @@ export interface IMemoryEnrollment {
   enrollmentId: string;
   user: string;
   workshop: string;
-  status: 'reserved' | 'confirmed' | 'cancelled' | 'waitlisted';
-  paymentStatus: 'pending' | 'completed' | 'failed' | 'refunded';
+  status: 'pending_payment' | 'reserved' | 'confirmed' | 'cancelled' | 'expired' | 'waitlisted' | 'completed';
+  paymentStatus: 'created' | 'authorized' | 'captured' | 'pending' | 'completed' | 'failed' | 'refunded' | 'free';
   reservedUntil?: Date;
+  confirmedAt?: Date;
   attendeeDetails: {
     fullName: string;
     email: string;
@@ -541,22 +542,44 @@ class MemoryStoreService {
     userId: string;
     workshopId: string;
     attendeeDetails: { fullName: string; email: string; phone: string };
-    paymentStatus?: 'pending' | 'completed';
+    paymentStatus?: 'created' | 'pending' | 'completed' | 'captured' | 'free';
   }): Promise<IMemoryEnrollment> {
     await this.init();
+
+    // Prevent duplicate enrollments for the same (userId, workshopId)
+    for (const existing of this.enrollments.values()) {
+      if (
+        existing.user === data.userId &&
+        existing.workshop === data.workshopId &&
+        existing.status !== 'cancelled' &&
+        existing.status !== 'expired'
+      ) {
+        if (existing.status !== 'confirmed') {
+          existing.reservedUntil = new Date(Date.now() + 15 * 60 * 1000);
+        }
+        return existing;
+      }
+    }
+
     const num = Math.floor(1000 + Math.random() * 9000);
     const enrollmentId = `AILP-${new Date().getFullYear()}-${num}`;
-    const _id = 'mem_enr_' + Date.now();
+    const _id = 'mem_enr_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
 
-    const isFreeConfirmed = data.paymentStatus === 'completed';
+    const isFreeConfirmed =
+      data.paymentStatus === 'completed' ||
+      data.paymentStatus === 'captured' ||
+      data.paymentStatus === 'free';
     const enrollment: IMemoryEnrollment = {
       _id,
       enrollmentId,
       user: data.userId,
       workshop: data.workshopId,
-      status: isFreeConfirmed ? 'confirmed' : 'reserved',
-      paymentStatus: data.paymentStatus || 'pending',
-      reservedUntil: isFreeConfirmed ? new Date(Date.now() + 365 * 24 * 60 * 60 * 1000) : new Date(Date.now() + 15 * 60 * 1000),
+      status: isFreeConfirmed ? 'confirmed' : 'pending_payment',
+      paymentStatus: isFreeConfirmed ? 'free' : 'created',
+      reservedUntil: isFreeConfirmed
+        ? new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)
+        : new Date(Date.now() + 15 * 60 * 1000),
+      confirmedAt: isFreeConfirmed ? new Date() : undefined,
       attendeeDetails: data.attendeeDetails,
       day1Attended: false,
       day2Attended: false,
@@ -585,7 +608,8 @@ class MemoryStoreService {
     if (enr) {
       const wasConfirmed = enr.status === 'confirmed';
       enr.status = 'confirmed';
-      enr.paymentStatus = 'completed';
+      enr.paymentStatus = 'captured';
+      enr.confirmedAt = new Date();
       if (!wasConfirmed) {
         const ws = this.workshops.get(enr.workshop);
         if (ws) {

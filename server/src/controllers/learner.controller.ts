@@ -158,7 +158,8 @@ export class LearnerController {
       const start = new Date(workshop.startDate || Date.now());
       const end = new Date(workshop.endDate || Date.now());
 
-      const isPaid =
+      const isCaptured =
+        enr.paymentStatus === 'captured' ||
         enr.paymentStatus === 'paid' ||
         enr.paymentStatus === 'completed' ||
         enr.paymentStatus === 'free' ||
@@ -167,9 +168,13 @@ export class LearnerController {
       const isFreeWorkshop = Boolean(workshop.price?.isFree || workshop.price?.basePrice === 0);
 
       // Strict enrollment authorization:
-      // Paid workshops require confirmed status AND verified payment.
-      // Free workshops require confirmed status.
-      const isPaidConfirmed = enr.status === 'confirmed' && (isFreeWorkshop ? true : isPaid);
+      // Paid workshops require confirmed status AND verified captured payment.
+      // Never treat 'created', 'authorized', 'pending', or 'failed' as a confirmed paid enrollment.
+      const isConfirmedStatus =
+        enr.status === 'confirmed' ||
+        enr.status === 'completed' ||
+        enr.status === 'attended';
+      const isPaidConfirmed = isConfirmedStatus && (isFreeWorkshop ? true : isCaptured);
 
       const isLiveOrUpcoming =
         now.getTime() >= start.getTime() - 30 * 60 * 1000 &&
@@ -290,9 +295,15 @@ export class LearnerController {
       return {
         _id: enr._id,
         enrollmentId: enr.enrollmentId,
-        status: enr.status,
-        paymentStatus: isPaid ? 'paid' : enr.paymentStatus,
+        status: isPaidConfirmed
+          ? enr.status
+          : enr.status === 'confirmed'
+          ? 'pending_payment'
+          : enr.status || 'pending_payment',
+        paymentStatus: isCaptured ? 'captured' : enr.paymentStatus || 'created',
         isAuthorized: isPaidConfirmed,
+        day1Attended: Boolean(enr.day1Attended),
+        day2Attended: Boolean(enr.day2Attended),
         workshop: {
           _id: workshop._id,
           title: workshop.title || 'AI Launchpad — 2-Day Hands-On AI Bootcamp',
@@ -334,9 +345,13 @@ export class LearnerController {
 
   private static async getAvailableWorkshops(): Promise<any[]> {
     let workshops: any[] = [];
+    let allResources: any[] = [];
     if (isDBConnected()) {
       try {
-        workshops = await Workshop.find({ status: 'published' }).sort({ startDate: 1 });
+        [workshops, allResources] = await Promise.all([
+          Workshop.find({ status: 'published' }).sort({ startDate: 1 }),
+          LearningResource.find({ isPublished: true }),
+        ]);
       } catch (err: any) {
         console.warn('[LearnerController AvailableWorkshops Fallback]', err.message);
       }
@@ -344,27 +359,114 @@ export class LearnerController {
     if (workshops.length === 0) {
       workshops = await memoryStore.getPublishedWorkshops();
     }
+    if (allResources.length === 0) {
+      const memRes = await memoryStore.getAllResources();
+      allResources = memRes.filter((r: any) => r.isPublished !== false);
+    }
 
-    return workshops.map((w: any) => ({
-      _id: w._id?.toString(),
-      title: w.title,
-      batchCode: w.batchCode,
-      description: w.description,
-      startDate: w.startDate,
-      endDate: w.endDate,
-      timings: w.timings || '10:00 AM – 3:00 PM IST',
-      timezone: w.timezone || 'Asia/Kolkata (IST)',
-      capacity: w.capacity || 60,
-      enrolledCount: w.enrolledCount || 0,
-      availableSeats:
-        w.availableSeats ?? Math.max(0, (w.capacity || 60) - (w.enrolledCount || 0)),
-      instructor: w.instructor || {
-        name: 'Vikram Malhotra',
-        role: 'Staff AI Engineer & Former ML Lead',
-        bio: 'Over 12 years building production software and leading enterprise LLM integrations.',
-      },
-      price: w.price || { basePrice: 1999, currency: 'INR', taxPercentage: 18, isFree: false },
-    }));
+    return workshops.map((w: any) => {
+      const batchCode = w.batchCode || 'AILP-2026-NOV-14';
+      const batchResources = allResources.filter(
+        (r: any) =>
+          !['faq', 'testimonial'].includes(r.category) &&
+          (r.workshopBatchCode === 'ALL' || !r.workshopBatchCode || r.workshopBatchCode === batchCode)
+      );
+
+      // Safe schedule preview for Registered Users (joinUrl and passcode strictly null)
+      const sessionsPreview = [
+        {
+          _id: `${batchCode}-day1`,
+          dayNumber: 1,
+          title: 'Day 1: LLM Foundations, Prompt Engineering & Custom AI Assistants',
+          sessionDate: w.startDate,
+          startTime: '10:00 AM',
+          endTime: '3:00 PM',
+          timezone: w.timezone || 'Asia/Kolkata (IST)',
+          instructorName: w.instructor?.name || 'Vikram Malhotra',
+          liveSessionUrl: null,
+          meetingPasscode: null,
+          status: 'scheduled',
+        },
+        {
+          _id: `${batchCode}-day2`,
+          dayNumber: 2,
+          title: 'Day 2: Multi-Step AI Workflows, Functional Prototyping & Capstone Lab',
+          sessionDate: w.endDate,
+          startTime: '10:00 AM',
+          endTime: '3:00 PM',
+          timezone: w.timezone || 'Asia/Kolkata (IST)',
+          instructorName: w.instructor?.name || 'Vikram Malhotra',
+          liveSessionUrl: null,
+          meetingPasscode: null,
+          status: 'scheduled',
+        },
+      ];
+
+      // Safe learning material previews (downloadUrl and content strictly null)
+      const materialsPreview = [
+        ...batchResources.map((r: any) => {
+          let section: 'slides' | 'notes' | 'prompts' | 'projects' = 'notes';
+          if (r.category === 'slide_deck') section = 'slides';
+          else if (r.category === 'prompt_template') section = 'prompts';
+          else if (r.category === 'code_repo') section = 'projects';
+          else if (r.category === 'pdf') section = 'notes';
+
+          return {
+            id: r._id?.toString(),
+            title: r.title,
+            description: r.description,
+            category: r.category,
+            section,
+            type:
+              r.category === 'prompt_template'
+                ? 'Prompt Template'
+                : r.category === 'code_repo'
+                ? 'Project Resource'
+                : r.category === 'slide_deck'
+                ? 'Slide Deck'
+                : 'Notes & PDF',
+            downloadUrl: null,
+            content: null,
+            isGated: true,
+          };
+        }),
+        {
+          id: 'res-slide-day1',
+          title: 'Day 1 & Day 2 Masterclass Slide Deck (Complete Visual Guide)',
+          description:
+            '65+ annotated slides covering LLM architectures, context windows, RAG pipelines, and agent patterns.',
+          category: 'slide_deck',
+          section: 'slides',
+          type: 'Slide Deck',
+          downloadUrl: null,
+          content: null,
+          isGated: true,
+        },
+      ];
+
+      return {
+        _id: w._id?.toString(),
+        title: w.title,
+        batchCode: w.batchCode,
+        description: w.description,
+        startDate: w.startDate,
+        endDate: w.endDate,
+        timings: w.timings || '10:00 AM – 3:00 PM IST',
+        timezone: w.timezone || 'Asia/Kolkata (IST)',
+        capacity: w.capacity || 60,
+        enrolledCount: w.enrolledCount || 0,
+        availableSeats:
+          w.availableSeats ?? Math.max(0, (w.capacity || 60) - (w.enrolledCount || 0)),
+        instructor: w.instructor || {
+          name: 'Vikram Malhotra',
+          role: 'Staff AI Engineer & Former ML Lead',
+          bio: 'Over 12 years building production software and leading enterprise LLM integrations.',
+        },
+        price: w.price || { basePrice: 1999, currency: 'INR', taxPercentage: 18, isFree: false },
+        sessionsPreview,
+        materialsPreview,
+      };
+    });
   }
 
   static async getDashboard(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -422,15 +524,32 @@ export class LearnerController {
       }
 
       const confirmedWorkshops = activeWorkshops.filter((w) => w.isAuthorized);
+      const pendingWorkshops = activeWorkshops.filter((w) => !w.isAuthorized);
       const hasConfirmedEnrollment = confirmedWorkshops.length > 0;
+      const hasPendingPayment = !hasConfirmedEnrollment && pendingWorkshops.length > 0;
+      const isWorkshopCompleted =
+        hasConfirmedEnrollment &&
+        (certificates.length > 0 ||
+          confirmedWorkshops.some((w) => w.day1Attended && w.day2Attended));
+
+      let userState: 'registered' | 'payment_pending' | 'enrolled' | 'completed' = 'registered';
+      if (isWorkshopCompleted) userState = 'completed';
+      else if (hasConfirmedEnrollment) userState = 'enrolled';
+      else if (hasPendingPayment) userState = 'payment_pending';
+
       const primaryWorkshop = confirmedWorkshops[0] || activeWorkshops[0] || null;
-      const upcomingClass = primaryWorkshop?.sessions?.[0] || null;
+      const upcomingClass =
+        primaryWorkshop?.sessions?.[0] ||
+        availableWorkshops[0]?.sessionsPreview?.[0] ||
+        null;
 
       res.status(200).json({
         success: true,
         data: {
           user: req.user,
+          userState,
           hasConfirmedEnrollment,
+          hasPendingPayment,
           workshops: activeWorkshops,
           availableWorkshops,
           upcomingClass,
@@ -522,24 +641,61 @@ export class LearnerController {
 
   /**
    * Dedicated Backend-Enforced Materials Endpoint
-   * Verifies that the signed-in student has a confirmed & paid enrollment before returning download URLs.
+   * Verifies that the signed-in student has a confirmed & captured paid enrollment for the target workshop.
    */
   static async getAuthorizedMaterials(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const userId = req.user!._id.toString();
-      const userEmail = req.user!.email;
-      const workshops = await LearnerController.getStudentWorkshops(userId, userEmail);
+      const targetEnrollment = req.verifiedEnrollment;
+      if (!targetEnrollment || !targetEnrollment.isAuthorized) {
+        const userId = req.user!._id.toString();
+        const userEmail = req.user!.email;
+        const workshops = await LearnerController.getStudentWorkshops(userId, userEmail);
+        const requestedTarget =
+          (req.params?.workshopId as string) || (req.query?.workshopId as string) || '';
 
-      const authorizedWorkshops = workshops.filter((w) => w.isAuthorized);
-      if (authorizedWorkshops.length === 0) {
-        throw ApiError.forbidden(
-          'Access denied: Confirmed enrollment and completed payment are required to access paid learning materials.'
-        );
+        const authorizedWorkshops = workshops.filter((w) => w.isAuthorized);
+        if (requestedTarget) {
+          const matched = authorizedWorkshops.find(
+            (w) =>
+              w.enrollmentId === requestedTarget ||
+              w._id?.toString() === requestedTarget ||
+              w.workshop?._id?.toString() === requestedTarget ||
+              w.workshop?.batchCode === requestedTarget
+          );
+          if (!matched) {
+            throw ApiError.forbidden(
+              `Access denied: You do not have a confirmed paid enrollment for workshop '${requestedTarget}'.`
+            );
+          }
+          res.status(200).json({
+            success: true,
+            workshopId: matched.workshop?._id,
+            batchCode: matched.workshop?.batchCode,
+            data: matched.resources,
+          });
+          return;
+        }
+
+        if (authorizedWorkshops.length === 0) {
+          throw ApiError.forbidden(
+            'Access denied: Confirmed enrollment and verified captured payment are required to access paid learning materials.'
+          );
+        }
+
+        res.status(200).json({
+          success: true,
+          workshopId: authorizedWorkshops[0].workshop?._id,
+          batchCode: authorizedWorkshops[0].workshop?.batchCode,
+          data: authorizedWorkshops[0].resources,
+        });
+        return;
       }
 
       res.status(200).json({
         success: true,
-        data: authorizedWorkshops[0].resources,
+        workshopId: targetEnrollment.workshop?._id,
+        batchCode: targetEnrollment.workshop?.batchCode,
+        data: targetEnrollment.resources,
       });
     } catch (error) {
       next(error);
@@ -548,18 +704,47 @@ export class LearnerController {
 
   /**
    * Dedicated Backend-Enforced Live Classes Endpoint
-   * Verifies that the signed-in student has a confirmed & paid enrollment before returning live meeting credentials.
+   * Verifies that the signed-in student has a confirmed & captured paid enrollment before returning live meeting credentials.
    */
   static async getAuthorizedLiveClasses(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const userId = req.user!._id.toString();
       const userEmail = req.user!.email;
       const workshops = await LearnerController.getStudentWorkshops(userId, userEmail);
+      const requestedTarget =
+        (req.params?.workshopId as string) || (req.query?.workshopId as string) || '';
 
       const authorizedWorkshops = workshops.filter((w) => w.isAuthorized);
+      if (requestedTarget) {
+        const matched = authorizedWorkshops.find(
+          (w) =>
+            w.enrollmentId === requestedTarget ||
+            w._id?.toString() === requestedTarget ||
+            w.workshop?._id?.toString() === requestedTarget ||
+            w.workshop?.batchCode === requestedTarget
+        );
+        if (!matched) {
+          throw ApiError.forbidden(
+            `Access denied: You do not have a confirmed paid enrollment for workshop '${requestedTarget}'.`
+          );
+        }
+        res.status(200).json({
+          success: true,
+          data: [
+            {
+              enrollmentId: matched.enrollmentId,
+              workshop: matched.workshop,
+              sessions: matched.sessions,
+              sessionAccess: matched.sessionAccess,
+            },
+          ],
+        });
+        return;
+      }
+
       if (authorizedWorkshops.length === 0) {
         throw ApiError.forbidden(
-          'Access denied: Confirmed enrollment and completed payment are required to access live class credentials.'
+          'Access denied: Confirmed enrollment and verified captured payment are required to access live class credentials.'
         );
       }
 
@@ -581,24 +766,42 @@ export class LearnerController {
     try {
       const userId = req.user!._id.toString();
       const userEmail = req.user!.email;
-      const { enrollmentId, projectTitle, repositoryUrl, liveDemoUrl, notes } = req.body;
+      const { enrollmentId, workshopId, projectTitle, repositoryUrl, liveDemoUrl, notes } = req.body;
 
       if (!projectTitle || !projectTitle.trim()) {
         throw ApiError.badRequest('Project title is required.');
       }
 
       const workshops = await LearnerController.getStudentWorkshops(userId, userEmail);
-      const targetEnrollment =
-        workshops.find((w) => w.enrollmentId === enrollmentId || w._id === enrollmentId) ||
-        workshops.find((w) => w.isAuthorized);
+      const requestedTarget = enrollmentId || workshopId || '';
+
+      let targetEnrollment: any = null;
+      if (requestedTarget) {
+        targetEnrollment = workshops.find(
+          (w) =>
+            w.enrollmentId === requestedTarget ||
+            w._id?.toString() === requestedTarget ||
+            w.workshop?._id?.toString() === requestedTarget ||
+            w.workshop?.batchCode === requestedTarget
+        );
+        if (!targetEnrollment) {
+          throw ApiError.forbidden(
+            `Access denied: You do not have an enrollment in workshop '${requestedTarget}'.`
+          );
+        }
+      } else {
+        targetEnrollment = workshops.find((w) => w.isAuthorized) || workshops[0];
+      }
 
       if (!targetEnrollment) {
-        throw ApiError.notFound('Enrollment not found for this student.');
+        throw ApiError.forbidden(
+          'Access denied: Confirmed workshop enrollment and verified payment are required to submit assignments.'
+        );
       }
 
       if (!targetEnrollment.isAuthorized) {
         throw ApiError.forbidden(
-          'Only students with confirmed enrollment and completed payment can submit capstone projects.'
+          'Only students with confirmed enrollment and verified captured payment can submit capstone assignments.'
         );
       }
 
@@ -628,6 +831,8 @@ export class LearnerController {
 
       const savedInMem = await memoryStore.saveSubmission({
         enrollmentId: targetEnrollment.enrollmentId,
+        workshopId: targetEnrollment.workshop?._id,
+        batchCode: targetEnrollment.workshop?.batchCode,
         userId,
         projectTitle: projectTitle.trim(),
         repositoryUrl,
@@ -705,6 +910,59 @@ export class LearnerController {
         success: true,
         count: certificates.length,
         data: certificates,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * Protected Certificate Download Endpoint
+   * Requires verified enrollment payment AND verified workshop completion.
+   */
+  static async downloadCertificate(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const userId = req.user!._id.toString();
+      const targetEnrollment = req.verifiedEnrollment;
+
+      if (!targetEnrollment || !targetEnrollment.isAuthorized) {
+        throw ApiError.forbidden(
+          'Access denied: Confirmed workshop enrollment and verified payment are required.'
+        );
+      }
+
+      const [memCerts, memSubs] = await Promise.all([
+        memoryStore.getAllCertificates(),
+        memoryStore.getAllSubmissions(),
+      ]);
+      const cert = memCerts.find(
+        (c: any) =>
+          !c.isRevoked &&
+          (c.userId === userId || c.enrollmentId === targetEnrollment.enrollmentId)
+      );
+      const hasSubmission = memSubs.some(
+        (s: any) =>
+          s.userId === userId &&
+          (s.enrollmentId === targetEnrollment.enrollmentId ||
+            s.workshopId === targetEnrollment.workshop?._id?.toString() ||
+            s.batchCode === targetEnrollment.workshop?.batchCode)
+      );
+
+      if (!cert && !hasSubmission && !(targetEnrollment.day1Attended && targetEnrollment.day2Attended)) {
+        throw ApiError.forbidden(
+          'Certificate locked: Verified completion of Day 1 & Day 2 sessions and capstone submission are required.'
+        );
+      }
+
+      res.status(200).json({
+        success: true,
+        data: cert || {
+          serialNumber: `AILP-CERT-${targetEnrollment.enrollmentId}`,
+          recipientName: req.user?.name || 'Student',
+          workshopTitle: targetEnrollment.workshop?.title,
+          batchCode: targetEnrollment.workshop?.batchCode,
+          issuedAt: new Date(),
+        },
       });
     } catch (error) {
       next(error);

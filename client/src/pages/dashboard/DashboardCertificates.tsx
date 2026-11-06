@@ -7,15 +7,19 @@ import {
   ShieldCheck,
   Search,
   Clock,
+  Lock,
+  CreditCard,
 } from 'lucide-react';
 import { useDashboard } from './DashboardLayout';
 
 export const DashboardCertificates: React.FC = () => {
-  const { dashboardData, progress } = useDashboard();
+  const { dashboardData, progress, isEnrolling, enrollInBatch, openCheckout } = useDashboard();
   const workshops = dashboardData?.workshops || [];
+  const availableWorkshops = dashboardData?.availableWorkshops || [];
   const submissions = dashboardData?.submissions || [];
   const certificates = dashboardData?.certificates || [];
   const primary = workshops.find((w: any) => w.isAuthorized) || workshops[0];
+  const previewWorkshop = availableWorkshops[0] || primary?.workshop;
   const currentProgress = progress[0];
 
   const [selectedCert, setSelectedCert] = useState<any>(null);
@@ -160,20 +164,52 @@ export const DashboardCertificates: React.FC = () => {
 
       {/* 2. Issued Certificates Grid */}
       {certificates.length === 0 ? (
-        <div className="p-8 rounded-3xl bg-white border border-slate-200 text-center space-y-3">
+        <div className="p-8 rounded-3xl bg-white border border-slate-200 text-center space-y-4">
           <div className="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto">
-            <Award className="w-6 h-6" />
+            {isConfirmed ? <Award className="w-6 h-6" /> : <Lock className="w-6 h-6 text-amber-600" />}
           </div>
           <h3 className="font-bold text-base text-[#0F172A]">
             {isEligible
               ? 'You Are Eligible for Your Certificate!'
-              : 'No Certificates Issued Yet'}
+              : isConfirmed
+              ? 'Complete Your Capstone to Unlock Your Certificate'
+              : 'Certificate Issuance Requires Confirmed Workshop Enrollment'}
           </h3>
           <p className="text-xs text-slate-500 max-w-md mx-auto">
             {isEligible
               ? 'Your assignment has been submitted. Your cryptographically signed certificate will appear here as soon as instructor approval is finalized.'
-              : 'Complete your workshop sessions and submit your capstone assignment to unlock your official certificate.'}
+              : isConfirmed
+              ? 'Attend Day 1 & Day 2 live sessions and submit your capstone assignment in the Assignments tab to unlock your official certificate.'
+              : 'You can view our certificate eligibility criteria and verify public credentials above. To earn your verifiable AI Launchpad Certificate, enroll and complete a workshop cohort.'}
           </p>
+          {!isConfirmed && (
+            <div className="pt-1">
+              {primary && !primary.isAuthorized ? (
+                <button
+                  onClick={() => openCheckout(primary)}
+                  className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold shadow-xs transition-all cursor-pointer"
+                >
+                  <CreditCard className="w-3.5 h-3.5" />
+                  <span>Complete Payment (₹{(primary.workshop?.price || 2999).toLocaleString('en-IN')})</span>
+                </button>
+              ) : (
+                previewWorkshop && (
+                  <button
+                    onClick={() => enrollInBatch(previewWorkshop._id)}
+                    disabled={isEnrolling}
+                    className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-xs transition-all cursor-pointer disabled:opacity-60"
+                  >
+                    <CreditCard className="w-3.5 h-3.5" />
+                    <span>
+                      {isEnrolling
+                        ? 'Starting Checkout...'
+                        : `Enroll & Pay (₹${(previewWorkshop.price || 2999).toLocaleString('en-IN')})`}
+                    </span>
+                  </button>
+                )
+              )}
+            </div>
+          )}
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -266,7 +302,7 @@ export const DashboardCertificates: React.FC = () => {
           <button
             type="submit"
             disabled={isVerifying}
-            className="inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-xl bg-[#0B0F19] hover:bg-slate-800 text-white text-xs font-bold cursor-pointer shrink-0"
+            className="inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold cursor-pointer shrink-0 transition-colors"
           >
             <Search className="w-3.5 h-3.5" />
             <span>{isVerifying ? 'Verifying...' : 'Verify Credential'}</span>

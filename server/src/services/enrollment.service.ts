@@ -132,42 +132,71 @@ export class EnrollmentService {
     const totalAmount = isFree ? 0 : basePrice + taxAmount;
     const currency = workshop.price?.currency || 'INR';
 
-    // 4. Create Enrollment
+    // 4. Create or Reuse Enrollment (Idempotent per userId + workshopId)
     let enrollment: any = null;
 
-    if (isDBConnected() && user._id && mongoose.Types.ObjectId.isValid(user._id.toString()) && workshop._id && mongoose.Types.ObjectId.isValid(workshop._id.toString())) {
+    if (
+      isDBConnected() &&
+      user._id &&
+      mongoose.Types.ObjectId.isValid(user._id.toString()) &&
+      workshop._id &&
+      mongoose.Types.ObjectId.isValid(workshop._id.toString())
+    ) {
       try {
-        const randomSuffix = Math.floor(1000 + Math.random() * 9000);
-        const enrollmentId = `ENR-${new Date().getFullYear()}-${randomSuffix}`;
-        const reservedUntil = isFree ? undefined : new Date(Date.now() + 15 * 60 * 1000);
-
-        enrollment = await Enrollment.create({
-          enrollmentId,
+        enrollment = await Enrollment.findOne({
           userId: user._id,
           workshopId: workshop._id,
-          status: isFree ? 'confirmed' : 'pending',
-          paymentStatus: isFree ? 'free' : 'pending',
-          reservedUntil,
-          attendeeDetails: {
-            fullName: input.fullName,
-            email,
-            phone: `${input.phoneCountryCode} ${input.phoneNumber}`,
-            userCategory: input.userCategory,
-            experienceLevel: input.experienceLevel,
-          },
-          utm: input.utm,
         });
 
-        if (!isFree) {
-          await Payment.create({
+        if (enrollment) {
+          if (enrollment.status !== 'confirmed') {
+            enrollment.status = isFree ? 'confirmed' : 'pending_payment';
+            enrollment.paymentStatus = isFree ? 'free' : 'created';
+            enrollment.reservedUntil = isFree
+              ? undefined
+              : new Date(Date.now() + 15 * 60 * 1000);
+            await enrollment.save();
+          }
+        } else {
+          const randomSuffix = Math.floor(1000 + Math.random() * 9000);
+          const enrollmentId = `ENR-${new Date().getFullYear()}-${randomSuffix}`;
+          const reservedUntil = isFree ? undefined : new Date(Date.now() + 15 * 60 * 1000);
+
+          enrollment = await Enrollment.create({
+            enrollmentId,
             userId: user._id,
-            enrollmentId: enrollment._id,
-            amount: totalAmount,
-            currency,
-            provider: 'razorpay',
-            status: 'pending',
-            taxAmount,
+            workshopId: workshop._id,
+            status: isFree ? 'confirmed' : 'pending_payment',
+            paymentStatus: isFree ? 'free' : 'created',
+            confirmedAt: isFree ? new Date() : undefined,
+            reservedUntil,
+            attendeeDetails: {
+              fullName: input.fullName,
+              email,
+              phone: `${input.phoneCountryCode} ${input.phoneNumber}`,
+              userCategory: input.userCategory,
+              experienceLevel: input.experienceLevel,
+            },
+            utm: input.utm,
           });
+
+          if (!isFree) {
+            await Payment.findOneAndUpdate(
+              { enrollmentId: enrollment._id },
+              {
+                userId: user._id,
+                enrollmentId: enrollment._id,
+                workshopId: workshop._id,
+                amount: totalAmount,
+                amountInPaise: Math.round(totalAmount * 100),
+                currency,
+                provider: 'razorpay',
+                status: 'created',
+                taxAmount,
+              },
+              { upsert: true, new: true }
+            );
+          }
         }
       } catch (dbErr: any) {
         console.warn('[MongoDB Enrollment Creation Fallback]', dbErr.message);
@@ -183,7 +212,7 @@ export class EnrollmentService {
           email,
           phone: `${input.phoneCountryCode} ${input.phoneNumber}`,
         },
-        paymentStatus: isFree ? 'completed' : 'pending',
+        paymentStatus: isFree ? 'free' : 'created',
       });
     }
 

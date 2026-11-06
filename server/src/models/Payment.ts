@@ -12,7 +12,7 @@ export interface IPayment extends Document {
   providerPaymentId?: string;
   providerOrderId?: string;
   providerSignature?: string;
-  status: 'pending' | 'captured' | 'failed' | 'refunded';
+  status: 'created' | 'authorized' | 'captured' | 'pending' | 'failed' | 'refunded';
   couponCode?: string;
   discountAmount?: number;
   taxAmount?: number;
@@ -75,8 +75,8 @@ const PaymentSchema = new Schema<IPayment>(
     },
     status: {
       type: String,
-      enum: ['pending', 'captured', 'failed', 'refunded'],
-      default: 'pending',
+      enum: ['created', 'authorized', 'captured', 'pending', 'failed', 'refunded'],
+      default: 'created',
       index: true,
     },
     couponCode: {

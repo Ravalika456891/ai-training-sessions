@@ -47,4 +47,3 @@ router.get("/me", import_auth_middleware.authenticate, import_auth_controller.Au
 router.put("/profile", import_auth_middleware.authenticate, import_auth_controller.AuthController.updateProfile);
 router.put("/change-password", import_auth_middleware.authenticate, import_auth_controller.AuthController.changePassword);
 var auth_routes_default = router;
-//# sourceMappingURL=auth.routes.js.map

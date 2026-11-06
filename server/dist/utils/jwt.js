@@ -69,4 +69,3 @@ const clearAuthCookie = (res) => {
   signToken,
   verifyToken
 });
-//# sourceMappingURL=jwt.js.map

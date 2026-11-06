@@ -62,4 +62,3 @@ class RegistrationController {
 0 && (module.exports = {
   RegistrationController
 });
-//# sourceMappingURL=registration.controller.js.map

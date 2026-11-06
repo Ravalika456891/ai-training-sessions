@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../src/routes/enrollment.routes.ts"],
-  "sourcesContent": ["import { Router } from 'express';\nimport { EnrollmentController } from '../controllers/enrollment.controller.js';\nimport { authenticate, optionalAuthenticate, requireRole } from '../middleware/auth.middleware.js';\nimport { validateRequest } from '../middleware/validate.middleware.js';\nimport { enrollmentRateLimiter } from '../middleware/rateLimit.middleware.js';\nimport { createEnrollmentSchema } from '../validators/enrollment.validator.js';\n\nconst router = Router();\n\n// Public / Learner registration endpoint\nrouter.post(\n  '/',\n  enrollmentRateLimiter,\n  optionalAuthenticate,\n  validateRequest(createEnrollmentSchema),\n  EnrollmentController.register\n);\n\n// Authenticated learner view of own enrollments\nrouter.get('/me', authenticate, EnrollmentController.getMyEnrollments);\n\n// Administrator view of all enrollments\nrouter.get('/admin', authenticate, requireRole('admin'), EnrollmentController.getAllEnrollments);\n\nexport default router;\n\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,qBAAuB;AACvB,mCAAqC;AACrC,6BAAgE;AAChE,iCAAgC;AAChC,kCAAsC;AACtC,kCAAuC;AAEvC,MAAM,aAAS,uBAAO;AAGtB,OAAO;AAAA,EACL;AAAA,EACA;AAAA,EACA;AAAA,MACA,4CAAgB,kDAAsB;AAAA,EACtC,kDAAqB;AACvB;AAGA,OAAO,IAAI,OAAO,qCAAc,kDAAqB,gBAAgB;AAGrE,OAAO,IAAI,UAAU,yCAAc,oCAAY,OAAO,GAAG,kDAAqB,iBAAiB;AAE/F,IAAO,4BAAQ;",
-  "names": []
-}

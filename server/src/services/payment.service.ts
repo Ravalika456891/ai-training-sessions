@@ -139,7 +139,7 @@ export class PaymentService {
       console.warn('[Razorpay API Note] Generated server-managed test order ID:', razorpayOrderId);
     }
 
-    // Upsert or create Payment record in MongoDB or memoryPayments
+    // Upsert or create Payment record in MongoDB or memoryPayments (status: 'created')
     if (isDBConnected() && mongoose.Types.ObjectId.isValid(enrollment._id?.toString())) {
       let payment = await Payment.findOne({ enrollmentId: enrollment._id });
       if (!payment) {
@@ -152,10 +152,11 @@ export class PaymentService {
           currency: workshop.price.currency || 'INR',
           provider: 'razorpay',
           providerOrderId: razorpayOrderId,
-          status: 'pending',
+          status: 'created',
           couponCode: appliedCoupon,
           discountAmount,
           taxAmount,
+          webhookEventsReceived: [],
         });
       } else {
         payment.amount = totalAmount;
@@ -164,7 +165,7 @@ export class PaymentService {
         payment.couponCode = appliedCoupon;
         payment.discountAmount = discountAmount;
         payment.taxAmount = taxAmount;
-        payment.status = 'pending';
+        payment.status = 'created';
       }
       await payment.save();
     } else {
@@ -178,10 +179,11 @@ export class PaymentService {
         currency: workshop.price.currency || 'INR',
         provider: 'razorpay',
         providerOrderId: razorpayOrderId,
-        status: 'pending',
+        status: 'created',
         couponCode: appliedCoupon,
         discountAmount,
         taxAmount,
+        webhookEventsReceived: [],
         createdAt: new Date(),
       });
     }
@@ -258,11 +260,9 @@ export class PaymentService {
       isValid = false;
     }
 
-    // For local test sandbox simulation without valid secret: accept matching test signature
-    if (!isValid && (razorpay_signature === 'simulated_test_signature' || env.NODE_ENV !== 'production')) {
-      if (razorpay_signature.startsWith('simulated_') || razorpay_signature.length >= 32) {
-        isValid = true;
-      }
+    // Only accept explicit sandbox demo signature when Razorpay modal is in simulated mode
+    if (!isValid && razorpay_signature === 'simulated_test_signature' && env.NODE_ENV !== 'production') {
+      isValid = true;
     }
 
     if (!isValid) {
@@ -270,9 +270,18 @@ export class PaymentService {
         payment.status = 'failed';
         payment.failureReason = 'Cryptographic signature mismatch';
         await payment.save();
+        const enr = await Enrollment.findById(payment.enrollmentId);
+        if (enr && enr.status !== 'confirmed') {
+          enr.paymentStatus = 'failed';
+          await enr.save();
+        }
       } else if (memPayment) {
         memPayment.status = 'failed';
         memPayment.failureReason = 'Cryptographic signature mismatch';
+        const enr = await memoryStore.findEnrollmentById(enrollmentId || memPayment.enrollmentId);
+        if (enr && enr.status !== 'confirmed') {
+          enr.paymentStatus = 'failed';
+        }
       }
       throw ApiError.badRequest('Invalid payment signature. Verification failed.');
     }
@@ -282,6 +291,7 @@ export class PaymentService {
         const existingEnrollment = await Enrollment.findById(payment.enrollmentId);
         return {
           verified: true,
+          alreadyProcessed: true,
           message: 'Payment already confirmed and processed.',
           paymentId: payment.providerPaymentId,
           orderId: payment.providerOrderId,
@@ -298,7 +308,8 @@ export class PaymentService {
       const enrollment = await Enrollment.findById(payment.enrollmentId);
       if (enrollment) {
         enrollment.status = 'confirmed';
-        enrollment.paymentStatus = 'completed';
+        enrollment.paymentStatus = 'captured';
+        enrollment.confirmedAt = new Date();
         await enrollment.save();
 
         await Workshop.findByIdAndUpdate(enrollment.workshopId, {
@@ -308,6 +319,8 @@ export class PaymentService {
 
       return {
         verified: true,
+        paymentStatus: 'captured',
+        enrollmentStatus: 'confirmed',
         message: 'Payment verified successfully. Your seat is confirmed!',
         paymentId: razorpay_payment_id,
         orderId: razorpay_order_id,
@@ -318,7 +331,23 @@ export class PaymentService {
       };
     }
 
-    // MemoryStore payment confirmation
+    // MemoryStore idempotent payment confirmation
+    if (memPayment.status === 'captured') {
+      const existingMemEnr = await memoryStore.findEnrollmentById(
+        enrollmentId || memPayment.enrollmentId
+      );
+      return {
+        verified: true,
+        alreadyProcessed: true,
+        paymentStatus: 'captured',
+        enrollmentStatus: 'confirmed',
+        message: 'Payment already confirmed and processed.',
+        paymentId: memPayment.providerPaymentId,
+        orderId: memPayment.providerOrderId,
+        enrollmentId: existingMemEnr?.enrollmentId || memPayment.enrollmentId,
+      };
+    }
+
     memPayment.status = 'captured';
     memPayment.providerPaymentId = razorpay_payment_id;
     memPayment.providerSignature = razorpay_signature;
@@ -328,6 +357,8 @@ export class PaymentService {
 
     return {
       verified: true,
+      paymentStatus: 'captured',
+      enrollmentStatus: 'confirmed',
       message: 'Payment verified successfully. Your seat is confirmed!',
       paymentId: razorpay_payment_id,
       orderId: razorpay_order_id,
@@ -361,45 +392,155 @@ export class PaymentService {
     const paymentEntity = payload.payload?.payment?.entity;
     const orderId = paymentEntity?.order_id;
     const paymentId = paymentEntity?.id;
+    const eventKey = payload.id || `${event}_${paymentId || orderId}`;
 
     if (!orderId) {
       return { received: true, ignored: true };
     }
 
-    const payment = await Payment.findOne({ providerOrderId: orderId });
-    if (!payment) {
+    let payment: any = null;
+    if (isDBConnected()) {
+      try {
+        payment = await Payment.findOne({ providerOrderId: orderId });
+      } catch (err: any) {
+        console.warn('[PaymentService.processWebhook DB Fallback]', err.message);
+      }
+    }
+
+    if (payment) {
+      if (payment.webhookEventsReceived.includes(eventKey)) {
+        return { received: true, alreadyProcessed: true, event };
+      }
+
+      payment.webhookEventsReceived.push(eventKey);
+
+      if (event === 'payment.created') {
+        if (payment.status !== 'captured') {
+          payment.status = 'created';
+        }
+        await payment.save();
+      } else if (event === 'payment.authorized') {
+        // NEVER treat payment.authorized as a confirmed paid enrollment
+        if (payment.status !== 'captured') {
+          payment.status = 'authorized';
+          payment.providerPaymentId = paymentId;
+          await payment.save();
+          const enrollment = await Enrollment.findById(payment.enrollmentId);
+          if (enrollment && enrollment.status !== 'confirmed') {
+            enrollment.paymentStatus = 'authorized';
+            await enrollment.save();
+          }
+        }
+      } else if (event === 'payment.captured') {
+        const wasCaptured = payment.status === 'captured';
+        payment.status = 'captured';
+        payment.providerPaymentId = paymentId;
+        await payment.save();
+
+        const enrollment = await Enrollment.findById(payment.enrollmentId);
+        if (enrollment && enrollment.status !== 'confirmed' && !wasCaptured) {
+          enrollment.status = 'confirmed';
+          enrollment.paymentStatus = 'captured';
+          enrollment.confirmedAt = new Date();
+          await enrollment.save();
+
+          await Workshop.findByIdAndUpdate(enrollment.workshopId, {
+            $inc: { reservedCount: -1, enrolledCount: 1 },
+          });
+        }
+      } else if (event === 'payment.failed') {
+        if (payment.status !== 'captured') {
+          payment.status = 'failed';
+          payment.failureReason = paymentEntity?.error_description || 'Payment failed';
+          await payment.save();
+          const enrollment = await Enrollment.findById(payment.enrollmentId);
+          if (enrollment && enrollment.status !== 'confirmed') {
+            enrollment.paymentStatus = 'failed';
+            await enrollment.save();
+          }
+        }
+      }
+
+      return { received: true, event };
+    }
+
+    // MemoryStore Webhook handling with idempotency
+    const memPayment = memoryPayments.get(orderId);
+    if (!memPayment) {
       return { received: true, notFound: true };
     }
 
-    // Check Idempotency: skip if already handled
-    if (payment.webhookEventsReceived.includes(payload.id || paymentId)) {
-      return { received: true, alreadyProcessed: true };
+    memPayment.webhookEventsReceived = memPayment.webhookEventsReceived || [];
+    if (memPayment.webhookEventsReceived.includes(eventKey)) {
+      return { received: true, alreadyProcessed: true, event };
     }
+    memPayment.webhookEventsReceived.push(eventKey);
 
-    payment.webhookEventsReceived.push(payload.id || paymentId);
-
-    if (event === 'payment.captured') {
-      payment.status = 'captured';
-      payment.providerPaymentId = paymentId;
-      await payment.save();
-
-      const enrollment = await Enrollment.findById(payment.enrollmentId);
-      if (enrollment && enrollment.status !== 'confirmed') {
-        enrollment.status = 'confirmed';
-        enrollment.paymentStatus = 'completed';
-        await enrollment.save();
-
-        await Workshop.findByIdAndUpdate(enrollment.workshopId, {
-          $inc: { reservedCount: -1, enrolledCount: 1 },
-        });
+    if (event === 'payment.created') {
+      if (memPayment.status !== 'captured') {
+        memPayment.status = 'created';
+      }
+    } else if (event === 'payment.authorized') {
+      // NEVER treat payment.authorized as a confirmed paid enrollment
+      if (memPayment.status !== 'captured') {
+        memPayment.status = 'authorized';
+        memPayment.providerPaymentId = paymentId;
+        const enr = await memoryStore.findEnrollmentById(memPayment.enrollmentId);
+        if (enr && enr.status !== 'confirmed') {
+          enr.paymentStatus = 'authorized';
+        }
+      }
+    } else if (event === 'payment.captured') {
+      if (memPayment.status !== 'captured') {
+        memPayment.status = 'captured';
+        memPayment.providerPaymentId = paymentId;
+        await memoryStore.confirmEnrollmentPayment(memPayment.enrollmentId);
       }
     } else if (event === 'payment.failed') {
-      payment.status = 'failed';
-      payment.failureReason = paymentEntity?.error_description || 'Payment failed';
-      await payment.save();
+      if (memPayment.status !== 'captured') {
+        memPayment.status = 'failed';
+        memPayment.failureReason = paymentEntity?.error_description || 'Payment failed';
+        const enr = await memoryStore.findEnrollmentById(memPayment.enrollmentId);
+        if (enr && enr.status !== 'confirmed') {
+          enr.paymentStatus = 'failed';
+        }
+      }
     }
 
     return { received: true, event };
+  }
+
+  // Helper: Verify that a captured payment exists for an enrollment
+  static async hasVerifiedCapturedPayment(enrollmentId: string): Promise<boolean> {
+    if (isDBConnected()) {
+      try {
+        const enrollment = await Enrollment.findOne({
+          $or: [
+            { enrollmentId },
+            ...(mongoose.Types.ObjectId.isValid(enrollmentId) ? [{ _id: enrollmentId }] : []),
+          ],
+        });
+        if (enrollment) {
+          const payment = await Payment.findOne({
+            enrollmentId: enrollment._id,
+            status: 'captured',
+          });
+          if (payment) return true;
+        }
+      } catch {
+        // Fallback to memory check
+      }
+    }
+
+    for (const p of memoryPayments.values()) {
+      if (
+        (p.enrollmentId === enrollmentId || p._id === enrollmentId) &&
+        p.status === 'captured'
+      ) {
+        return true;
+      }
+    }
+    return false;
   }
 
   // 4. Get Authenticated User Payments

@@ -43,4 +43,3 @@ router.post("/validate-coupon", import_payment_controller.PaymentController.vali
 router.get("/my-payments", import_auth_middleware.authenticate, import_payment_controller.PaymentController.getMyPayments);
 router.get("/enrollment/:enrollmentId", import_payment_controller.PaymentController.getPaymentByEnrollment);
 var payment_routes_default = router;
-//# sourceMappingURL=payment.routes.js.map

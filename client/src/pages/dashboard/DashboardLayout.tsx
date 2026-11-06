@@ -147,9 +147,44 @@ export const DashboardLayout: React.FC = () => {
     dashboardData?.hasConfirmedEnrollment ||
       (dashboardData?.workshops || []).some((w: any) => w.isAuthorized)
   );
+  const hasPendingPayment = Boolean(
+    !hasConfirmedEnrollment &&
+      (dashboardData?.hasPendingPayment ||
+        (dashboardData?.workshops || []).some((w: any) => !w.isAuthorized))
+  );
+  const userState: 'registered' | 'payment_pending' | 'enrolled' | 'completed' =
+    dashboardData?.userState ||
+    (hasConfirmedEnrollment
+      ? 'enrolled'
+      : hasPendingPayment
+      ? 'payment_pending'
+      : 'registered');
 
-  // Full 7-item navigation for Enrolled Students; simplified 3-item navigation for Registered Users (not yet enrolled)
-  const enrolledNavItems = [
+  const userStateMeta = {
+    registered: {
+      label: 'Registered User',
+      dotColor: 'bg-blue-500',
+      badgeClass: 'bg-blue-50 text-blue-700 border-blue-200',
+    },
+    payment_pending: {
+      label: 'Payment Pending',
+      dotColor: 'bg-amber-500',
+      badgeClass: 'bg-amber-50 text-amber-800 border-amber-300',
+    },
+    enrolled: {
+      label: 'Enrolled Student',
+      dotColor: 'bg-emerald-500',
+      badgeClass: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+    },
+    completed: {
+      label: 'Workshop Completed',
+      dotColor: 'bg-indigo-600',
+      badgeClass: 'bg-indigo-50 text-indigo-700 border-indigo-200',
+    },
+  }[userState];
+
+  // Display ALL 7 student dashboard sections for ALL signed-in users (never hide menu items before payment)
+  const activeNavItems = [
     { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard, end: true },
     { label: 'My Workshops', href: '/dashboard/workshops', icon: GraduationCap },
     { label: 'Live Classes', href: '/dashboard/live-classes', icon: Video },
@@ -158,14 +193,6 @@ export const DashboardLayout: React.FC = () => {
     { label: 'Certificates', href: '/dashboard/certificates', icon: Award },
     { label: 'Profile', href: '/dashboard/profile', icon: User },
   ];
-
-  const registeredOnlyNavItems = [
-    { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard, end: true },
-    { label: 'My Workshops', href: '/dashboard/workshops', icon: GraduationCap },
-    { label: 'Profile', href: '/dashboard/profile', icon: User },
-  ];
-
-  const activeNavItems = hasConfirmedEnrollment ? enrolledNavItems : registeredOnlyNavItems;
 
   const handleSignOut = async () => {
     await logout();
@@ -233,12 +260,10 @@ export const DashboardLayout: React.FC = () => {
                 <p className="text-xs font-bold text-[#0F172A] truncate">{user?.name || 'Learner'}</p>
                 <div className="flex items-center gap-1.5 mt-0.5">
                   <span
-                    className={`inline-block w-1.5 h-1.5 rounded-full shrink-0 ${
-                      hasConfirmedEnrollment ? 'bg-emerald-500' : 'bg-blue-500'
-                    }`}
+                    className={`inline-block w-1.5 h-1.5 rounded-full shrink-0 ${userStateMeta.dotColor}`}
                   />
                   <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider truncate">
-                    {hasConfirmedEnrollment ? 'Enrolled Student' : 'Registered User'}
+                    {userStateMeta.label}
                   </span>
                 </div>
               </div>
@@ -276,10 +301,10 @@ export const DashboardLayout: React.FC = () => {
               <div className="mt-4 p-3.5 rounded-2xl bg-blue-50/70 border border-blue-200 space-y-1.5">
                 <div className="flex items-center gap-1.5 text-[11px] font-bold text-blue-700">
                   <Lock className="w-3.5 h-3.5 text-blue-600 shrink-0" />
-                  <span>Learning Modules</span>
+                  <span>{hasPendingPayment ? 'Payment Pending' : 'Preview Mode'}</span>
                 </div>
                 <p className="text-[11px] text-slate-600 leading-relaxed">
-                  Live Classes, Materials, Assignments, and Certificates unlock automatically once your workshop enrollment is confirmed.
+                  You can browse all sections and curriculum previews freely. Complete workshop payment to unlock live session links, full downloads, and project submission.
                 </p>
               </div>
             )}
@@ -302,13 +327,13 @@ export const DashboardLayout: React.FC = () => {
 
             <button
               onClick={handleSignOut}
-              title={isSidebarCollapsed ? 'Sign Out' : undefined}
+              title={isSidebarCollapsed ? 'Logout' : undefined}
               className={`w-full flex items-center ${
                 isSidebarCollapsed ? 'justify-center px-2' : 'gap-2.5 px-3'
               } py-2 rounded-xl text-xs font-semibold text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer`}
             >
               <LogOut className="w-4 h-4 shrink-0" />
-              {!isSidebarCollapsed && <span>Sign Out</span>}
+              {!isSidebarCollapsed && <span>Logout</span>}
             </button>
           </div>
         </aside>
@@ -328,17 +353,13 @@ export const DashboardLayout: React.FC = () => {
               </button>
               <div className="flex items-center gap-2.5">
                 <h1 className="text-base sm:text-lg font-black text-[#0F172A] tracking-tight">
-                  {hasConfirmedEnrollment ? 'Student Learning Portal' : 'Workshop Discovery & Account'}
+                  Student Dashboard
                 </h1>
                 <span
-                  className={`hidden sm:inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[10px] font-bold border ${
-                    hasConfirmedEnrollment
-                      ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                      : 'bg-blue-50 text-blue-700 border-blue-200'
-                  }`}
+                  className={`hidden sm:inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[10px] font-bold border ${userStateMeta.badgeClass}`}
                 >
                   <ShieldCheck className="w-3 h-3" />
-                  <span>{hasConfirmedEnrollment ? 'Enrolled Student' : 'Registered User'}</span>
+                  <span>{userStateMeta.label}</span>
                 </span>
               </div>
             </div>
@@ -356,10 +377,10 @@ export const DashboardLayout: React.FC = () => {
                 type="button"
                 onClick={handleSignOut}
                 className="p-1.5 sm:px-3 sm:py-1.5 rounded-xl text-xs font-semibold text-rose-600 hover:bg-rose-50 border border-transparent hover:border-rose-200 transition-colors cursor-pointer flex items-center gap-1.5"
-                title="Sign Out"
+                title="Logout"
               >
                 <LogOut className="w-4 h-4 shrink-0" />
-                <span className="hidden sm:inline">Sign Out</span>
+                <span className="hidden sm:inline">Logout</span>
               </button>
             </div>
           </header>

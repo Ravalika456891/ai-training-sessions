@@ -81,4 +81,3 @@ const Attendance = import_mongoose.default.model("Attendance", AttendanceSchema)
 0 && (module.exports = {
   Attendance
 });
-//# sourceMappingURL=Attendance.js.map

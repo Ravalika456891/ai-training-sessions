@@ -124,4 +124,3 @@ const WorkshopSession = import_mongoose.default.model(
 0 && (module.exports = {
   WorkshopSession
 });
-//# sourceMappingURL=WorkshopSession.js.map

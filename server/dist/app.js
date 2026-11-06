@@ -100,4 +100,3 @@ const createApp = () => {
 0 && (module.exports = {
   createApp
 });
-//# sourceMappingURL=app.js.map

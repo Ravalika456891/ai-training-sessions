@@ -48,4 +48,3 @@ const isRazorpayConfigured = () => {
   isRazorpayConfigured,
   razorpayInstance
 });
-//# sourceMappingURL=razorpay.js.map

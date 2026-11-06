@@ -25,4 +25,3 @@ var import_certificate_controller = require("../controllers/certificate.controll
 const router = (0, import_express.Router)();
 router.get("/verify/:serialNumber", import_certificate_controller.CertificateController.verifyCertificate);
 var certificate_routes_default = router;
-//# sourceMappingURL=certificate.routes.js.map

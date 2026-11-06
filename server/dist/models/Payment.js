@@ -83,8 +83,8 @@ const PaymentSchema = new import_mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["pending", "captured", "failed", "refunded"],
-      default: "pending",
+      enum: ["created", "authorized", "captured", "pending", "failed", "refunded"],
+      default: "created",
       index: true
     },
     couponCode: {
@@ -122,4 +122,3 @@ const Payment = import_mongoose.default.model("Payment", PaymentSchema);
 0 && (module.exports = {
   Payment
 });
-//# sourceMappingURL=Payment.js.map

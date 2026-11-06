@@ -132,35 +132,55 @@ class EnrollmentService {
     let enrollment = null;
     if ((0, import_db.isDBConnected)() && user._id && import_mongoose.default.Types.ObjectId.isValid(user._id.toString()) && workshop._id && import_mongoose.default.Types.ObjectId.isValid(workshop._id.toString())) {
       try {
-        const randomSuffix = Math.floor(1e3 + Math.random() * 9e3);
-        const enrollmentId = `ENR-${(/* @__PURE__ */ new Date()).getFullYear()}-${randomSuffix}`;
-        const reservedUntil = isFree ? void 0 : new Date(Date.now() + 15 * 60 * 1e3);
-        enrollment = await import_Enrollment.Enrollment.create({
-          enrollmentId,
+        enrollment = await import_Enrollment.Enrollment.findOne({
           userId: user._id,
-          workshopId: workshop._id,
-          status: isFree ? "confirmed" : "pending",
-          paymentStatus: isFree ? "free" : "pending",
-          reservedUntil,
-          attendeeDetails: {
-            fullName: input.fullName,
-            email,
-            phone: `${input.phoneCountryCode} ${input.phoneNumber}`,
-            userCategory: input.userCategory,
-            experienceLevel: input.experienceLevel
-          },
-          utm: input.utm
+          workshopId: workshop._id
         });
-        if (!isFree) {
-          await import_Payment.Payment.create({
+        if (enrollment) {
+          if (enrollment.status !== "confirmed") {
+            enrollment.status = isFree ? "confirmed" : "pending_payment";
+            enrollment.paymentStatus = isFree ? "free" : "created";
+            enrollment.reservedUntil = isFree ? void 0 : new Date(Date.now() + 15 * 60 * 1e3);
+            await enrollment.save();
+          }
+        } else {
+          const randomSuffix = Math.floor(1e3 + Math.random() * 9e3);
+          const enrollmentId = `ENR-${(/* @__PURE__ */ new Date()).getFullYear()}-${randomSuffix}`;
+          const reservedUntil = isFree ? void 0 : new Date(Date.now() + 15 * 60 * 1e3);
+          enrollment = await import_Enrollment.Enrollment.create({
+            enrollmentId,
             userId: user._id,
-            enrollmentId: enrollment._id,
-            amount: totalAmount,
-            currency,
-            provider: "razorpay",
-            status: "pending",
-            taxAmount
+            workshopId: workshop._id,
+            status: isFree ? "confirmed" : "pending_payment",
+            paymentStatus: isFree ? "free" : "created",
+            confirmedAt: isFree ? /* @__PURE__ */ new Date() : void 0,
+            reservedUntil,
+            attendeeDetails: {
+              fullName: input.fullName,
+              email,
+              phone: `${input.phoneCountryCode} ${input.phoneNumber}`,
+              userCategory: input.userCategory,
+              experienceLevel: input.experienceLevel
+            },
+            utm: input.utm
           });
+          if (!isFree) {
+            await import_Payment.Payment.findOneAndUpdate(
+              { enrollmentId: enrollment._id },
+              {
+                userId: user._id,
+                enrollmentId: enrollment._id,
+                workshopId: workshop._id,
+                amount: totalAmount,
+                amountInPaise: Math.round(totalAmount * 100),
+                currency,
+                provider: "razorpay",
+                status: "created",
+                taxAmount
+              },
+              { upsert: true, new: true }
+            );
+          }
         }
       } catch (dbErr) {
         console.warn("[MongoDB Enrollment Creation Fallback]", dbErr.message);
@@ -175,7 +195,7 @@ class EnrollmentService {
           email,
           phone: `${input.phoneCountryCode} ${input.phoneNumber}`
         },
-        paymentStatus: isFree ? "completed" : "pending"
+        paymentStatus: isFree ? "free" : "created"
       });
     }
     return {
@@ -245,4 +265,3 @@ class EnrollmentService {
 0 && (module.exports = {
   EnrollmentService
 });
-//# sourceMappingURL=enrollment.service.js.map

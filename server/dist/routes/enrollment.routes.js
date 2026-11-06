@@ -37,4 +37,3 @@ router.post(
 router.get("/me", import_auth_middleware.authenticate, import_enrollment_controller.EnrollmentController.getMyEnrollments);
 router.get("/admin", import_auth_middleware.authenticate, (0, import_auth_middleware.requireRole)("admin"), import_enrollment_controller.EnrollmentController.getAllEnrollments);
 var enrollment_routes_default = router;
-//# sourceMappingURL=enrollment.routes.js.map

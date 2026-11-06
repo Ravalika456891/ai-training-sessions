@@ -8,16 +8,20 @@ import {
   Loader2,
   ClipboardCheck,
   MessageSquare,
+  Lock,
+  CreditCard,
 } from 'lucide-react';
 import { useDashboard } from './DashboardLayout';
 
 export const DashboardAssignments: React.FC = () => {
-  const { dashboardData, refreshDashboard } = useDashboard();
+  const { dashboardData, refreshDashboard, isEnrolling, enrollInBatch, openCheckout } = useDashboard();
   const workshops = dashboardData?.workshops || [];
+  const availableWorkshops = dashboardData?.availableWorkshops || [];
   const assignments = dashboardData?.assignments || [];
   const submissions = dashboardData?.submissions || [];
   const primary = workshops.find((w: any) => w.isAuthorized) || workshops[0];
   const isAuthorized = Boolean(primary?.isAuthorized);
+  const previewWorkshop = availableWorkshops[0] || primary?.workshop;
 
   const [projectTitle, setProjectTitle] = useState('');
   const [repoUrl, setRepoUrl] = useState('');
@@ -87,6 +91,49 @@ export const DashboardAssignments: React.FC = () => {
           Review assigned tasks, submit your capstone deliverable, and view instructor feedback.
         </p>
       </div>
+
+      {/* Unpaid Registered User Explanatory Banner */}
+      {!isAuthorized && (
+        <div className="p-5 rounded-3xl bg-amber-50/90 border border-amber-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-start gap-3">
+            <div className="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center shrink-0">
+              <Lock className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="text-sm font-extrabold text-amber-950">
+                Assignment Descriptions Preview • Submission Restricted
+              </h3>
+              <p className="text-xs text-amber-800 mt-0.5">
+                You can review the Day 1 & Day 2 assignment specifications below. To submit your capstone deliverable and receive mentor feedback, please complete your workshop enrollment and payment.
+              </p>
+            </div>
+          </div>
+          {primary && !primary.isAuthorized ? (
+            <button
+              onClick={() => openCheckout(primary)}
+              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold shadow-xs transition-all cursor-pointer shrink-0"
+            >
+              <CreditCard className="w-3.5 h-3.5" />
+              <span>Complete Payment (₹{(primary.workshop?.price || 2999).toLocaleString('en-IN')})</span>
+            </button>
+          ) : (
+            previewWorkshop && (
+              <button
+                onClick={() => enrollInBatch(previewWorkshop._id)}
+                disabled={isEnrolling}
+                className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-xs transition-all cursor-pointer shrink-0 disabled:opacity-60"
+              >
+                <CreditCard className="w-3.5 h-3.5" />
+                <span>
+                  {isEnrolling
+                    ? 'Starting Checkout...'
+                    : `Enroll & Pay (₹${(previewWorkshop.price || 2999).toLocaleString('en-IN')})`}
+                </span>
+              </button>
+            )
+          )}
+        </div>
+      )}
 
       {/* 1. Assigned Tasks Section */}
       <div className="space-y-3">
@@ -203,7 +250,7 @@ export const DashboardAssignments: React.FC = () => {
             <button
               type="submit"
               disabled={isSubmitting || !isAuthorized}
-              className="w-full inline-flex items-center justify-center gap-2 py-3 px-5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white text-xs font-bold shadow-md transition-all cursor-pointer disabled:opacity-60"
+              className="w-full inline-flex items-center justify-center gap-2 py-3 px-5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-xs transition-all cursor-pointer disabled:opacity-60"
             >
               {isSubmitting ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -215,7 +262,7 @@ export const DashboardAssignments: React.FC = () => {
 
             {!isAuthorized && (
               <p className="text-[11px] text-amber-700 text-center">
-                Assignment submission unlocks once your workshop enrollment is confirmed.
+                Assignment submission unlocks once your workshop enrollment and payment are verified.
               </p>
             )}
           </form>

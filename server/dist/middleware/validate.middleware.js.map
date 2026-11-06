@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../src/middleware/validate.middleware.ts"],
-  "sourcesContent": ["import { Request, Response, NextFunction } from 'express';\nimport { AnyZodObject, ZodError } from 'zod';\nimport { ApiError } from '../utils/apiError.js';\n\nexport const validateRequest = (schema: AnyZodObject) => {\n  return async (req: Request, _res: Response, next: NextFunction): Promise<void> => {\n    try {\n      req.body = await schema.parseAsync(req.body);\n      next();\n    } catch (error) {\n      if (error instanceof ZodError) {\n        const errorMessages = error.errors.map((e) => ({\n          field: e.path.join('.'),\n          message: e.message,\n        }));\n        next(new ApiError(400, 'Validation failed', errorMessages));\n      } else {\n        next(error);\n      }\n    }\n  };\n};\n\n"],
-  "mappings": ";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AACA,iBAAuC;AACvC,sBAAyB;AAElB,MAAM,kBAAkB,CAAC,WAAyB;AACvD,SAAO,OAAO,KAAc,MAAgB,SAAsC;AAChF,QAAI;AACF,UAAI,OAAO,MAAM,OAAO,WAAW,IAAI,IAAI;AAC3C,WAAK;AAAA,IACP,SAAS,OAAO;AACd,UAAI,iBAAiB,qBAAU;AAC7B,cAAM,gBAAgB,MAAM,OAAO,IAAI,CAAC,OAAO;AAAA,UAC7C,OAAO,EAAE,KAAK,KAAK,GAAG;AAAA,UACtB,SAAS,EAAE;AAAA,QACb,EAAE;AACF,aAAK,IAAI,yBAAS,KAAK,qBAAqB,aAAa,CAAC;AAAA,MAC5D,OAAO;AACL,aAAK,KAAK;AAAA,MACZ;AAAA,IACF;AAAA,EACF;AACF;",
-  "names": []
-}

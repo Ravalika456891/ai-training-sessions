@@ -10,20 +10,63 @@ import {
   Presentation,
   Eye,
   CreditCard,
+  ArrowRight,
 } from 'lucide-react';
 import { useDashboard } from './DashboardLayout';
 
 export const DashboardMaterials: React.FC = () => {
-  const { dashboardData, openCheckout } = useDashboard();
+  const { dashboardData, isEnrolling, enrollInBatch, openCheckout } = useDashboard();
   const workshops = dashboardData?.workshops || [];
-  const primary = workshops.find((w: any) => w.isAuthorized) || workshops[0];
+  const availableWorkshops = dashboardData?.availableWorkshops || [];
+
+  const primary = workshops.find((w: any) => w.isAuthorized) || workshops[0] || null;
+  const previewBatch = availableWorkshops[0] || null;
   const isAuthorized = Boolean(primary?.isAuthorized);
 
   const [activeTab, setActiveTab] = useState<'all' | 'slides' | 'notes' | 'prompts' | 'projects'>('all');
   const [selectedResource, setSelectedResource] = useState<any | null>(null);
   const [downloadNotice, setDownloadNotice] = useState<string | null>(null);
 
-  const rawResources = primary?.resources || [];
+  const rawResources =
+    primary?.resources ||
+    previewBatch?.materialsPreview || [
+      {
+        id: 'preview-slide-1',
+        title: 'Day 1 & Day 2 Masterclass Slide Deck (Complete Visual Guide)',
+        description:
+          '65+ annotated slides covering LLM architectures, context windows, RAG pipelines, and agent patterns.',
+        section: 'slides',
+        type: 'Slide Deck',
+        isGated: true,
+      },
+      {
+        id: 'preview-prompt-1',
+        title: 'Module 1 & 2: Reusable 10-Prompt Enterprise Library',
+        description:
+          'Battle-tested system prompt templates for GPT-4o, Claude 3.5 Sonnet, and Gemini 2.0.',
+        section: 'prompts',
+        type: 'Prompt Template',
+        isGated: true,
+      },
+      {
+        id: 'preview-notes-1',
+        title: 'Module 3: Custom Assistant Grounding & RAG PDF Guide',
+        description:
+          'Step-by-step architecture playbook for building hallucination-free enterprise AI assistants.',
+        section: 'notes',
+        type: 'Notes & PDF',
+        isGated: true,
+      },
+      {
+        id: 'preview-project-1',
+        title: 'Module 5: React + Tailwind AI Prototype Starter Repository',
+        description:
+          'Production-ready full-stack starter kit with streaming LLM responses and tool calling.',
+        section: 'projects',
+        type: 'Project Resource',
+        isGated: true,
+      },
+    ];
 
   const filteredResources =
     activeTab === 'all'
@@ -32,7 +75,9 @@ export const DashboardMaterials: React.FC = () => {
 
   const handleAccessResource = (resource: any) => {
     if (!isAuthorized) {
-      setDownloadNotice('Complete your workshop enrollment payment to unlock learning materials.');
+      setDownloadNotice(
+        'This resource is part of the paid workshop curriculum. Click "Enroll & Pay" above to unlock full access and downloads.'
+      );
       return;
     }
     if (resource.content) {
@@ -70,7 +115,9 @@ export const DashboardMaterials: React.FC = () => {
             Learning Materials
           </h2>
           <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
-            Access your workshop slides, study notes, reusable prompt templates, and starter project resources.
+            {isAuthorized
+              ? 'Access and download your workshop slides, study notes, reusable prompt templates, and starter project resources.'
+              : 'Preview the workshop slides, study notes, prompt templates, and project resources included in your cohort.'}
           </p>
         </div>
 
@@ -78,17 +125,58 @@ export const DashboardMaterials: React.FC = () => {
           className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border self-start sm:self-auto ${
             isAuthorized
               ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-              : 'bg-amber-50 text-amber-700 border-amber-200'
+              : 'bg-blue-50 text-blue-700 border-blue-200'
           }`}
         >
           {isAuthorized ? (
             <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
           ) : (
-            <Lock className="w-3.5 h-3.5 text-amber-600" />
+            <Lock className="w-3.5 h-3.5 text-blue-600" />
           )}
-          <span>{isAuthorized ? 'Materials Unlocked' : 'Materials Locked'}</span>
+          <span>{isAuthorized ? 'Materials Unlocked' : 'Material Previews • Locked'}</span>
         </span>
       </div>
+
+      {/* Contextual Payment Banner for Unpaid Registered Users */}
+      {!isAuthorized && (
+        <div className="p-5 rounded-2xl bg-amber-50/90 border border-amber-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-xs">
+          <div className="flex items-start gap-3">
+            <AlertCircle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+            <div>
+              <p className="font-bold text-amber-900">
+                {primary
+                  ? 'Payment Pending — Complete Checkout to Unlock Downloads'
+                  : 'Preview Mode — Confirmed Enrollment Required for Downloads'}
+              </p>
+              <p className="text-amber-800 text-[11px] mt-0.5 leading-relaxed">
+                You can browse all material titles and descriptions below. Complete your verified workshop payment to unlock full slide decks, PDF guides, copyable prompt templates, and starter code repositories.
+              </p>
+            </div>
+          </div>
+
+          {primary ? (
+            <button
+              onClick={() => openCheckout(primary.enrollmentId)}
+              className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-xs transition-colors shrink-0 cursor-pointer"
+            >
+              <CreditCard className="w-3.5 h-3.5" />
+              <span>Enroll & Pay Now</span>
+            </button>
+          ) : (
+            previewBatch && (
+              <button
+                disabled={isEnrolling}
+                onClick={() => enrollInBatch(previewBatch._id)}
+                className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-xs transition-colors shrink-0 cursor-pointer disabled:opacity-60"
+              >
+                <CreditCard className="w-3.5 h-3.5" />
+                <span>{isEnrolling ? 'Reserving...' : 'Enroll & Pay'}</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+            )
+          )}
+        </div>
+      )}
 
       {/* Category Filter Tabs */}
       <div className="flex flex-wrap items-center gap-2 border-b border-slate-200 pb-3">
@@ -108,53 +196,32 @@ export const DashboardMaterials: React.FC = () => {
       </div>
 
       {downloadNotice && (
-        <div className="p-3.5 rounded-xl bg-indigo-50 border border-indigo-200 text-indigo-800 text-xs flex items-center justify-between">
+        <div className="p-3.5 rounded-xl bg-blue-50 border border-blue-200 text-blue-800 text-xs flex items-center justify-between">
           <span>{downloadNotice}</span>
           <button
             onClick={() => setDownloadNotice(null)}
-            className="text-indigo-500 hover:text-indigo-700 font-bold ml-2 cursor-pointer"
+            className="text-blue-500 hover:text-blue-700 font-bold ml-2 cursor-pointer"
           >
             ✕
           </button>
         </div>
       )}
 
-      {!isAuthorized && primary && (
-        <div className="p-5 rounded-2xl bg-amber-50 border border-amber-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-xs">
-          <div className="flex items-center gap-3">
-            <AlertCircle className="w-5 h-5 text-amber-600 shrink-0" />
-            <div>
-              <p className="font-bold text-amber-900">Verified Enrollment Required</p>
-              <p className="text-amber-700 text-[11px]">
-                Complete your cohort payment to unlock all slide decks, notes, prompt templates, and project starter repositories.
-              </p>
-            </div>
-          </div>
-          <button
-            onClick={() => openCheckout(primary.enrollmentId)}
-            className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-xs transition-colors shrink-0 cursor-pointer"
-          >
-            <CreditCard className="w-3.5 h-3.5" />
-            <span>Complete Payment</span>
-          </button>
-        </div>
-      )}
-
-      {/* Materials Grid */}
+      {/* Materials Grid (Always displays previews for unpaid users and full access for paid students) */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {filteredResources.map((m: any) => {
           const Icon = getIcon(m.section);
           return (
             <div
               key={m.id}
-              className="p-6 rounded-3xl bg-white border border-slate-200 shadow-xs flex flex-col justify-between space-y-4 hover:border-indigo-300 transition-colors"
+              className="p-6 rounded-3xl bg-white border border-slate-200 shadow-xs flex flex-col justify-between space-y-4 hover:border-blue-300 transition-colors"
             >
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <div className="w-10 h-10 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center">
                     <Icon className="w-5 h-5" />
                   </div>
-                  <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-md bg-purple-50 text-purple-700 border border-purple-200">
+                  <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-md bg-blue-50 text-blue-700 border border-blue-200">
                     {m.type}
                   </span>
                 </div>
@@ -173,8 +240,8 @@ export const DashboardMaterials: React.FC = () => {
                   onClick={() => handleAccessResource(m)}
                   className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                     isAuthorized
-                      ? 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white shadow-xs'
-                      : 'bg-slate-100 text-slate-500 border border-slate-200'
+                      ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-xs'
+                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200 border border-slate-200'
                   }`}
                 >
                   {isAuthorized ? (
@@ -191,8 +258,8 @@ export const DashboardMaterials: React.FC = () => {
                     )
                   ) : (
                     <>
-                      <Lock className="w-3.5 h-3.5" />
-                      <span>Locked</span>
+                      <Lock className="w-3.5 h-3.5 text-amber-600" />
+                      <span>Locked • Enroll to Access</span>
                     </>
                   )}
                 </button>
@@ -204,11 +271,11 @@ export const DashboardMaterials: React.FC = () => {
 
       {/* Resource Preview Modal */}
       {selectedResource && (
-        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white max-w-xl w-full rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-2xl space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <div>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-purple-600">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-blue-600">
                   {selectedResource.type}
                 </span>
                 <h3 className="font-extrabold text-base text-[#0F172A]">
@@ -239,7 +306,7 @@ export const DashboardMaterials: React.FC = () => {
                     setDownloadNotice('Copied template to clipboard!');
                     setSelectedResource(null);
                   }}
-                  className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold cursor-pointer"
+                  className="px-4 py-2 rounded-xl bg-blue-600 text-white text-xs font-bold cursor-pointer"
                 >
                   Copy Content
                 </button>

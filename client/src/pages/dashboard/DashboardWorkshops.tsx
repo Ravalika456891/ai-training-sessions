@@ -207,62 +207,95 @@ export const DashboardWorkshops: React.FC = () => {
         </div>
       )}
 
-      {/* Available Workshop Batches for Exploration */}
+      {/* Available Workshop Batches for Exploration & Curriculum Preview */}
       {otherBatches.length > 0 && (
         <div className="space-y-4 pt-2">
           <div>
             <h3 className="text-base font-extrabold text-[#0F172A]">
-              Upcoming Workshop Batches
+              Available Workshop Batches & Curriculum Previews
             </h3>
             <p className="text-xs text-slate-500">
-              Explore other scheduled cohorts open for enrollment.
+              Preview the full Day 1 & Day 2 curriculum and schedule below. Click "Enroll & Pay" to reserve your confirmed seat.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             {otherBatches.map((batch: any) => {
               const basePrice = batch.price?.basePrice ?? 1999;
+              const previewSessions = batch.sessionsPreview || [];
               return (
                 <div
                   key={batch._id}
-                  className="p-5 rounded-2xl bg-white border border-slate-200 flex flex-col justify-between space-y-4"
+                  className="p-6 rounded-3xl bg-white border border-slate-200 flex flex-col justify-between space-y-4 shadow-xs"
                 >
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     <div className="flex items-center justify-between">
-                      <span className="font-mono text-xs font-bold text-indigo-600">
+                      <span className="font-mono text-xs font-bold text-blue-600 bg-blue-50 px-2.5 py-0.5 rounded-md border border-blue-200">
                         {batch.batchCode}
                       </span>
                       <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
                         {batch.availableSeats} seats open
                       </span>
                     </div>
-                    <h4 className="font-bold text-sm text-[#0F172A]">{batch.title}</h4>
-                    <p className="text-xs text-slate-500">
-                      {new Date(batch.startDate).toLocaleDateString('en-US', {
-                        month: 'short',
-                        day: 'numeric',
-                      })}{' '}
-                      –{' '}
-                      {new Date(batch.endDate).toLocaleDateString('en-US', {
-                        month: 'short',
-                        day: 'numeric',
-                        year: 'numeric',
-                      })}{' '}
-                      • {batch.timings}
+                    <div>
+                      <h4 className="font-bold text-base text-[#0F172A]">{batch.title}</h4>
+                      <p className="text-xs text-slate-500 mt-1">{batch.description}</p>
+                    </div>
+                    <p className="text-xs font-semibold text-[#0F172A] flex items-center gap-2">
+                      <Calendar className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                      <span>
+                        {new Date(batch.startDate).toLocaleDateString('en-US', {
+                          month: 'short',
+                          day: 'numeric',
+                        })}{' '}
+                        –{' '}
+                        {new Date(batch.endDate).toLocaleDateString('en-US', {
+                          month: 'short',
+                          day: 'numeric',
+                          year: 'numeric',
+                        })}{' '}
+                        • {batch.timings}
+                      </span>
                     </p>
+
+                    {/* Day 1 & Day 2 Curriculum Preview */}
+                    {previewSessions.length > 0 && (
+                      <div className="space-y-1.5 pt-1">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
+                          Curriculum Preview
+                        </span>
+                        {previewSessions.map((ps: any) => (
+                          <div
+                            key={ps._id || ps.dayNumber}
+                            className="p-2.5 rounded-xl bg-slate-50 border border-slate-200/80 text-xs flex items-start gap-2"
+                          >
+                            <span className="font-bold text-blue-600 shrink-0">
+                              Day {ps.dayNumber}:
+                            </span>
+                            <span className="text-[#0F172A] font-medium">{ps.title}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
 
-                  <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
-                    <span className="text-sm font-black text-[#0F172A]">
-                      ₹{basePrice.toLocaleString('en-IN')}{' '}
-                      <span className="text-[10px] font-normal text-slate-500">+ GST</span>
-                    </span>
+                  <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
+                    <div>
+                      <span className="text-[10px] uppercase font-bold text-slate-400 block">
+                        Tuition Fee
+                      </span>
+                      <span className="text-base font-black text-[#0F172A]">
+                        ₹{basePrice.toLocaleString('en-IN')}{' '}
+                        <span className="text-[10px] font-normal text-slate-500">+ 18% GST</span>
+                      </span>
+                    </div>
                     <button
                       disabled={isEnrolling}
                       onClick={() => enrollInBatch(batch._id)}
-                      className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition-colors cursor-pointer disabled:opacity-60"
+                      className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-xs transition-colors cursor-pointer disabled:opacity-60"
                     >
-                      <span>Enroll</span>
+                      <CreditCard className="w-3.5 h-3.5" />
+                      <span>Enroll & Pay</span>
                       <ArrowRight className="w-3.5 h-3.5" />
                     </button>
                   </div>

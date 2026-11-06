@@ -129,4 +129,3 @@ const User = import_mongoose.default.model("User", UserSchema);
 0 && (module.exports = {
   User
 });
-//# sourceMappingURL=User.js.map

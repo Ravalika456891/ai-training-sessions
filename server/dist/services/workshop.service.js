@@ -122,4 +122,3 @@ class WorkshopService {
 0 && (module.exports = {
   WorkshopService
 });
-//# sourceMappingURL=workshop.service.js.map

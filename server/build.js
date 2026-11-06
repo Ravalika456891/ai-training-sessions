@@ -25,7 +25,7 @@ esbuild.buildSync({
   platform: 'node',
   format: 'cjs',
   target: 'node20',
-  sourcemap: true,
+  sourcemap: false,
 });
 
 console.log(`✓ Successfully compiled ${entryPoints.length} TypeScript files to dist/`);
