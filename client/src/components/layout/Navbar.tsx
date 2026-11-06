@@ -176,22 +176,13 @@ export const Navbar: React.FC<NavbarProps> = ({
             {/* Authenticated User Menu or Sign In */}
             {user ? (
               <div className="flex items-center gap-2 shrink-0">
-                {user.role === 'admin' ? (
+                {user.role === 'admin' && (
                   <button
                     onClick={onOpenAdminConsole}
                     className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-blue-200 bg-blue-50 hover:bg-blue-100 text-xs font-semibold text-blue-700 transition-all shadow-xs active:scale-95 cursor-pointer whitespace-nowrap shrink-0"
                   >
                     <ShieldAlert className="w-3.5 h-3.5 text-blue-600 shrink-0" />
                     <span>Admin Ops</span>
-                  </button>
-                ) : (
-                  <button
-                    onClick={handleDashboardClick}
-                    className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-blue-200 bg-blue-50 hover:bg-blue-100 text-xs font-semibold text-blue-700 transition-all shadow-xs active:scale-95 cursor-pointer whitespace-nowrap shrink-0"
-                    title="Open Student Portal"
-                  >
-                    <LayoutDashboard className="w-3.5 h-3.5 text-blue-600 shrink-0" />
-                    <span>My Dashboard</span>
                   </button>
                 )}
 
@@ -297,15 +288,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           {/* Mobile & Tablet Action Controls */}
           <div className="flex lg:hidden items-center gap-2">
-            {user ? (
-              <button
-                onClick={handleDashboardClick}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-blue-200 bg-blue-50 text-xs font-semibold text-blue-700 shrink-0 cursor-pointer"
-              >
-                <LayoutDashboard className="w-3.5 h-3.5 text-blue-600 shrink-0" />
-                <span>My Dashboard</span>
-              </button>
-            ) : (
+            {!user && (
               <Button
                 variant="primary"
                 size="sm"
