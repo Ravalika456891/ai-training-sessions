@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Sparkles,
   Menu,
@@ -28,6 +29,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenAdminConsole,
 }) => {
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
@@ -106,7 +108,7 @@ export const Navbar: React.FC<NavbarProps> = ({
     if (onOpenLearnerDashboard) {
       onOpenLearnerDashboard();
     } else {
-      window.location.href = '/dashboard';
+      navigate('/dashboard');
     }
   };
 
@@ -222,15 +224,15 @@ export const Navbar: React.FC<NavbarProps> = ({
                         <p className="text-[11px] text-slate-500 truncate mt-0.5">{user.email}</p>
                       </div>
 
-                      <div className="p-1 space-y-0.5">
+                      <div className="p-1.5 space-y-1">
                         <button
                           onClick={() => {
                             setIsUserMenuOpen(false);
                             handleDashboardClick();
                           }}
-                          className="w-full text-left px-3 py-2 text-xs font-medium text-[#475569] hover:text-blue-600 hover:bg-blue-50/50 rounded-lg flex items-center gap-2 transition-colors cursor-pointer"
+                          className="w-full text-left px-3 py-2 text-xs font-semibold text-[#0F172A] hover:text-blue-600 hover:bg-blue-50 rounded-xl flex items-center gap-2.5 transition-colors cursor-pointer"
                         >
-                          <LayoutDashboard className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                          <LayoutDashboard className="w-4 h-4 text-blue-600 shrink-0" />
                           <span>My Dashboard</span>
                         </button>
 

@@ -182,6 +182,17 @@ export const DashboardLayout: React.FC = () => {
           {/* Bottom Actions */}
           <div className="p-3 border-t border-slate-200 space-y-1">
             <Link
+              to="/dashboard"
+              className="flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold text-blue-700 bg-blue-50/70 hover:bg-blue-100/80 transition-colors"
+            >
+              <span className="flex items-center gap-2">
+                <LayoutDashboard className="w-3.5 h-3.5 text-blue-600" />
+                <span>My Dashboard</span>
+              </span>
+              <ChevronRight className="w-3.5 h-3.5 text-blue-600" />
+            </Link>
+
+            <Link
               to="/"
               className="flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium text-slate-600 hover:text-[#0F172A] hover:bg-slate-100 transition-colors"
             >
@@ -227,6 +238,14 @@ export const DashboardLayout: React.FC = () => {
             </div>
 
             <div className="flex items-center gap-2 sm:gap-3">
+              <Link
+                to="/dashboard"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 transition-colors"
+              >
+                <LayoutDashboard className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                <span>My Dashboard</span>
+              </Link>
+
               <Link
                 to="/"
                 className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium text-slate-600 hover:text-blue-600 hover:bg-slate-50 border border-slate-200 transition-colors"
