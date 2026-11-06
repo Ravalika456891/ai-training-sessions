@@ -64,7 +64,11 @@ class AuthService {
         const token2 = (0, import_jwt.signToken)({
           userId: user._id.toString(),
           email: user.email,
-          role: user.role
+          role: user.role,
+          name: user.name,
+          phone: user.phone,
+          userCategory: user.userCategory,
+          experienceLevel: user.experienceLevel
         });
         return {
           user: {
@@ -101,7 +105,11 @@ class AuthService {
     const token = (0, import_jwt.signToken)({
       userId: memUser._id,
       email: memUser.email,
-      role: memUser.role
+      role: memUser.role,
+      name: memUser.name,
+      phone: memUser.phone,
+      userCategory: memUser.userCategory,
+      experienceLevel: memUser.experienceLevel
     });
     return {
       user: {
@@ -133,7 +141,11 @@ class AuthService {
           const token2 = (0, import_jwt.signToken)({
             userId: user._id.toString(),
             email: user.email,
-            role: user.role
+            role: user.role,
+            name: user.name,
+            phone: user.phone,
+            userCategory: user.userCategory,
+            experienceLevel: user.experienceLevel
           });
           return {
             user: {
@@ -165,7 +177,11 @@ class AuthService {
     const token = (0, import_jwt.signToken)({
       userId: memUser._id,
       email: memUser.email,
-      role: memUser.role
+      role: memUser.role,
+      name: memUser.name,
+      phone: memUser.phone,
+      userCategory: memUser.userCategory,
+      experienceLevel: memUser.experienceLevel
     });
     return {
       user: {
@@ -227,7 +243,11 @@ class AuthService {
         const token2 = (0, import_jwt.signToken)({
           userId: user._id.toString(),
           email: user.email,
-          role: user.role
+          role: user.role,
+          name: user.name,
+          phone: user.phone,
+          userCategory: user.userCategory,
+          experienceLevel: user.experienceLevel
         });
         return {
           user: {
@@ -261,7 +281,11 @@ class AuthService {
     const token = (0, import_jwt.signToken)({
       userId: memUser._id,
       email: memUser.email,
-      role: memUser.role
+      role: memUser.role,
+      name: memUser.name,
+      phone: memUser.phone,
+      userCategory: memUser.userCategory,
+      experienceLevel: memUser.experienceLevel
     });
     return {
       user: {
@@ -278,7 +302,7 @@ class AuthService {
       token
     };
   }
-  static async getMe(userId) {
+  static async getMe(userId, fallbackUser) {
     if ((0, import_db.isDBConnected)() && import_mongoose.default.Types.ObjectId.isValid(userId)) {
       try {
         const user = await import_User.User.findById(userId);
@@ -309,6 +333,18 @@ class AuthService {
         userCategory: memUser.userCategory,
         experienceLevel: memUser.experienceLevel,
         createdAt: memUser.createdAt
+      };
+    }
+    if (fallbackUser) {
+      return {
+        _id: fallbackUser._id?.toString() || userId,
+        name: fallbackUser.name,
+        email: fallbackUser.email,
+        phone: fallbackUser.phone,
+        role: fallbackUser.role || "learner",
+        userCategory: fallbackUser.userCategory || "working_professional",
+        experienceLevel: fallbackUser.experienceLevel || "beginner",
+        createdAt: fallbackUser.createdAt || /* @__PURE__ */ new Date()
       };
     }
     throw import_apiError.ApiError.notFound("User not found.");
@@ -375,7 +411,8 @@ class AuthService {
     memUser.resetPasswordExpires = void 0;
     return { message: "Password has been reset successfully. You can now sign in." };
   }
-  static async updateProfile(userId, data) {
+  static async updateProfile(userId, data, fallbackUser) {
+    let updatedUser = null;
     if ((0, import_db.isDBConnected)() && import_mongoose.default.Types.ObjectId.isValid(userId)) {
       try {
         const user = await import_User.User.findById(userId);
@@ -385,21 +422,47 @@ class AuthService {
           if (data.experienceLevel) user.experienceLevel = data.experienceLevel;
           if (data.userCategory) user.userCategory = data.userCategory;
           await user.save();
-          return this.getMe(userId);
+          updatedUser = await this.getMe(userId, user);
         }
       } catch (err) {
         console.warn("[MongoDB updateProfile fallback]", err);
       }
     }
-    const memUser = await import_memoryStore.memoryStore.findUserById(userId);
-    if (memUser) {
-      if (data.name) memUser.name = data.name.trim();
-      if (data.phone) memUser.phone = data.phone;
-      if (data.experienceLevel) memUser.experienceLevel = data.experienceLevel;
-      if (data.userCategory) memUser.userCategory = data.userCategory;
-      return this.getMe(userId);
+    if (!updatedUser) {
+      const memUser = await import_memoryStore.memoryStore.findUserById(userId);
+      if (memUser) {
+        if (data.name) memUser.name = data.name.trim();
+        if (data.phone) memUser.phone = data.phone;
+        if (data.experienceLevel) memUser.experienceLevel = data.experienceLevel;
+        if (data.userCategory) memUser.userCategory = data.userCategory;
+        updatedUser = await this.getMe(userId, memUser);
+      }
     }
-    throw import_apiError.ApiError.notFound("User not found.");
+    if (!updatedUser && fallbackUser) {
+      updatedUser = {
+        _id: fallbackUser._id?.toString() || userId,
+        name: data.name ? data.name.trim() : fallbackUser.name,
+        email: fallbackUser.email,
+        phone: data.phone || fallbackUser.phone,
+        role: fallbackUser.role || "learner",
+        userCategory: data.userCategory || fallbackUser.userCategory || "working_professional",
+        experienceLevel: data.experienceLevel || fallbackUser.experienceLevel || "beginner",
+        createdAt: fallbackUser.createdAt || /* @__PURE__ */ new Date()
+      };
+    }
+    if (!updatedUser) {
+      throw import_apiError.ApiError.notFound("User not found.");
+    }
+    const token = (0, import_jwt.signToken)({
+      userId: updatedUser._id,
+      email: updatedUser.email,
+      role: updatedUser.role,
+      name: updatedUser.name,
+      phone: updatedUser.phone,
+      userCategory: updatedUser.userCategory,
+      experienceLevel: updatedUser.experienceLevel
+    });
+    return { user: updatedUser, token };
   }
   static async changePassword(userId, currentPassword, newPassword) {
     if (!currentPassword || !newPassword) {

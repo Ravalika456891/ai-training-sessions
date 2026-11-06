@@ -6,6 +6,10 @@ export interface TokenPayload {
   userId: string;
   email: string;
   role: string;
+  name?: string;
+  phone?: { countryCode: string; number: string };
+  userCategory?: string;
+  experienceLevel?: string;
 }
 
 export const signToken = (payload: TokenPayload): string => {

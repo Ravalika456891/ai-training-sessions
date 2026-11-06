@@ -50,6 +50,24 @@ export const authenticate = async (
       user = await memoryStore.findUserById(payload.userId);
     }
 
+    if (!user && payload.email) {
+      user = await memoryStore.findUserByEmail(payload.email);
+    }
+
+    // Stateless JWT fallback for serverless multi-instance environments
+    if (!user && payload.userId && payload.email) {
+      user = {
+        _id: payload.userId,
+        name: payload.name || payload.email.split('@')[0],
+        email: payload.email,
+        role: payload.role || 'learner',
+        phone: payload.phone || { countryCode: '+91', number: '' },
+        userCategory: payload.userCategory || 'working_professional',
+        experienceLevel: payload.experienceLevel || 'beginner',
+        createdAt: new Date(),
+      };
+    }
+
     if (!user) {
       throw ApiError.unauthorized('User account no longer exists.');
     }

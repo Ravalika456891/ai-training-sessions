@@ -61,6 +61,21 @@ const authenticate = async (req, _res, next) => {
     if (!user) {
       user = await import_memoryStore.memoryStore.findUserById(payload.userId);
     }
+    if (!user && payload.email) {
+      user = await import_memoryStore.memoryStore.findUserByEmail(payload.email);
+    }
+    if (!user && payload.userId && payload.email) {
+      user = {
+        _id: payload.userId,
+        name: payload.name || payload.email.split("@")[0],
+        email: payload.email,
+        role: payload.role || "learner",
+        phone: payload.phone || { countryCode: "+91", number: "" },
+        userCategory: payload.userCategory || "working_professional",
+        experienceLevel: payload.experienceLevel || "beginner",
+        createdAt: /* @__PURE__ */ new Date()
+      };
+    }
     if (!user) {
       throw import_apiError.ApiError.unauthorized("User account no longer exists.");
     }

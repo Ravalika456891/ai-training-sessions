@@ -75,7 +75,7 @@ class AuthController {
   }
   static async getMe(req, res, next) {
     try {
-      const user = await import_auth_service.AuthService.getMe(req.user._id.toString());
+      const user = await import_auth_service.AuthService.getMe(req.user._id.toString(), req.user);
       res.status(200).json({
         success: true,
         data: { user }
@@ -109,7 +109,12 @@ class AuthController {
   }
   static async updateProfile(req, res, next) {
     try {
-      const updatedUser = await import_auth_service.AuthService.updateProfile(req.user._id.toString(), req.body);
+      const { user: updatedUser, token } = await import_auth_service.AuthService.updateProfile(
+        req.user._id.toString(),
+        req.body,
+        req.user
+      );
+      (0, import_jwt.setAuthCookie)(res, token);
       res.status(200).json({
         success: true,
         message: "Profile updated successfully.",

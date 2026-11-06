@@ -40,6 +40,10 @@ export class AuthService {
           userId: user._id.toString(),
           email: user.email,
           role: user.role,
+          name: user.name,
+          phone: user.phone,
+          userCategory: user.userCategory,
+          experienceLevel: user.experienceLevel,
         });
 
         return {
@@ -82,6 +86,10 @@ export class AuthService {
       userId: memUser._id,
       email: memUser.email,
       role: memUser.role,
+      name: memUser.name,
+      phone: memUser.phone,
+      userCategory: memUser.userCategory,
+      experienceLevel: memUser.experienceLevel,
     });
 
     return {
@@ -120,6 +128,10 @@ export class AuthService {
             userId: user._id.toString(),
             email: user.email,
             role: user.role,
+            name: user.name,
+            phone: user.phone,
+            userCategory: user.userCategory,
+            experienceLevel: user.experienceLevel,
           });
 
           return {
@@ -157,6 +169,10 @@ export class AuthService {
       userId: memUser._id,
       email: memUser.email,
       role: memUser.role,
+      name: memUser.name,
+      phone: memUser.phone,
+      userCategory: memUser.userCategory,
+      experienceLevel: memUser.experienceLevel,
     });
 
     return {
@@ -235,6 +251,10 @@ export class AuthService {
           userId: user._id.toString(),
           email: user.email,
           role: user.role,
+          name: user.name,
+          phone: user.phone,
+          userCategory: user.userCategory,
+          experienceLevel: user.experienceLevel,
         });
 
         return {
@@ -273,6 +293,10 @@ export class AuthService {
       userId: memUser._id,
       email: memUser.email,
       role: memUser.role,
+      name: memUser.name,
+      phone: memUser.phone,
+      userCategory: memUser.userCategory,
+      experienceLevel: memUser.experienceLevel,
     });
 
     return {
@@ -291,7 +315,7 @@ export class AuthService {
     };
   }
 
-  static async getMe(userId: string): Promise<any> {
+  static async getMe(userId: string, fallbackUser?: any): Promise<any> {
     if (isDBConnected() && mongoose.Types.ObjectId.isValid(userId)) {
       try {
         const user = await User.findById(userId);
@@ -323,6 +347,19 @@ export class AuthService {
         userCategory: memUser.userCategory,
         experienceLevel: memUser.experienceLevel,
         createdAt: memUser.createdAt,
+      };
+    }
+
+    if (fallbackUser) {
+      return {
+        _id: fallbackUser._id?.toString() || userId,
+        name: fallbackUser.name,
+        email: fallbackUser.email,
+        phone: fallbackUser.phone,
+        role: fallbackUser.role || 'learner',
+        userCategory: fallbackUser.userCategory || 'working_professional',
+        experienceLevel: fallbackUser.experienceLevel || 'beginner',
+        createdAt: fallbackUser.createdAt || new Date(),
       };
     }
 
@@ -405,7 +442,13 @@ export class AuthService {
     return { message: 'Password has been reset successfully. You can now sign in.' };
   }
 
-  static async updateProfile(userId: string, data: { name?: string; phone?: any; experienceLevel?: any; userCategory?: any }): Promise<any> {
+  static async updateProfile(
+    userId: string,
+    data: { name?: string; phone?: any; experienceLevel?: any; userCategory?: any },
+    fallbackUser?: any
+  ): Promise<{ user: any; token: string }> {
+    let updatedUser: any = null;
+
     if (isDBConnected() && mongoose.Types.ObjectId.isValid(userId)) {
       try {
         const user = await User.findById(userId);
@@ -415,23 +458,52 @@ export class AuthService {
           if (data.experienceLevel) user.experienceLevel = data.experienceLevel;
           if (data.userCategory) user.userCategory = data.userCategory;
           await user.save();
-          return this.getMe(userId);
+          updatedUser = await this.getMe(userId, user);
         }
       } catch (err) {
         console.warn('[MongoDB updateProfile fallback]', err);
       }
     }
 
-    const memUser = await memoryStore.findUserById(userId);
-    if (memUser) {
-      if (data.name) memUser.name = data.name.trim();
-      if (data.phone) memUser.phone = data.phone;
-      if (data.experienceLevel) memUser.experienceLevel = data.experienceLevel;
-      if (data.userCategory) memUser.userCategory = data.userCategory;
-      return this.getMe(userId);
+    if (!updatedUser) {
+      const memUser = await memoryStore.findUserById(userId);
+      if (memUser) {
+        if (data.name) memUser.name = data.name.trim();
+        if (data.phone) memUser.phone = data.phone;
+        if (data.experienceLevel) memUser.experienceLevel = data.experienceLevel;
+        if (data.userCategory) memUser.userCategory = data.userCategory;
+        updatedUser = await this.getMe(userId, memUser);
+      }
     }
 
-    throw ApiError.notFound('User not found.');
+    if (!updatedUser && fallbackUser) {
+      updatedUser = {
+        _id: fallbackUser._id?.toString() || userId,
+        name: data.name ? data.name.trim() : fallbackUser.name,
+        email: fallbackUser.email,
+        phone: data.phone || fallbackUser.phone,
+        role: fallbackUser.role || 'learner',
+        userCategory: data.userCategory || fallbackUser.userCategory || 'working_professional',
+        experienceLevel: data.experienceLevel || fallbackUser.experienceLevel || 'beginner',
+        createdAt: fallbackUser.createdAt || new Date(),
+      };
+    }
+
+    if (!updatedUser) {
+      throw ApiError.notFound('User not found.');
+    }
+
+    const token = signToken({
+      userId: updatedUser._id,
+      email: updatedUser.email,
+      role: updatedUser.role,
+      name: updatedUser.name,
+      phone: updatedUser.phone,
+      userCategory: updatedUser.userCategory,
+      experienceLevel: updatedUser.experienceLevel,
+    });
+
+    return { user: updatedUser, token };
   }
 
   static async changePassword(userId: string, currentPassword: string, newPassword: string): Promise<{ message: string }> {

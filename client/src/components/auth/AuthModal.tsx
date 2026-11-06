@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { X, Lock, Mail, User, AlertCircle, ArrowRight, ShieldCheck, Sparkles } from 'lucide-react';
 import { Button } from '../common/Button';
 import { useAuth } from '../../context/AuthContext';
@@ -22,6 +23,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   defaultMode = 'login',
 }) => {
   const { refreshUser } = useAuth();
+  const navigate = useNavigate();
   const [mode, setMode] = useState<'login' | 'register'>(defaultMode);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -47,6 +49,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         if (res.success) {
           await refreshUser();
           onClose();
+          navigate('/dashboard');
         }
       } else {
         const payload: any = {
@@ -61,6 +64,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         if (res.success) {
           await refreshUser();
           onClose();
+          navigate('/dashboard');
         }
       }
     } catch (err: any) {
@@ -88,6 +92,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 if (authRes.success) {
                   await refreshUser();
                   onClose();
+                  navigate('/dashboard');
                 }
               } catch (err: any) {
                 setError(err.message || 'Google token verification failed.');
@@ -123,6 +128,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         await refreshUser();
         setShowGooglePrompt(false);
         onClose();
+        navigate('/dashboard');
       }
     } catch (err: any) {
       setError(err.message || 'Google authentication failed.');
@@ -378,9 +384,16 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   <div className="flex items-center justify-between">
                     <label className="text-xs font-semibold text-slate-700">Password</label>
                     {mode === 'login' && (
-                      <span className="text-[11px] text-blue-600 hover:underline cursor-pointer">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          onClose();
+                          navigate('/forgot-password');
+                        }}
+                        className="text-[11px] text-blue-600 hover:underline cursor-pointer"
+                      >
                         Forgot?
-                      </span>
+                      </button>
                     )}
                   </div>
                   <div className="relative">

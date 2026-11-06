@@ -15,7 +15,16 @@ import { AuthModal } from '../../components/auth/AuthModal';
 import { AdminConsoleModal } from '../../components/admin/AdminConsoleModal';
 import { CertificateVerifyModal } from '../../components/certificate/CertificateVerifyModal';
 import { BATCH_OPTIONS } from '../../data/workshopData';
-import { ArrowRight, X } from 'lucide-react';
+import {
+  ArrowRight,
+  X,
+  LayoutDashboard,
+  BookOpen,
+  Video,
+  FileText,
+  Award,
+  CheckCircle2,
+} from 'lucide-react';
 import { Button } from '../../components/common/Button';
 import { useAuth } from '../../context/AuthContext';
 import { api, type ApiWorkshop } from '../../services/api';
@@ -149,6 +158,73 @@ export const HomePage: React.FC = () => {
         onOpenLearnerDashboard={() => navigate('/dashboard')}
         onOpenAdminConsole={() => setIsAdminConsoleOpen(true)}
       />
+
+      {/* Active Signed-In Student Portal Bar (Shown only after Sign In) */}
+      {user && (
+        <section
+          aria-label="Authenticated Student Portal Bar"
+          className="bg-blue-600 text-white border-b border-blue-700 shadow-md"
+        >
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-white/15 border border-white/25 flex items-center justify-center shrink-0">
+                <CheckCircle2 className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full bg-white text-blue-700">
+                    Signed In • {user.role.toUpperCase()}
+                  </span>
+                  <span className="text-xs sm:text-sm font-bold text-white">
+                    Welcome back, {user.name}!
+                  </span>
+                </div>
+                <p className="text-[11px] sm:text-xs text-blue-100 mt-0.5">
+                  Your personal Student Portal is unlocked. Access your enrolled workshops, live classes, materials, and certificates below.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center flex-wrap gap-2">
+              <button
+                onClick={() => navigate('/dashboard')}
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white text-blue-700 hover:bg-blue-50 text-xs font-extrabold shadow-sm transition-all cursor-pointer"
+              >
+                <LayoutDashboard className="w-3.5 h-3.5 text-blue-600" />
+                <span>Open Student Dashboard</span>
+              </button>
+              <button
+                onClick={() => navigate('/dashboard/workshops')}
+                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-blue-700/80 hover:bg-blue-700 text-white border border-blue-400/30 text-xs font-semibold transition-all cursor-pointer"
+              >
+                <BookOpen className="w-3.5 h-3.5" />
+                <span>My Workshops</span>
+              </button>
+              <button
+                onClick={() => navigate('/dashboard/live-classes')}
+                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-blue-700/80 hover:bg-blue-700 text-white border border-blue-400/30 text-xs font-semibold transition-all cursor-pointer"
+              >
+                <Video className="w-3.5 h-3.5" />
+                <span>Live Classes</span>
+              </button>
+              <button
+                onClick={() => navigate('/dashboard/materials')}
+                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-blue-700/80 hover:bg-blue-700 text-white border border-blue-400/30 text-xs font-semibold transition-all cursor-pointer"
+              >
+                <FileText className="w-3.5 h-3.5" />
+                <span>Materials</span>
+              </button>
+              <button
+                onClick={() => navigate('/dashboard/certificates')}
+                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-blue-700/80 hover:bg-blue-700 text-white border border-blue-400/30 text-xs font-semibold transition-all cursor-pointer"
+              >
+                <Award className="w-3.5 h-3.5" />
+                <span>Certificates</span>
+              </button>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Main Page Content */}
       <main className="flex-1">

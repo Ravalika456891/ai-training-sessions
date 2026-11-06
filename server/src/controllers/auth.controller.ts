@@ -62,7 +62,7 @@ export class AuthController {
 
   static async getMe(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const user = await AuthService.getMe(req.user!._id.toString());
+      const user = await AuthService.getMe(req.user!._id.toString(), req.user);
       res.status(200).json({
         success: true,
         data: { user },
@@ -99,7 +99,12 @@ export class AuthController {
 
   static async updateProfile(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const updatedUser = await AuthService.updateProfile(req.user!._id.toString(), req.body);
+      const { user: updatedUser, token } = await AuthService.updateProfile(
+        req.user!._id.toString(),
+        req.body,
+        req.user
+      );
+      setAuthCookie(res, token);
       res.status(200).json({
         success: true,
         message: 'Profile updated successfully.',
