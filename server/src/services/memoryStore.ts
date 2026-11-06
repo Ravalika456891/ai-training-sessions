@@ -18,7 +18,7 @@ export interface IMemoryUser {
   experienceLevel?: 'beginner' | 'intermediate' | 'advanced';
   marketingConsent: boolean;
   resetPasswordToken?: string;
-  resetPasswordExpires?: Date;
+  resetPasswordExpires?: Date; 
   createdAt: Date;
   updatedAt: Date;
   comparePassword(candidatePassword: string): Promise<boolean>;
@@ -95,6 +95,8 @@ class MemoryStoreService {
   private sessions: Map<string, any> = new Map();
   private resources: Map<string, any> = new Map();
   private certificates: Map<string, any> = new Map();
+  private submissions: Map<string, any> = new Map();
+  private assignments: Map<string, any> = new Map();
   private auditLogs: any[] = [];
   private settings: any = {
     key: 'global_settings',
@@ -138,15 +140,20 @@ class MemoryStoreService {
     },
     updatedAt: new Date(),
   };
-  private isInitialized = false;
+  private initPromise: Promise<void> | null = null;
 
   constructor() {
-    this.init();
+    this.initPromise = this.runInit();
   }
 
   private async init() {
-    if (this.isInitialized) return;
-    this.isInitialized = true;
+    if (!this.initPromise) {
+      this.initPromise = this.runInit();
+    }
+    await this.initPromise;
+  }
+
+  private async runInit() {
 
     // 1. Seed Default Admin User
     const adminPasswordHash = await bcrypt.hash(env.ADMIN_PASSWORD, 10);
@@ -388,6 +395,32 @@ class MemoryStoreService {
     for (const r of defaultResources) {
       this.resources.set(r._id, r);
     }
+
+    const defaultAssignments = [
+      {
+        _id: 'assign_day1',
+        title: 'Day 1 Deliverable: Custom Grounded AI Assistant & Prompt Library',
+        description:
+          'Configure a domain-specific AI assistant with system prompt instructions, structured JSON output schema, and knowledge base grounding.',
+        dayNumber: 1,
+        workshopBatchCode: 'ALL',
+        isRequiredForCertificate: true,
+        createdAt: new Date(),
+      },
+      {
+        _id: 'assign_day2',
+        title: 'Day 2 Capstone: Multi-Step AI Workflow & Functional Web Prototype',
+        description:
+          'Build and deploy a working multi-step AI automation or full-stack web prototype and submit your repository and live demo links.',
+        dayNumber: 2,
+        workshopBatchCode: 'ALL',
+        isRequiredForCertificate: true,
+        createdAt: new Date(),
+      },
+    ];
+    for (const a of defaultAssignments) {
+      this.assignments.set(a._id, a);
+    }
   }
 
   // --- User Operations ---
@@ -515,14 +548,15 @@ class MemoryStoreService {
     const enrollmentId = `AILP-${new Date().getFullYear()}-${num}`;
     const _id = 'mem_enr_' + Date.now();
 
+    const isFreeConfirmed = data.paymentStatus === 'completed';
     const enrollment: IMemoryEnrollment = {
       _id,
       enrollmentId,
       user: data.userId,
       workshop: data.workshopId,
-      status: 'reserved',
+      status: isFreeConfirmed ? 'confirmed' : 'reserved',
       paymentStatus: data.paymentStatus || 'pending',
-      reservedUntil: new Date(Date.now() + 15 * 60 * 1000), // 15 mins
+      reservedUntil: isFreeConfirmed ? new Date(Date.now() + 365 * 24 * 60 * 60 * 1000) : new Date(Date.now() + 15 * 60 * 1000),
       attendeeDetails: data.attendeeDetails,
       day1Attended: false,
       day2Attended: false,
@@ -535,10 +569,42 @@ class MemoryStoreService {
     const workshop = this.workshops.get(data.workshopId);
     if (workshop && workshop.availableSeats > 0) {
       workshop.availableSeats -= 1;
-      workshop.reservedCount += 1;
+      if (isFreeConfirmed) {
+        workshop.enrolledCount += 1;
+      } else {
+        workshop.reservedCount += 1;
+      }
     }
 
     return enrollment;
+  }
+
+  async confirmEnrollmentPayment(enrollmentId: string): Promise<IMemoryEnrollment | null> {
+    await this.init();
+    const enr = await this.findEnrollmentById(enrollmentId);
+    if (enr) {
+      const wasConfirmed = enr.status === 'confirmed';
+      enr.status = 'confirmed';
+      enr.paymentStatus = 'completed';
+      if (!wasConfirmed) {
+        const ws = this.workshops.get(enr.workshop);
+        if (ws) {
+          ws.reservedCount = Math.max(0, ws.reservedCount - 1);
+          ws.enrolledCount += 1;
+        }
+      }
+      return enr;
+    }
+
+    // Also check registrations by ID
+    for (const reg of this.registrations.values()) {
+      if (reg._id === enrollmentId || `REG-${reg._id.slice(-6).toUpperCase()}` === enrollmentId || reg._id.toUpperCase() === enrollmentId) {
+        reg.registrationStatus = 'confirmed';
+        reg.paymentStatus = 'paid';
+        reg.updatedAt = new Date();
+      }
+    }
+    return null;
   }
 
   async getEnrollmentsByUserId(userId: string): Promise<IMemoryEnrollment[]> {
@@ -745,6 +811,30 @@ class MemoryStoreService {
     const item = { ...cert, _id };
     this.certificates.set(_id.toString(), item);
     return item;
+  }
+
+  async getAllSubmissions(): Promise<any[]> {
+    await this.init();
+    return Array.from(this.submissions.values());
+  }
+
+  async saveSubmission(sub: any): Promise<any> {
+    await this.init();
+    const _id = sub._id || 'sub_' + Date.now();
+    const item = {
+      ...sub,
+      _id,
+      status: sub.status || 'submitted',
+      createdAt: sub.createdAt || new Date(),
+      updatedAt: new Date(),
+    };
+    this.submissions.set(_id.toString(), item);
+    return item;
+  }
+
+  async getAllAssignments(): Promise<any[]> {
+    await this.init();
+    return Array.from(this.assignments.values());
   }
 
   async createAuditLog(entry: any): Promise<any> {

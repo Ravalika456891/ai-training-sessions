@@ -257,3 +257,4 @@ export const AdminPayments: React.FC = () => {
     </div>
   );
 };
+

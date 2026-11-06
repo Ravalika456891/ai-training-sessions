@@ -3,10 +3,14 @@ import mongoose from 'mongoose';
 import { Enrollment } from '../models/Enrollment.js';
 import { Registration } from '../models/Registration.js';
 import { Workshop } from '../models/Workshop.js';
+import { WorkshopSession } from '../models/WorkshopSession.js';
+import { LearningResource } from '../models/LearningResource.js';
+import { Assignment } from '../models/Assignment.js';
 import { ProjectSubmission } from '../models/ProjectSubmission.js';
 import { Certificate } from '../models/Certificate.js';
-import { Payment } from '../models/Payment.js';
 import { Attendance } from '../models/Attendance.js';
+import { EnrollmentService } from '../services/enrollment.service.js';
+import { PaymentService } from '../services/payment.service.js';
 import { ApiError } from '../utils/apiError.js';
 import { isDBConnected } from '../config/db.js';
 import { memoryStore } from '../services/memoryStore.js';
@@ -14,12 +18,36 @@ import { memoryStore } from '../services/memoryStore.js';
 export class LearnerController {
   /**
    * Helper to gather all enrollments & registrations for the authenticated student
-   * across both MongoDB Atlas and the resilient memoryStore.
+   * across both MongoDB Atlas and the resilient memoryStore, enriched with real
+   * WorkshopSession and LearningResource records.
    */
   private static async getStudentWorkshops(userId: string, userEmail: string): Promise<any[]> {
     const normalizedEmail = (userEmail || '').toLowerCase().trim();
     const rawEnrollments: any[] = [];
     const seenBatchCodes = new Set<string>();
+
+    // Fetch real sessions & learning resources from MongoDB or memoryStore
+    let allSessions: any[] = [];
+    let allResources: any[] = [];
+
+    if (isDBConnected()) {
+      try {
+        [allSessions, allResources] = await Promise.all([
+          WorkshopSession.find().sort({ dayNumber: 1 }),
+          LearningResource.find({ isPublished: true }).sort({ createdAt: -1 }),
+        ]);
+      } catch (err: any) {
+        console.warn('[LearnerController Sessions/Resources Fallback]', err.message);
+      }
+    }
+    if (allSessions.length === 0) {
+      allSessions = await memoryStore.getAllSessions();
+    }
+    if (allResources.length === 0) {
+      allResources = (await memoryStore.getAllResources()).filter(
+        (r) => r.isPublished && !['faq', 'testimonial'].includes(r.category)
+      );
+    }
 
     // 1. Query MongoDB Enrollments & Registrations if connected
     if (isDBConnected()) {
@@ -29,6 +57,7 @@ export class LearnerController {
             .populate('workshopId')
             .sort({ createdAt: -1 });
           for (const enr of dbEnrollments) {
+            if (enr.status === 'cancelled') continue;
             const ws: any = enr.workshopId || {};
             if (ws.batchCode) seenBatchCodes.add(ws.batchCode);
             rawEnrollments.push({
@@ -44,6 +73,7 @@ export class LearnerController {
         if (normalizedEmail) {
           const dbRegs = await Registration.find({ email: normalizedEmail }).sort({ createdAt: -1 });
           for (const reg of dbRegs) {
+            if (reg.registrationStatus === 'cancelled') continue;
             let ws: any = null;
             if (mongoose.Types.ObjectId.isValid(reg.batchId)) {
               ws = await Workshop.findById(reg.batchId);
@@ -86,6 +116,7 @@ export class LearnerController {
     // 2. Check MemoryStore Enrollments & Registrations
     const memEnrollments = await memoryStore.getEnrollmentsByUserId(userId);
     for (const memEnr of memEnrollments) {
+      if (memEnr.status === 'cancelled') continue;
       const ws = await memoryStore.findWorkshop(memEnr.workshop);
       const batchCode = ws?.batchCode || memEnr.workshop;
       if (!seenBatchCodes.has(batchCode)) {
@@ -103,6 +134,7 @@ export class LearnerController {
     if (normalizedEmail) {
       const memRegs = await memoryStore.getAllRegistrations();
       for (const reg of memRegs.filter((r) => r.email.toLowerCase() === normalizedEmail)) {
+        if (reg.registrationStatus === 'cancelled') continue;
         const ws = await memoryStore.findWorkshop(reg.batchId);
         const batchCode = ws?.batchCode || reg.batchId;
         if (!seenBatchCodes.has(batchCode)) {
@@ -121,6 +153,7 @@ export class LearnerController {
     // 3. Map with strict enrollment & payment authorization
     return rawEnrollments.map((enr: any) => {
       const workshop = enr.workshop || {};
+      const batchCode = workshop.batchCode || 'AILP-2026-NOV-14';
       const now = new Date();
       const start = new Date(workshop.startDate || Date.now());
       const end = new Date(workshop.endDate || Date.now());
@@ -128,17 +161,131 @@ export class LearnerController {
       const isPaid =
         enr.paymentStatus === 'paid' ||
         enr.paymentStatus === 'completed' ||
+        enr.paymentStatus === 'free' ||
         enr.paymentStatus === 'waived';
+
+      const isFreeWorkshop = Boolean(workshop.price?.isFree || workshop.price?.basePrice === 0);
 
       // Strict enrollment authorization:
       // Paid workshops require confirmed status AND verified payment.
       // Free workshops require confirmed status.
-      const isPaidConfirmed =
-        enr.status === 'confirmed' && (workshop.price?.isFree ? true : isPaid);
+      const isPaidConfirmed = enr.status === 'confirmed' && (isFreeWorkshop ? true : isPaid);
 
       const isLiveOrUpcoming =
         now.getTime() >= start.getTime() - 30 * 60 * 1000 &&
         now.getTime() <= end.getTime();
+
+      // Match real Day 1 & Day 2 sessions for this batch
+      const batchSessions = allSessions.filter(
+        (s) =>
+          s.batchCode === batchCode ||
+          s.workshopId?.toString() === workshop._id?.toString()
+      );
+
+      const formattedSessions =
+        batchSessions.length > 0
+          ? batchSessions.map((s) => ({
+              _id: s._id?.toString(),
+              dayNumber: s.dayNumber,
+              title: s.title,
+              sessionDate: s.sessionDate,
+              startTime: s.startTime || '10:00 AM',
+              endTime: s.endTime || '3:00 PM',
+              timezone: s.timezone || workshop.timezone || 'Asia/Kolkata (IST)',
+              instructorName: s.instructorName || workshop.instructor?.name || 'Vikram Malhotra',
+              liveSessionUrl: isPaidConfirmed ? s.liveSessionUrl : null,
+              meetingPasscode: isPaidConfirmed ? s.meetingPasscode : null,
+              status: s.status || 'scheduled',
+            }))
+          : [
+              {
+                _id: `${batchCode}-day1`,
+                dayNumber: 1,
+                title: 'Day 1: LLM Foundations, Prompt Engineering & Custom AI Assistants',
+                sessionDate: workshop.startDate,
+                startTime: '10:00 AM',
+                endTime: '3:00 PM',
+                timezone: workshop.timezone || 'Asia/Kolkata (IST)',
+                instructorName: workshop.instructor?.name || 'Vikram Malhotra',
+                liveSessionUrl: isPaidConfirmed
+                  ? workshop.liveSessionUrl || 'https://meet.google.com/ailp-live-cohort'
+                  : null,
+                meetingPasscode: isPaidConfirmed ? workshop.meetingPasscode || 'AILP2026' : null,
+                status: 'scheduled',
+              },
+              {
+                _id: `${batchCode}-day2`,
+                dayNumber: 2,
+                title: 'Day 2: Multi-Step AI Workflows, Functional Prototyping & Capstone Lab',
+                sessionDate: workshop.endDate,
+                startTime: '10:00 AM',
+                endTime: '3:00 PM',
+                timezone: workshop.timezone || 'Asia/Kolkata (IST)',
+                instructorName: workshop.instructor?.name || 'Vikram Malhotra',
+                liveSessionUrl: isPaidConfirmed
+                  ? workshop.liveSessionUrl || 'https://meet.google.com/ailp-live-cohort'
+                  : null,
+                meetingPasscode: isPaidConfirmed ? workshop.meetingPasscode || 'AILP2026' : null,
+                status: 'scheduled',
+              },
+            ];
+
+      // Map real learning resources categorized into Slides, Notes, Prompt Templates, and Project Resources
+      const batchResources = allResources.filter(
+        (r) =>
+          !['faq', 'testimonial'].includes(r.category) &&
+          (r.workshopBatchCode === 'ALL' || !r.workshopBatchCode || r.workshopBatchCode === batchCode)
+      );
+
+      const mappedResources = [
+        ...batchResources.map((r) => {
+          let section: 'slides' | 'notes' | 'prompts' | 'projects' = 'notes';
+          if (r.category === 'slide_deck') section = 'slides';
+          else if (r.category === 'prompt_template') section = 'prompts';
+          else if (r.category === 'code_repo') section = 'projects';
+          else if (r.category === 'pdf') section = 'notes';
+
+          return {
+            id: r._id?.toString(),
+            title: r.title,
+            description: r.description,
+            category: r.category,
+            section,
+            type:
+              r.category === 'prompt_template'
+                ? 'Prompt Template'
+                : r.category === 'code_repo'
+                ? 'Project Resource'
+                : r.category === 'slide_deck'
+                ? 'Slide Deck'
+                : 'Notes & PDF',
+            downloadUrl: isPaidConfirmed ? r.url || '#download-resource' : null,
+            content: isPaidConfirmed ? r.content || null : null,
+            isGated: !isPaidConfirmed,
+          };
+        }),
+        {
+          id: 'res-slide-day1',
+          title: 'Day 1 & Day 2 Masterclass Slide Deck (Complete Visual Guide)',
+          description:
+            '65+ annotated slides covering LLM architectures, context windows, RAG pipelines, and agent patterns.',
+          category: 'slide_deck',
+          section: 'slides',
+          type: 'Slide Deck',
+          downloadUrl: isPaidConfirmed ? 'https://ailaunchpad.edu/materials/masterclass-slides.pdf' : null,
+          content: isPaidConfirmed
+            ? 'Module 1: How Modern LLMs Reason\nModule 2: Zero-Shot & Few-Shot Prompt Architecture\nModule 3: Custom AI Assistants & Grounding\nModule 4: Agentic Workflows & Function Calling'
+            : null,
+          isGated: !isPaidConfirmed,
+        },
+      ];
+
+      const primaryJoinUrl =
+        formattedSessions[0]?.liveSessionUrl ||
+        workshop.liveSessionUrl ||
+        'https://meet.google.com/ailp-live-cohort';
+      const primaryPasscode =
+        formattedSessions[0]?.meetingPasscode || workshop.meetingPasscode || 'AILP2026';
 
       return {
         _id: enr._id,
@@ -149,56 +296,75 @@ export class LearnerController {
         workshop: {
           _id: workshop._id,
           title: workshop.title || 'AI Launchpad — 2-Day Hands-On AI Bootcamp',
-          batchCode: workshop.batchCode || 'AILP-2026',
+          batchCode,
+          description:
+            workshop.description ||
+            'Master practical Generative AI in one weekend. Build custom AI assistants, workflows, and functional prototypes with live mentorship.',
           startDate: workshop.startDate,
           endDate: workshop.endDate,
           timings: workshop.timings || '10:00 AM – 3:00 PM IST',
           timezone: workshop.timezone || 'Asia/Kolkata (IST)',
-          instructor: workshop.instructor,
-          price: workshop.price || { basePrice: 1999, currency: 'INR', taxPercentage: 18, isFree: false },
+          instructor: workshop.instructor || {
+            name: 'Vikram Malhotra',
+            role: 'Staff AI Engineer & Former ML Lead',
+            bio: 'Over 12 years building production software and leading enterprise LLM integrations.',
+          },
+          price: workshop.price || {
+            basePrice: 1999,
+            currency: 'INR',
+            taxPercentage: 18,
+            isFree: false,
+          },
         },
+        sessions: formattedSessions,
         sessionAccess: {
           isUnlocked: isPaidConfirmed,
-          joinUrl: isPaidConfirmed ? 'https://meet.google.com/ailp-live-cohort' : null,
-          meetingPasscode: isPaidConfirmed ? 'AILP2026' : null,
+          joinUrl: isPaidConfirmed ? primaryJoinUrl : null,
+          meetingPasscode: isPaidConfirmed ? primaryPasscode : null,
           platform: 'Google Meet / Zoom HD Virtual Classroom',
           canJoinNow: isPaidConfirmed && isLiveOrUpcoming,
           reason: !isPaidConfirmed
             ? 'Complete enrollment payment to unlock your live classroom seat.'
             : null,
         },
-        resources: [
-          {
-            id: 'res-1',
-            title: 'Module 1 & 2: Reusable 10-Prompt Enterprise Library',
-            type: 'PDF & Markdown',
-            downloadUrl: isPaidConfirmed ? '#download-prompts' : null,
-            isGated: !isPaidConfirmed,
-          },
-          {
-            id: 'res-2',
-            title: 'Module 3: Custom Assistant Instructions & Grounding Template',
-            type: 'Starter Pack',
-            downloadUrl: isPaidConfirmed ? '#download-assistant' : null,
-            isGated: !isPaidConfirmed,
-          },
-          {
-            id: 'res-3',
-            title: 'Module 5: React + Tailwind Prototype Starter Repository',
-            type: 'GitHub Repo',
-            downloadUrl: isPaidConfirmed ? 'https://github.com/example/ai-prototype-starter' : null,
-            isGated: !isPaidConfirmed,
-          },
-          {
-            id: 'res-4',
-            title: 'Module 6: Multi-Step n8n / Make.com Lead Workflow Blueprint',
-            type: 'JSON Workflow',
-            downloadUrl: isPaidConfirmed ? '#download-blueprint' : null,
-            isGated: !isPaidConfirmed,
-          },
-        ],
+        resources: mappedResources,
       };
     });
+  }
+
+  private static async getAvailableWorkshops(): Promise<any[]> {
+    let workshops: any[] = [];
+    if (isDBConnected()) {
+      try {
+        workshops = await Workshop.find({ status: 'published' }).sort({ startDate: 1 });
+      } catch (err: any) {
+        console.warn('[LearnerController AvailableWorkshops Fallback]', err.message);
+      }
+    }
+    if (workshops.length === 0) {
+      workshops = await memoryStore.getPublishedWorkshops();
+    }
+
+    return workshops.map((w: any) => ({
+      _id: w._id?.toString(),
+      title: w.title,
+      batchCode: w.batchCode,
+      description: w.description,
+      startDate: w.startDate,
+      endDate: w.endDate,
+      timings: w.timings || '10:00 AM – 3:00 PM IST',
+      timezone: w.timezone || 'Asia/Kolkata (IST)',
+      capacity: w.capacity || 60,
+      enrolledCount: w.enrolledCount || 0,
+      availableSeats:
+        w.availableSeats ?? Math.max(0, (w.capacity || 60) - (w.enrolledCount || 0)),
+      instructor: w.instructor || {
+        name: 'Vikram Malhotra',
+        role: 'Staff AI Engineer & Former ML Lead',
+        bio: 'Over 12 years building production software and leading enterprise LLM integrations.',
+      },
+      price: w.price || { basePrice: 1999, currency: 'INR', taxPercentage: 18, isFree: false },
+    }));
   }
 
   static async getDashboard(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -206,28 +372,148 @@ export class LearnerController {
       const userId = req.user!._id.toString();
       const userEmail = req.user!.email;
 
-      const activeWorkshops = await LearnerController.getStudentWorkshops(userId, userEmail);
+      const [activeWorkshops, availableWorkshops] = await Promise.all([
+        LearnerController.getStudentWorkshops(userId, userEmail),
+        LearnerController.getAvailableWorkshops(),
+      ]);
 
       let submissions: any[] = [];
       let certificates: any[] = [];
+      let assignments: any[] = [];
 
-      if (isDBConnected() && mongoose.Types.ObjectId.isValid(userId)) {
+      if (isDBConnected()) {
         try {
-          submissions = await ProjectSubmission.find({ userId }).sort({ createdAt: -1 });
-          certificates = await Certificate.find({ userId, isRevoked: false }).sort({ createdAt: -1 });
+          if (mongoose.Types.ObjectId.isValid(userId)) {
+            [submissions, certificates] = await Promise.all([
+              ProjectSubmission.find({ userId }).sort({ createdAt: -1 }),
+              Certificate.find({ userId, isRevoked: false }).sort({ createdAt: -1 }),
+            ]);
+          }
+          assignments = await Assignment.find().sort({ dayNumber: 1 });
         } catch (err: any) {
           console.warn('[LearnerController Dashboard Queries]', err.message);
         }
       }
 
+      if (submissions.length === 0) {
+        const memSubs = await memoryStore.getAllSubmissions();
+        const studentEnrIds = new Set(
+          activeWorkshops.flatMap((w) => [w._id?.toString(), w.enrollmentId])
+        );
+        submissions = memSubs.filter(
+          (s) => s.userId === userId || studentEnrIds.has(s.enrollmentId)
+        );
+      }
+
+      if (certificates.length === 0) {
+        const memCerts = await memoryStore.getAllCertificates();
+        const studentEnrIds = new Set(
+          activeWorkshops.flatMap((w) => [w._id?.toString(), w.enrollmentId])
+        );
+        certificates = memCerts.filter(
+          (c) =>
+            !c.isRevoked &&
+            (c.userId === userId || studentEnrIds.has(c.enrollmentId?.toString()))
+        );
+      }
+
+      if (assignments.length === 0) {
+        assignments = await memoryStore.getAllAssignments();
+      }
+
+      const confirmedWorkshops = activeWorkshops.filter((w) => w.isAuthorized);
+      const hasConfirmedEnrollment = confirmedWorkshops.length > 0;
+      const primaryWorkshop = confirmedWorkshops[0] || activeWorkshops[0] || null;
+      const upcomingClass = primaryWorkshop?.sessions?.[0] || null;
+
       res.status(200).json({
         success: true,
         data: {
           user: req.user,
+          hasConfirmedEnrollment,
           workshops: activeWorkshops,
+          availableWorkshops,
+          upcomingClass,
+          assignments,
           submissions,
           certificates,
         },
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * POST /api/learners/enroll
+   * Allows a signed-in Registered User to enroll in a selected workshop batch.
+   * Preserves strict verification: paid workshops require payment completion via Razorpay before unlocking content.
+   */
+  static async enrollInWorkshop(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const user: any = req.user!;
+      const { workshopId } = req.body;
+
+      if (!workshopId) {
+        throw ApiError.badRequest('Please select a workshop batch to enroll.');
+      }
+
+      // Check if user already has an enrollment for this batch
+      const existingWorkshops = await LearnerController.getStudentWorkshops(
+        user._id.toString(),
+        user.email
+      );
+      const existing = existingWorkshops.find(
+        (w) =>
+          w.workshop?._id?.toString() === workshopId ||
+          w.workshop?.batchCode === workshopId
+      );
+
+      if (existing) {
+        if (existing.isAuthorized) {
+          res.status(200).json({
+            success: true,
+            message: 'You are already confirmed in this workshop cohort.',
+            data: {
+              enrollment: existing,
+              paymentRequired: false,
+            },
+          });
+          return;
+        }
+        // Return existing pending enrollment so they can proceed to payment
+        res.status(200).json({
+          success: true,
+          message: 'Seat reserved. Proceed to payment to confirm your enrollment.',
+          data: {
+            enrollment: existing,
+            paymentRequired: true,
+          },
+        });
+        return;
+      }
+
+      const result = await EnrollmentService.registerLearner(
+        {
+          workshopId,
+          fullName: user.name || 'Student',
+          email: user.email,
+          phoneCountryCode: user.phone?.countryCode || '+91',
+          phoneNumber: user.phone?.number || '9876543210',
+          userCategory: user.userCategory || 'working_professional',
+          experienceLevel: user.experienceLevel || 'beginner',
+          acceptTerms: true,
+          marketingConsent: true,
+        },
+        user._id.toString()
+      );
+
+      res.status(201).json({
+        success: true,
+        message: result.paymentRequired
+          ? 'Seat reserved! Complete payment to unlock your live classes and materials.'
+          : 'Free workshop enrollment confirmed! Your student dashboard is unlocked.',
+        data: result,
       });
     } catch (error) {
       next(error);
@@ -253,7 +539,7 @@ export class LearnerController {
 
       res.status(200).json({
         success: true,
-        data: authorizedWorkshops.flatMap((w) => w.resources),
+        data: authorizedWorkshops[0].resources,
       });
     } catch (error) {
       next(error);
@@ -282,6 +568,7 @@ export class LearnerController {
         data: authorizedWorkshops.map((w) => ({
           enrollmentId: w.enrollmentId,
           workshop: w.workshop,
+          sessions: w.sessions,
           sessionAccess: w.sessionAccess,
         })),
       });
@@ -301,9 +588,9 @@ export class LearnerController {
       }
 
       const workshops = await LearnerController.getStudentWorkshops(userId, userEmail);
-      const targetEnrollment = workshops.find(
-        (w) => w.enrollmentId === enrollmentId || w._id === enrollmentId
-      );
+      const targetEnrollment =
+        workshops.find((w) => w.enrollmentId === enrollmentId || w._id === enrollmentId) ||
+        workshops.find((w) => w.isAuthorized);
 
       if (!targetEnrollment) {
         throw ApiError.notFound('Enrollment not found for this student.');
@@ -315,7 +602,11 @@ export class LearnerController {
         );
       }
 
-      if (isDBConnected() && mongoose.Types.ObjectId.isValid(userId) && mongoose.Types.ObjectId.isValid(targetEnrollment._id)) {
+      if (
+        isDBConnected() &&
+        mongoose.Types.ObjectId.isValid(userId) &&
+        mongoose.Types.ObjectId.isValid(targetEnrollment._id)
+      ) {
         const submission = await ProjectSubmission.create({
           enrollmentId: targetEnrollment._id,
           userId,
@@ -335,20 +626,20 @@ export class LearnerController {
         return;
       }
 
+      const savedInMem = await memoryStore.saveSubmission({
+        enrollmentId: targetEnrollment.enrollmentId,
+        userId,
+        projectTitle: projectTitle.trim(),
+        repositoryUrl,
+        liveDemoUrl,
+        notes,
+        status: 'submitted',
+      });
+
       res.status(201).json({
         success: true,
         message: 'Capstone project submitted successfully. It is now queued for mentor review.',
-        data: {
-          _id: 'sub_' + Date.now(),
-          enrollmentId: targetEnrollment.enrollmentId,
-          userId,
-          projectTitle: projectTitle.trim(),
-          repositoryUrl,
-          liveDemoUrl,
-          notes,
-          status: 'submitted',
-          createdAt: new Date(),
-        },
+        data: savedInMem,
       });
     } catch (error) {
       next(error);
@@ -358,12 +649,22 @@ export class LearnerController {
   static async getMySubmissions(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const userId = req.user!._id.toString();
+      const userEmail = req.user!.email;
       let submissions: any[] = [];
 
       if (isDBConnected() && mongoose.Types.ObjectId.isValid(userId)) {
         submissions = await ProjectSubmission.find({ userId })
           .populate('workshopId', 'title batchCode')
           .sort({ createdAt: -1 });
+      }
+
+      if (submissions.length === 0) {
+        const workshops = await LearnerController.getStudentWorkshops(userId, userEmail);
+        const studentEnrIds = new Set(workshops.flatMap((w) => [w._id?.toString(), w.enrollmentId]));
+        const memSubs = await memoryStore.getAllSubmissions();
+        submissions = memSubs.filter(
+          (s) => s.userId === userId || studentEnrIds.has(s.enrollmentId)
+        );
       }
 
       res.status(200).json({
@@ -379,6 +680,7 @@ export class LearnerController {
   static async getMyCertificates(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const userId = req.user!._id.toString();
+      const userEmail = req.user!.email;
       let certificates: any[] = [];
 
       if (isDBConnected() && mongoose.Types.ObjectId.isValid(userId)) {
@@ -386,6 +688,17 @@ export class LearnerController {
           userId,
           isRevoked: false,
         }).sort({ createdAt: -1 });
+      }
+
+      if (certificates.length === 0) {
+        const workshops = await LearnerController.getStudentWorkshops(userId, userEmail);
+        const studentEnrIds = new Set(workshops.flatMap((w) => [w._id?.toString(), w.enrollmentId]));
+        const memCerts = await memoryStore.getAllCertificates();
+        certificates = memCerts.filter(
+          (c) =>
+            !c.isRevoked &&
+            (c.userId === userId || studentEnrIds.has(c.enrollmentId?.toString()))
+        );
       }
 
       res.status(200).json({
@@ -401,13 +714,7 @@ export class LearnerController {
   static async getPayments(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const userId = req.user!._id.toString();
-      let payments: any[] = [];
-
-      if (isDBConnected() && mongoose.Types.ObjectId.isValid(userId)) {
-        payments = await Payment.find({ userId })
-          .populate('workshopId', 'title batchCode startDate price')
-          .sort({ createdAt: -1 });
-      }
+      const payments = await PaymentService.getMyPayments(userId);
 
       res.status(200).json({
         success: true,
@@ -439,40 +746,64 @@ export class LearnerController {
         }
       }
 
+      if (submissions.length === 0) {
+        const studentEnrIds = new Set(workshops.flatMap((w) => [w._id?.toString(), w.enrollmentId]));
+        submissions = (await memoryStore.getAllSubmissions()).filter(
+          (s) => s.userId === userId || studentEnrIds.has(s.enrollmentId)
+        );
+      }
+
+      if (certificates.length === 0) {
+        const studentEnrIds = new Set(workshops.flatMap((w) => [w._id?.toString(), w.enrollmentId]));
+        certificates = (await memoryStore.getAllCertificates()).filter(
+          (c) => !c.isRevoked && (c.userId === userId || studentEnrIds.has(c.enrollmentId?.toString()))
+        );
+      }
+
       const progress = workshops.map((enr: any) => {
         const hasDay1 = attendance.some(
           (a: any) =>
-            a.enrollmentId?.toString() === enr._id?.toString() &&
+            (a.enrollmentId?.toString() === enr._id?.toString() ||
+              a.enrollmentId?.toString() === enr.enrollmentId) &&
             a.dayNumber === 1 &&
             a.status === 'present'
         );
         const hasDay2 = attendance.some(
           (a: any) =>
-            a.enrollmentId?.toString() === enr._id?.toString() &&
+            (a.enrollmentId?.toString() === enr._id?.toString() ||
+              a.enrollmentId?.toString() === enr.enrollmentId) &&
             a.dayNumber === 2 &&
             a.status === 'present'
         );
         const hasSubmitted = submissions.some(
-          (s: any) => s.enrollmentId?.toString() === enr._id?.toString()
+          (s: any) =>
+            s.enrollmentId?.toString() === enr._id?.toString() ||
+            s.enrollmentId?.toString() === enr.enrollmentId
         );
         const hasCert = certificates.some(
-          (c: any) => c.enrollmentId?.toString() === enr._id?.toString()
+          (c: any) =>
+            c.enrollmentId?.toString() === enr._id?.toString() ||
+            c.enrollmentId?.toString() === enr.enrollmentId
         );
 
-        let score = enr.isAuthorized ? 20 : 10;
-        if (hasDay1) score += 20;
-        if (hasDay2) score += 20;
-        if (hasSubmitted) score += 20;
-        if (hasCert) score += 20;
+        let score = enr.isAuthorized ? 25 : 0;
+        if (hasDay1) score += 25;
+        if (hasDay2) score += 25;
+        if (hasSubmitted) score += 15;
+        if (hasCert) score += 10;
+
+        const isEligibleForCertificate = Boolean(enr.isAuthorized && hasSubmitted);
 
         return {
           enrollmentId: enr.enrollmentId,
           workshopTitle: enr.workshop?.title || 'AI Launchpad Bootcamp',
           batchCode: enr.workshop?.batchCode || 'AILP-COHORT',
           percentage: Math.min(score, 100),
+          isAuthorized: enr.isAuthorized,
           day1Attended: hasDay1,
           day2Attended: hasDay2,
           projectSubmitted: hasSubmitted,
+          isEligibleForCertificate,
           certificateEarned: hasCert,
           status: enr.status,
           paymentStatus: enr.paymentStatus,

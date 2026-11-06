@@ -7,6 +7,7 @@ const router = Router();
 router.use(authenticate);
 
 router.get('/dashboard', LearnerController.getDashboard);
+router.post('/enroll', LearnerController.enrollInWorkshop);
 router.get('/materials', LearnerController.getAuthorizedMaterials);
 router.get('/live-classes', LearnerController.getAuthorizedLiveClasses);
 router.post('/submissions', LearnerController.submitProject);
@@ -16,4 +17,3 @@ router.get('/payments', LearnerController.getPayments);
 router.get('/progress', LearnerController.getProgress);
 
 export default router;
-

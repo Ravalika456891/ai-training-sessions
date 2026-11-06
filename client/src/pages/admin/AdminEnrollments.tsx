@@ -220,3 +220,4 @@ export const AdminEnrollments: React.FC = () => {
     </div>
   );
 };
+

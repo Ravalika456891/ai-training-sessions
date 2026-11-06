@@ -1,14 +1,23 @@
 import React, { useState } from 'react';
-import { Upload, CheckCircle2, AlertCircle, ExternalLink, Code2, Loader2, FileCheck } from 'lucide-react';
+import {
+  Upload,
+  CheckCircle2,
+  AlertCircle,
+  ExternalLink,
+  Code2,
+  Loader2,
+  ClipboardCheck,
+  MessageSquare,
+} from 'lucide-react';
 import { useDashboard } from './DashboardLayout';
-import { Button } from '../../components/common/Button';
 
 export const DashboardAssignments: React.FC = () => {
   const { dashboardData, refreshDashboard } = useDashboard();
   const workshops = dashboardData?.workshops || [];
+  const assignments = dashboardData?.assignments || [];
   const submissions = dashboardData?.submissions || [];
-  const primary = workshops[0];
-  const isAuthorized = primary?.isAuthorized;
+  const primary = workshops.find((w: any) => w.isAuthorized) || workshops[0];
+  const isAuthorized = Boolean(primary?.isAuthorized);
 
   const [projectTitle, setProjectTitle] = useState('');
   const [repoUrl, setRepoUrl] = useState('');
@@ -53,14 +62,16 @@ export const DashboardAssignments: React.FC = () => {
         throw new Error(data.message || 'Submission failed.');
       }
 
-      setSuccessMsg('Capstone project submitted successfully! Evaluated projects qualify for verified certification.');
+      setSuccessMsg(
+        'Assignment submitted! Once reviewed by your instructor, your certificate eligibility updates automatically.'
+      );
       setProjectTitle('');
       setRepoUrl('');
       setDemoUrl('');
       setNotes('');
       await refreshDashboard();
     } catch (err: any) {
-      setErrorMsg(err.message || 'Error submitting project.');
+      setErrorMsg(err.message || 'Error submitting assignment.');
     } finally {
       setIsSubmitting(false);
     }
@@ -70,24 +81,51 @@ export const DashboardAssignments: React.FC = () => {
     <div className="space-y-6">
       <div>
         <h2 className="text-xl sm:text-2xl font-black text-[#0F172A] tracking-tight">
-          Capstone Project & Assignments
+          Assignments
         </h2>
         <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
-          Submit your functional AI prototype deliverables for mentor code review and certificate qualification.
+          Review assigned tasks, submit your capstone deliverable, and view instructor feedback.
         </p>
       </div>
 
+      {/* 1. Assigned Tasks Section */}
+      <div className="space-y-3">
+        <h3 className="text-sm font-extrabold text-[#0F172A] uppercase tracking-wider">
+          Assigned Tasks
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {assignments.map((task: any) => (
+            <div
+              key={task._id || task.title}
+              className="p-5 rounded-3xl bg-white border border-slate-200 shadow-xs space-y-2.5"
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-md bg-indigo-50 text-indigo-700 border border-indigo-200">
+                  Day {task.dayNumber || 1} Task
+                </span>
+                <span className="text-xs font-semibold text-slate-500">
+                  Max Score: {task.maxScore || 100} pts
+                </span>
+              </div>
+              <h4 className="font-bold text-sm text-[#0F172A]">{task.title}</h4>
+              <p className="text-xs text-slate-500 leading-relaxed">{task.description}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* 2. Submission Form & Status / Instructor Feedback */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Form Column */}
-        <div className="lg:col-span-7 bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-sm space-y-5">
+        <div className="lg:col-span-7 bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-xs space-y-5">
           <div className="pb-3 border-b border-slate-100 flex items-center justify-between">
             <h3 className="text-sm font-bold text-[#0F172A] flex items-center gap-2">
-              <Upload className="w-4 h-4 text-blue-600" />
-              <span>Submit Capstone Deliverable</span>
+              <Upload className="w-4 h-4 text-indigo-600" />
+              <span>Submit Assignment Deliverable</span>
             </h3>
             {primary && (
-              <span className="text-[10px] font-mono font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded">
-                Cohort: {primary.workshop?.batchCode}
+              <span className="text-[10px] font-mono font-bold text-indigo-600 bg-indigo-50 px-2.5 py-0.5 rounded-md border border-indigo-200">
+                {primary.workshop?.batchCode}
               </span>
             )}
           </div>
@@ -108,113 +146,149 @@ export const DashboardAssignments: React.FC = () => {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">Project Title *</label>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">
+                Project Title *
+              </label>
               <input
                 type="text"
                 required
                 value={projectTitle}
                 onChange={(e) => setProjectTitle(e.target.value)}
-                placeholder="e.g. Real-Time Customer Support Voice Agent"
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs text-[#0F172A] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600 transition-colors bg-white"
+                placeholder="e.g. Custom RAG Support Assistant & Workflow"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs text-[#0F172A] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-600 transition-colors bg-white"
               />
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">GitHub Repository URL</label>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  GitHub / Code Repository URL
+                </label>
                 <input
                   type="url"
                   value={repoUrl}
                   onChange={(e) => setRepoUrl(e.target.value)}
                   placeholder="https://github.com/..."
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs text-[#0F172A] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600 transition-colors bg-white"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs text-[#0F172A] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-600 transition-colors bg-white"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Live Demo / Deployed URL</label>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  Live Demo / Prototype URL
+                </label>
                 <input
                   type="url"
                   value={demoUrl}
                   onChange={(e) => setDemoUrl(e.target.value)}
                   placeholder="https://my-ai-app.vercel.app"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs text-[#0F172A] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600 transition-colors bg-white"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs text-[#0F172A] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-600 transition-colors bg-white"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">Architecture & Technical Notes</label>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">
+                Implementation Notes & Prompts Used
+              </label>
               <textarea
                 rows={3}
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                placeholder="Briefly describe LLM model used, prompt techniques, and tools integrated..."
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs text-[#0F172A] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600 transition-colors bg-white"
+                placeholder="Briefly describe your system prompt, tools used, and workflow architecture..."
+                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs text-[#0F172A] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-600 transition-colors bg-white"
               />
             </div>
 
-            <Button
+            <button
               type="submit"
-              variant="primary"
-              size="md"
               disabled={isSubmitting || !isAuthorized}
-              className="w-full"
-              rightIcon={isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
+              className="w-full inline-flex items-center justify-center gap-2 py-3 px-5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white text-xs font-bold shadow-md transition-all cursor-pointer disabled:opacity-60"
             >
-              {isSubmitting ? 'Submitting Deliverable...' : 'Submit Capstone for Mentor Evaluation'}
-            </Button>
+              {isSubmitting ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Upload className="w-4 h-4" />
+              )}
+              <span>{isSubmitting ? 'Submitting...' : 'Submit Assignment'}</span>
+            </button>
 
             {!isAuthorized && (
               <p className="text-[11px] text-amber-700 text-center">
-                Submissions are unlocked once your cohort enrollment is confirmed.
+                Assignment submission unlocks once your workshop enrollment is confirmed.
               </p>
             )}
           </form>
         </div>
 
-        {/* Deliverables History Column */}
+        {/* Submission Status & Instructor Feedback Column */}
         <div className="lg:col-span-5 space-y-4">
-          <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
+          <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-xs space-y-4">
             <h3 className="text-sm font-bold text-[#0F172A] flex items-center justify-between pb-3 border-b border-slate-100">
               <span className="flex items-center gap-2">
-                <FileCheck className="w-4 h-4 text-emerald-600" />
-                <span>Submitted Deliverables</span>
+                <ClipboardCheck className="w-4 h-4 text-emerald-600" />
+                <span>Submission Status & Feedback</span>
               </span>
               <span className="text-xs font-semibold text-slate-500">
-                {submissions.length} Total
+                {submissions.length} Submitted
               </span>
             </h3>
 
             {submissions.length === 0 ? (
               <div className="py-8 text-center text-xs text-slate-500 space-y-1">
-                <p className="font-semibold text-slate-700">No submissions yet.</p>
-                <p>Submit your Day 2 capstone project using the form.</p>
+                <p className="font-semibold text-slate-700">No submissions recorded yet.</p>
+                <p>Submit your assignment using the form to receive instructor feedback.</p>
               </div>
             ) : (
               <div className="space-y-3">
                 {submissions.map((sub: any, idx: number) => (
                   <div
                     key={sub._id || idx}
-                    className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-2 text-xs"
+                    className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2.5 text-xs"
                   >
                     <div className="flex items-start justify-between gap-2">
                       <span className="font-bold text-[#0F172A]">{sub.projectTitle}</span>
-                      <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 border border-blue-200 shrink-0">
+                      <span
+                        className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md border shrink-0 ${
+                          sub.status === 'approved'
+                            ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                            : sub.status === 'needs_revision'
+                            ? 'bg-amber-50 text-amber-700 border-amber-200'
+                            : 'bg-indigo-50 text-indigo-700 border-indigo-200'
+                        }`}
+                      >
                         {sub.status || 'submitted'}
                       </span>
                     </div>
 
-                    <div className="flex items-center gap-3 text-[11px] text-slate-500">
+                    {sub.notes && (
+                      <p className="text-[11px] text-slate-600 line-clamp-2">{sub.notes}</p>
+                    )}
+
+                    {/* Instructor Feedback Box */}
+                    <div className="p-3 rounded-xl bg-white border border-slate-200/80 space-y-1">
+                      <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-purple-700">
+                        <MessageSquare className="w-3 h-3 text-purple-600" />
+                        <span>Instructor Feedback</span>
+                      </div>
+                      <p className="text-[11px] text-slate-600">
+                        {sub.instructorFeedback ||
+                          (sub.status === 'approved'
+                            ? 'Approved! Strong prompt architecture and clean workflow execution.'
+                            : 'Queued for mentor review. Feedback is posted within 24 hours of submission.')}
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-3 text-[11px] text-slate-500 pt-1">
                       {sub.repositoryUrl && (
                         <a
                           href={sub.repositoryUrl}
                           target="_blank"
                           rel="noreferrer"
-                          className="text-blue-600 hover:underline flex items-center gap-1 font-mono"
+                          className="text-indigo-600 hover:underline flex items-center gap-1 font-mono"
                         >
                           <Code2 className="w-3 h-3" />
-                          <span>Code</span>
+                          <span>Repo</span>
                         </a>
                       )}
                       {sub.liveDemoUrl && (
@@ -222,7 +296,7 @@ export const DashboardAssignments: React.FC = () => {
                           href={sub.liveDemoUrl}
                           target="_blank"
                           rel="noreferrer"
-                          className="text-blue-600 hover:underline flex items-center gap-1 font-mono"
+                          className="text-indigo-600 hover:underline flex items-center gap-1 font-mono"
                         >
                           <ExternalLink className="w-3 h-3" />
                           <span>Demo</span>

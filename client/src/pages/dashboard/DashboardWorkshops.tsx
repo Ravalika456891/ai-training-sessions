@@ -1,132 +1,275 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { GraduationCap, Calendar, Clock, User, Video, ArrowRight, ShieldCheck } from 'lucide-react';
+import {
+  GraduationCap,
+  Calendar,
+  Clock,
+  User,
+  Video,
+  ArrowRight,
+  BookOpen,
+  CreditCard,
+  CheckCircle2,
+  Layers,
+} from 'lucide-react';
 import { useDashboard } from './DashboardLayout';
-import { Button } from '../../components/common/Button';
 
 export const DashboardWorkshops: React.FC = () => {
-  const { dashboardData } = useDashboard();
+  const { dashboardData, isEnrolling, enrollInBatch, openCheckout } = useDashboard();
   const workshops = dashboardData?.workshops || [];
+  const availableWorkshops = dashboardData?.availableWorkshops || [];
+
+  const enrolledBatchCodes = new Set(workshops.map((w: any) => w.workshop?.batchCode));
+  const otherBatches = availableWorkshops.filter(
+    (b: any) => !enrolledBatchCodes.has(b.batchCode)
+  );
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-xl sm:text-2xl font-black text-[#0F172A] tracking-tight">
-            My Enrolled Workshops
-          </h2>
-          <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
-            Manage your registered cohorts, review dates, and access curriculum deliverables.
-          </p>
-        </div>
-        <Link to="/#pricing">
-          <Button variant="outline" size="sm" rightIcon={<ArrowRight className="w-3.5 h-3.5" />}>
-            Enroll in Another Batch
-          </Button>
-        </Link>
+    <div className="space-y-8">
+      <div>
+        <h2 className="text-xl sm:text-2xl font-black text-[#0F172A] tracking-tight">
+          My Workshops
+        </h2>
+        <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
+          View your enrolled workshop cohorts, Day 1 & Day 2 curriculum schedule, and enrollment status.
+        </p>
       </div>
 
+      {/* Enrolled Workshops Section */}
       {workshops.length === 0 ? (
-        <div className="p-8 sm:p-12 rounded-3xl bg-white border border-slate-200 text-center space-y-4">
-          <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mx-auto">
+        <div className="p-8 rounded-3xl bg-white border border-slate-200 text-center space-y-3">
+          <div className="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto">
             <GraduationCap className="w-6 h-6" />
           </div>
-          <div>
-            <h3 className="font-bold text-base text-[#0F172A]">No Enrolled Workshops</h3>
-            <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
-              You haven't reserved a seat in any upcoming cohort yet. All cohorts feature identical live mentorship and materials at ₹1,999.
-            </p>
-          </div>
-          <Link to="/#pricing">
-            <Button variant="primary" size="md">
-              View Available Batches
-            </Button>
-          </Link>
+          <h3 className="font-bold text-base text-[#0F172A]">No Workshops Enrolled Yet</h3>
+          <p className="text-xs text-slate-500 max-w-md mx-auto">
+            Select an available weekend cohort below to reserve your seat and unlock your student learning modules.
+          </p>
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-5">
           {workshops.map((w: any) => {
             const isConfirmed = w.isAuthorized;
+            const sessions = w.sessions || [];
+
             return (
               <div
                 key={w.enrollmentId}
-                className="p-6 rounded-3xl bg-white border border-slate-200 shadow-xs space-y-4 transition-all hover:border-slate-300"
+                className="p-6 sm:p-7 rounded-3xl bg-white border border-slate-200 shadow-xs space-y-5"
               >
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
+                {/* Top Header */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                      <span className="font-mono text-xs font-bold text-blue-600">
+                      <span className="font-mono text-xs font-bold text-indigo-600 bg-indigo-50 px-2.5 py-0.5 rounded-md border border-indigo-200">
                         {w.workshop?.batchCode || 'AILP-BATCH'}
                       </span>
                       <span
-                        className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md border ${
+                        className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-md border ${
                           isConfirmed
                             ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
                             : 'bg-amber-50 text-amber-700 border-amber-200'
                         }`}
                       >
-                        {isConfirmed ? 'Confirmed Participant' : 'Payment Pending'}
+                        {isConfirmed ? 'Confirmed Enrollment' : 'Payment Pending'}
                       </span>
                     </div>
-                    <h3 className="text-base sm:text-lg font-bold text-[#0F172A]">
+                    <h3 className="text-lg font-extrabold text-[#0F172A]">
                       {w.workshop?.title || 'AI Launchpad — 2-Day Hands-On AI Bootcamp'}
                     </h3>
                   </div>
 
                   <div className="text-left sm:text-right">
-                    <span className="text-xs font-mono text-slate-500 block">Enrollment ID:</span>
-                    <span className="text-xs font-bold text-[#0F172A]">{w.enrollmentId}</span>
+                    <span className="text-[10px] uppercase font-bold text-slate-400 block">
+                      Enrollment ID
+                    </span>
+                    <span className="text-xs font-mono font-bold text-[#0F172A]">
+                      {w.enrollmentId}
+                    </span>
                   </div>
                 </div>
 
+                {/* Metadata Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-                  <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center gap-2.5">
-                    <Calendar className="w-4 h-4 text-blue-600 shrink-0" />
+                  <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-center gap-3">
+                    <Calendar className="w-4 h-4 text-indigo-600 shrink-0" />
                     <div>
-                      <span className="text-[10px] text-slate-500 font-semibold block uppercase">Cohort Days</span>
-                      <span className="font-bold text-[#0F172A]">Saturday & Sunday</span>
+                      <span className="text-[10px] text-slate-500 font-semibold block uppercase">
+                        Dates
+                      </span>
+                      <span className="font-bold text-[#0F172A]">
+                        {new Date(w.workshop?.startDate).toLocaleDateString('en-US', {
+                          month: 'short',
+                          day: 'numeric',
+                        })}{' '}
+                        –{' '}
+                        {new Date(w.workshop?.endDate).toLocaleDateString('en-US', {
+                          month: 'short',
+                          day: 'numeric',
+                          year: 'numeric',
+                        })}
+                      </span>
                     </div>
                   </div>
 
-                  <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center gap-2.5">
-                    <Clock className="w-4 h-4 text-blue-600 shrink-0" />
+                  <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-center gap-3">
+                    <Clock className="w-4 h-4 text-purple-600 shrink-0" />
                     <div>
-                      <span className="text-[10px] text-slate-500 font-semibold block uppercase">Daily Schedule</span>
-                      <span className="font-bold text-[#0F172A]">{w.workshop?.timings || '10:00 AM – 3:00 PM IST'}</span>
+                      <span className="text-[10px] text-slate-500 font-semibold block uppercase">
+                        Schedule
+                      </span>
+                      <span className="font-bold text-[#0F172A]">
+                        {w.workshop?.timings || '10:00 AM – 3:00 PM IST'}
+                      </span>
                     </div>
                   </div>
 
-                  <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center gap-2.5">
-                    <User className="w-4 h-4 text-blue-600 shrink-0" />
+                  <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-center gap-3">
+                    <User className="w-4 h-4 text-indigo-600 shrink-0" />
                     <div>
-                      <span className="text-[10px] text-slate-500 font-semibold block uppercase">Lead Instructor</span>
-                      <span className="font-bold text-[#0F172A]">{w.workshop?.instructor?.name || 'Vikram Malhotra'}</span>
+                      <span className="text-[10px] text-slate-500 font-semibold block uppercase">
+                        Instructor
+                      </span>
+                      <span className="font-bold text-[#0F172A]">
+                        {w.workshop?.instructor?.name || 'Vikram Malhotra'}
+                      </span>
                     </div>
                   </div>
                 </div>
 
-                <div className="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                {/* Day 1 & Day 2 Curriculum & Schedule */}
+                <div className="space-y-2.5">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+                    <Layers className="w-3.5 h-3.5 text-indigo-600" />
+                    <span>Curriculum & Session Schedule</span>
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {sessions.map((s: any) => (
+                      <div
+                        key={s._id || s.dayNumber}
+                        className="p-3.5 rounded-2xl bg-slate-50/80 border border-slate-200 space-y-1 text-xs"
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="font-bold text-indigo-600">Day {s.dayNumber}</span>
+                          <span className="text-[11px] text-slate-500">
+                            {s.startTime} – {s.endTime}
+                          </span>
+                        </div>
+                        <p className="font-bold text-[#0F172A]">{s.title}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Bottom Action Bar */}
+                <div className="pt-3 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div className="text-xs text-slate-500 flex items-center gap-1.5">
-                    <ShieldCheck className="w-4 h-4 text-blue-600" />
-                    <span>Includes 2 days live mentoring, 4 capstone deliverables, and certificate.</span>
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>
+                      {isConfirmed
+                        ? 'Full access to live classroom, slides, prompt templates, and certification.'
+                        : 'Complete payment to activate your classroom link and learning materials.'}
+                    </span>
                   </div>
 
                   <div className="flex items-center gap-2.5 shrink-0">
-                    <Link to="/dashboard/materials">
-                      <Button variant="outline" size="sm">
-                        View Materials
-                      </Button>
-                    </Link>
-                    <Link to="/dashboard/live-classes">
-                      <Button variant="primary" size="sm" rightIcon={<Video className="w-3.5 h-3.5" />}>
-                        Classroom Link
-                      </Button>
-                    </Link>
+                    {isConfirmed ? (
+                      <>
+                        <Link
+                          to="/dashboard/materials"
+                          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl border border-slate-200 hover:border-indigo-300 text-xs font-semibold text-[#0F172A] hover:bg-slate-50 transition-colors"
+                        >
+                          <BookOpen className="w-3.5 h-3.5 text-indigo-600" />
+                          <span>Materials</span>
+                        </Link>
+                        <Link
+                          to="/dashboard/live-classes"
+                          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white text-xs font-bold shadow-sm transition-all"
+                        >
+                          <Video className="w-3.5 h-3.5" />
+                          <span>Join Live Class</span>
+                        </Link>
+                      </>
+                    ) : (
+                      <button
+                        onClick={() => openCheckout(w.enrollmentId)}
+                        className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white text-xs font-bold shadow-sm transition-all cursor-pointer"
+                      >
+                        <CreditCard className="w-3.5 h-3.5" />
+                        <span>Complete Payment</span>
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
             );
           })}
+        </div>
+      )}
+
+      {/* Available Workshop Batches for Exploration */}
+      {otherBatches.length > 0 && (
+        <div className="space-y-4 pt-2">
+          <div>
+            <h3 className="text-base font-extrabold text-[#0F172A]">
+              Upcoming Workshop Batches
+            </h3>
+            <p className="text-xs text-slate-500">
+              Explore other scheduled cohorts open for enrollment.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {otherBatches.map((batch: any) => {
+              const basePrice = batch.price?.basePrice ?? 1999;
+              return (
+                <div
+                  key={batch._id}
+                  className="p-5 rounded-2xl bg-white border border-slate-200 flex flex-col justify-between space-y-4"
+                >
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="font-mono text-xs font-bold text-indigo-600">
+                        {batch.batchCode}
+                      </span>
+                      <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
+                        {batch.availableSeats} seats open
+                      </span>
+                    </div>
+                    <h4 className="font-bold text-sm text-[#0F172A]">{batch.title}</h4>
+                    <p className="text-xs text-slate-500">
+                      {new Date(batch.startDate).toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                      })}{' '}
+                      –{' '}
+                      {new Date(batch.endDate).toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                        year: 'numeric',
+                      })}{' '}
+                      • {batch.timings}
+                    </p>
+                  </div>
+
+                  <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
+                    <span className="text-sm font-black text-[#0F172A]">
+                      ₹{basePrice.toLocaleString('en-IN')}{' '}
+                      <span className="text-[10px] font-normal text-slate-500">+ GST</span>
+                    </span>
+                    <button
+                      disabled={isEnrolling}
+                      onClick={() => enrollInBatch(batch._id)}
+                      className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition-colors cursor-pointer disabled:opacity-60"
+                    >
+                      <span>Enroll</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
       )}
     </div>

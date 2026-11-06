@@ -4,11 +4,9 @@ import {
   LayoutDashboard,
   GraduationCap,
   Video,
-  Download,
-  Upload,
-  TrendingUp,
+  BookOpen,
+  ClipboardCheck,
   Award,
-  CreditCard,
   User,
   LogOut,
   Sparkles,
@@ -16,16 +14,22 @@ import {
   X,
   ExternalLink,
   ShieldCheck,
-  ChevronRight
+  PanelLeftClose,
+  PanelLeftOpen,
+  Lock,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { CheckoutModal } from '../../components/checkout/CheckoutModal';
 
 export interface DashboardContextType {
   dashboardData: any;
   payments: any[];
   progress: any[];
   isLoading: boolean;
+  isEnrolling: boolean;
   refreshDashboard: () => Promise<void>;
+  enrollInBatch: (workshopId: string) => Promise<void>;
+  openCheckout: (enrollmentId: string) => void;
 }
 
 export const DashboardContext = React.createContext<DashboardContextType>({
@@ -33,7 +37,10 @@ export const DashboardContext = React.createContext<DashboardContextType>({
   payments: [],
   progress: [],
   isLoading: true,
+  isEnrolling: false,
   refreshDashboard: async () => {},
+  enrollInBatch: async () => {},
+  openCheckout: () => {},
 });
 
 export const useDashboard = () => React.useContext(DashboardContext);
@@ -42,12 +49,21 @@ export const DashboardLayout: React.FC = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const [dashboardData, setDashboardData] = useState<any>(null);
   const [payments, setPayments] = useState<any[]>([]);
   const [progress, setProgress] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isEnrolling, setIsEnrolling] = useState(false);
+  const [checkoutEnrollmentId, setCheckoutEnrollmentId] = useState<string | null>(null);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  const showToast = (msg: string) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(null), 4000);
+  };
 
   const refreshDashboard = async () => {
     setIsLoading(true);
@@ -87,22 +103,69 @@ export const DashboardLayout: React.FC = () => {
     refreshDashboard();
   }, []);
 
-  // Close mobile drawer on route change
   useEffect(() => {
     setIsMobileMenuOpen(false);
   }, [location.pathname]);
 
-  const navItems = [
-    { label: 'Overview', href: '/dashboard', icon: LayoutDashboard, end: true },
+  const enrollInBatch = async (workshopId: string) => {
+    setIsEnrolling(true);
+    try {
+      const res = await fetch('/api/learners/enroll', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ workshopId }),
+      });
+      const json = await res.json();
+      if (!res.ok) {
+        throw new Error(json.message || 'Could not enroll in workshop.');
+      }
+
+      await refreshDashboard();
+
+      const enrollmentId = json.data?.enrollment?.enrollmentId;
+      if (json.data?.paymentRequired && enrollmentId) {
+        setCheckoutEnrollmentId(enrollmentId);
+      } else {
+        showToast(json.message || 'Workshop enrollment confirmed!');
+      }
+    } catch (err: any) {
+      showToast(err.message || 'Enrollment failed.');
+    } finally {
+      setIsEnrolling(false);
+    }
+  };
+
+  const openCheckout = (enrollmentId: string) => {
+    setCheckoutEnrollmentId(enrollmentId);
+  };
+
+  const hasConfirmedEnrollment = Boolean(
+    dashboardData?.hasConfirmedEnrollment ||
+      (dashboardData?.workshops || []).some((w: any) => w.isAuthorized)
+  );
+
+  // Full 7-item navigation for Enrolled Students; simplified 3-item navigation for Registered Users (not yet enrolled)
+  const enrolledNavItems = [
+    { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard, end: true },
     { label: 'My Workshops', href: '/dashboard/workshops', icon: GraduationCap },
     { label: 'Live Classes', href: '/dashboard/live-classes', icon: Video },
-    { label: 'Learning Materials', href: '/dashboard/materials', icon: Download },
-    { label: 'Assignments', href: '/dashboard/assignments', icon: Upload },
-    { label: 'Learning Progress', href: '/dashboard/progress', icon: TrendingUp },
+    { label: 'Learning Materials', href: '/dashboard/materials', icon: BookOpen },
+    { label: 'Assignments', href: '/dashboard/assignments', icon: ClipboardCheck },
     { label: 'Certificates', href: '/dashboard/certificates', icon: Award },
-    { label: 'Payment History', href: '/dashboard/payments', icon: CreditCard },
-    { label: 'Profile Settings', href: '/dashboard/profile', icon: User },
+    { label: 'Profile', href: '/dashboard/profile', icon: User },
   ];
+
+  const registeredOnlyNavItems = [
+    { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard, end: true },
+    { label: 'My Workshops', href: '/dashboard/workshops', icon: GraduationCap },
+    { label: 'Profile', href: '/dashboard/profile', icon: User },
+  ];
+
+  const activeNavItems = hasConfirmedEnrollment ? enrolledNavItems : registeredOnlyNavItems;
 
   const handleSignOut = async () => {
     await logout();
@@ -116,99 +179,136 @@ export const DashboardLayout: React.FC = () => {
         payments,
         progress,
         isLoading,
+        isEnrolling,
         refreshDashboard,
+        enrollInBatch,
+        openCheckout,
       }}
     >
       <div className="min-h-screen bg-[#F8FAFC] text-[#0F172A] flex font-sans">
-        {/* Desktop Sidebar (Fixed Left) */}
-        <aside className="hidden lg:flex lg:flex-col lg:w-64 bg-white border-r border-slate-200 shrink-0 select-none">
-          {/* Brand Logo */}
-          <div className="p-5 border-b border-slate-200">
-            <Link to="/" className="flex items-center gap-2.5 group">
-              <div className="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-sm group-hover:bg-blue-700 transition-colors">
+        {/* Desktop Collapsible Dark Navy & Purple Sidebar */}
+        <aside
+          className={`hidden lg:flex lg:flex-col bg-[#0B0F19] text-slate-200 border-r border-slate-800 shrink-0 select-none transition-all duration-200 ${
+            isSidebarCollapsed ? 'lg:w-20' : 'lg:w-64'
+          }`}
+        >
+          {/* Brand Logo & Collapse Toggle */}
+          <div className="p-4 border-b border-slate-800/80 flex items-center justify-between gap-2">
+            <Link to="/" className="flex items-center gap-2.5 group min-w-0">
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center text-white shadow-md shrink-0">
                 <Sparkles className="w-5 h-5 text-white" />
               </div>
-              <div>
-                <span className="font-extrabold text-base tracking-tight text-[#0F172A] block leading-none">
-                  AI Launchpad
-                </span>
-                <span className="text-[10px] text-blue-600 font-bold uppercase tracking-wider block mt-1">
-                  Student Portal
-                </span>
-              </div>
+              {!isSidebarCollapsed && (
+                <div className="min-w-0">
+                  <span className="font-extrabold text-sm tracking-tight text-white block truncate">
+                    AI Launchpad
+                  </span>
+                  <span className="text-[10px] text-purple-300 font-bold uppercase tracking-wider block mt-0.5">
+                    {hasConfirmedEnrollment ? 'Student Portal' : 'Learner Account'}
+                  </span>
+                </div>
+              )}
             </Link>
+            <button
+              type="button"
+              onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+              className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-colors cursor-pointer shrink-0"
+              title={isSidebarCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}
+            >
+              {isSidebarCollapsed ? (
+                <PanelLeftOpen className="w-4 h-4" />
+              ) : (
+                <PanelLeftClose className="w-4 h-4" />
+              )}
+            </button>
           </div>
 
-          {/* User Badge Info */}
-          <div className="p-4 mx-3 my-3 rounded-2xl bg-slate-50 border border-slate-200 flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-blue-600 text-white font-black text-sm flex items-center justify-center shrink-0">
-              {user?.name ? user.name.charAt(0).toUpperCase() : 'S'}
-            </div>
-            <div className="min-w-0 flex-1">
-              <p className="text-xs font-bold text-[#0F172A] truncate">{user?.name || 'Student'}</p>
-              <div className="flex items-center gap-1.5 mt-0.5">
-                <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
-                <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider">
-                  {user?.role || 'learner'}
-                </span>
+          {/* User Status Card */}
+          {!isSidebarCollapsed && (
+            <div className="p-3.5 mx-3 my-3 rounded-2xl bg-slate-900/90 border border-slate-800 flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-600 to-purple-600 text-white font-black text-sm flex items-center justify-center shrink-0">
+                {user?.name ? user.name.charAt(0).toUpperCase() : 'S'}
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-xs font-bold text-white truncate">{user?.name || 'Learner'}</p>
+                <div className="flex items-center gap-1.5 mt-0.5">
+                  <span
+                    className={`inline-block w-1.5 h-1.5 rounded-full shrink-0 ${
+                      hasConfirmedEnrollment ? 'bg-emerald-400' : 'bg-purple-400'
+                    }`}
+                  />
+                  <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider truncate">
+                    {hasConfirmedEnrollment ? 'Enrolled Student' : 'Registered User'}
+                  </span>
+                </div>
               </div>
             </div>
-          </div>
+          )}
 
-          {/* Navigation Links */}
+          {/* Main Navigation Links */}
           <nav className="flex-1 px-3 py-2 space-y-1 overflow-y-auto">
-            {navItems.map((item) => {
+            {activeNavItems.map((item) => {
               const Icon = item.icon;
               return (
                 <NavLink
                   key={item.href}
                   to={item.href}
                   end={item.end}
+                  title={isSidebarCollapsed ? item.label : undefined}
                   className={({ isActive }) =>
-                    `flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all ${
+                    `flex items-center ${
+                      isSidebarCollapsed ? 'justify-center px-2' : 'gap-3 px-3.5'
+                    } py-2.5 rounded-xl text-xs font-semibold transition-all ${
                       isActive
-                        ? 'bg-blue-600 text-white shadow-xs'
-                        : 'text-slate-600 hover:text-[#0F172A] hover:bg-slate-100'
+                        ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md shadow-indigo-950/50'
+                        : 'text-slate-400 hover:text-white hover:bg-white/5'
                     }`
                   }
                 >
                   <Icon className="w-4 h-4 shrink-0" />
-                  <span>{item.label}</span>
+                  {!isSidebarCollapsed && <span>{item.label}</span>}
                 </NavLink>
               );
             })}
+
+            {/* Helpful note for Registered Users (not yet enrolled) */}
+            {!hasConfirmedEnrollment && !isSidebarCollapsed && (
+              <div className="mt-4 p-3.5 rounded-2xl bg-slate-900/70 border border-slate-800/90 space-y-1.5">
+                <div className="flex items-center gap-1.5 text-[11px] font-bold text-purple-300">
+                  <Lock className="w-3.5 h-3.5 text-purple-400 shrink-0" />
+                  <span>Learning Modules</span>
+                </div>
+                <p className="text-[11px] text-slate-400 leading-relaxed">
+                  Live Classes, Materials, Assignments, and Certificates unlock automatically once your workshop enrollment is confirmed.
+                </p>
+              </div>
+            )}
           </nav>
 
           {/* Bottom Actions */}
-          <div className="p-3 border-t border-slate-200 space-y-1">
-            <Link
-              to="/dashboard"
-              className="flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold text-blue-700 bg-blue-50/70 hover:bg-blue-100/80 transition-colors"
-            >
-              <span className="flex items-center gap-2">
-                <LayoutDashboard className="w-3.5 h-3.5 text-blue-600" />
-                <span>My Dashboard</span>
-              </span>
-              <ChevronRight className="w-3.5 h-3.5 text-blue-600" />
-            </Link>
-
+          <div className="p-3 border-t border-slate-800 space-y-1">
             <Link
               to="/"
-              className="flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium text-slate-600 hover:text-[#0F172A] hover:bg-slate-100 transition-colors"
+              title={isSidebarCollapsed ? 'Public Website' : undefined}
+              className={`flex items-center ${
+                isSidebarCollapsed ? 'justify-center px-2' : 'justify-between px-3'
+              } py-2 rounded-xl text-xs font-medium text-slate-400 hover:text-white hover:bg-white/5 transition-colors`}
             >
-              <span className="flex items-center gap-2">
-                <ExternalLink className="w-3.5 h-3.5 text-slate-400" />
-                <span>Public Website</span>
+              <span className="flex items-center gap-2.5">
+                <ExternalLink className="w-4 h-4 text-slate-400 shrink-0" />
+                {!isSidebarCollapsed && <span>Explore Public Site</span>}
               </span>
-              <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
             </Link>
 
             <button
               onClick={handleSignOut}
-              className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
+              title={isSidebarCollapsed ? 'Sign Out' : undefined}
+              className={`w-full flex items-center ${
+                isSidebarCollapsed ? 'justify-center px-2' : 'gap-2.5 px-3'
+              } py-2 rounded-xl text-xs font-semibold text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 transition-colors cursor-pointer`}
             >
               <LogOut className="w-4 h-4 shrink-0" />
-              <span>Sign Out</span>
+              {!isSidebarCollapsed && <span>Sign Out</span>}
             </button>
           </div>
         </aside>
@@ -216,7 +316,7 @@ export const DashboardLayout: React.FC = () => {
         {/* Main Content Area */}
         <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
           {/* Top Header Bar */}
-          <header className="bg-white border-b border-slate-200 sticky top-0 z-30 px-4 sm:px-6 py-3 flex items-center justify-between">
+          <header className="bg-white border-b border-slate-200 sticky top-0 z-30 px-4 sm:px-6 py-3.5 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <button
                 type="button"
@@ -226,13 +326,19 @@ export const DashboardLayout: React.FC = () => {
               >
                 {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
               </button>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2.5">
                 <h1 className="text-base sm:text-lg font-black text-[#0F172A] tracking-tight">
-                  Student Dashboard
+                  {hasConfirmedEnrollment ? 'Student Learning Portal' : 'Workshop Discovery & Account'}
                 </h1>
-                <span className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 text-[10px] font-bold border border-blue-200">
-                  <ShieldCheck className="w-3 h-3 text-blue-600" />
-                  Verified Session
+                <span
+                  className={`hidden sm:inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[10px] font-bold border ${
+                    hasConfirmedEnrollment
+                      ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                      : 'bg-purple-50 text-purple-700 border-purple-200'
+                  }`}
+                >
+                  <ShieldCheck className="w-3 h-3" />
+                  <span>{hasConfirmedEnrollment ? 'Enrolled Student' : 'Registered User'}</span>
                 </span>
               </div>
             </div>
@@ -240,18 +346,10 @@ export const DashboardLayout: React.FC = () => {
             <div className="flex items-center gap-2 sm:gap-3">
               <Link
                 to="/dashboard"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 transition-colors"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 transition-colors"
               >
-                <LayoutDashboard className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                <LayoutDashboard className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
                 <span>My Dashboard</span>
-              </Link>
-
-              <Link
-                to="/"
-                className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium text-slate-600 hover:text-blue-600 hover:bg-slate-50 border border-slate-200 transition-colors"
-              >
-                <ExternalLink className="w-3.5 h-3.5" />
-                <span>Visit Main Site</span>
               </Link>
 
               <button
@@ -266,37 +364,52 @@ export const DashboardLayout: React.FC = () => {
             </div>
           </header>
 
-          {/* Mobile Drawer (When Open) */}
+          {/* Toast Feedback Banner */}
+          {toastMessage && (
+            <div className="bg-indigo-950 text-white px-4 py-2.5 text-xs font-semibold flex items-center justify-between">
+              <div className="max-w-6xl mx-auto w-full flex items-center justify-between">
+                <span>{toastMessage}</span>
+                <button
+                  onClick={() => setToastMessage(null)}
+                  className="text-slate-300 hover:text-white ml-4 cursor-pointer"
+                >
+                  ✕
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Compact Mobile Drawer */}
           {isMobileMenuOpen && (
-            <div className="lg:hidden fixed inset-0 z-40 bg-slate-900/50 backdrop-blur-xs flex">
-              <div className="w-72 max-w-[85%] bg-white h-full flex flex-col p-4 shadow-2xl animate-in slide-in-from-left duration-200">
-                <div className="flex items-center justify-between pb-3 border-b border-slate-200">
+            <div className="lg:hidden fixed inset-0 z-40 bg-slate-950/60 backdrop-blur-xs flex">
+              <div className="w-72 max-w-[85%] bg-[#0B0F19] text-white h-full flex flex-col p-4 shadow-2xl">
+                <div className="flex items-center justify-between pb-3 border-b border-slate-800">
                   <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white">
+                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center text-white">
                       <Sparkles className="w-4 h-4" />
                     </div>
-                    <span className="font-extrabold text-sm text-[#0F172A]">AI Launchpad</span>
+                    <span className="font-extrabold text-sm text-white">AI Launchpad</span>
                   </div>
                   <button
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600"
+                    className="p-1.5 rounded-lg text-slate-400 hover:text-white"
                   >
                     <X className="w-5 h-5" />
                   </button>
                 </div>
 
-                <div className="my-3 p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-full bg-blue-600 text-white font-bold text-xs flex items-center justify-center shrink-0">
+                <div className="my-3 p-3 rounded-xl bg-slate-900 border border-slate-800 flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-600 to-purple-600 text-white font-bold text-xs flex items-center justify-center shrink-0">
                     {user?.name ? user.name.charAt(0).toUpperCase() : 'S'}
                   </div>
                   <div className="min-w-0">
-                    <p className="text-xs font-bold text-[#0F172A] truncate">{user?.name || 'Student'}</p>
-                    <p className="text-[10px] text-slate-500 truncate">{user?.email}</p>
+                    <p className="text-xs font-bold text-white truncate">{user?.name || 'Learner'}</p>
+                    <p className="text-[10px] text-slate-400 truncate">{user?.email}</p>
                   </div>
                 </div>
 
                 <nav className="flex-1 space-y-1 overflow-y-auto">
-                  {navItems.map((item) => {
+                  {activeNavItems.map((item) => {
                     const Icon = item.icon;
                     return (
                       <NavLink
@@ -304,10 +417,10 @@ export const DashboardLayout: React.FC = () => {
                         to={item.href}
                         end={item.end}
                         className={({ isActive }) =>
-                          `flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all ${
+                          `flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all ${
                             isActive
-                              ? 'bg-blue-600 text-white'
-                              : 'text-slate-600 hover:text-[#0F172A] hover:bg-slate-100'
+                              ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white'
+                              : 'text-slate-300 hover:text-white hover:bg-white/5'
                           }`
                         }
                       >
@@ -318,17 +431,17 @@ export const DashboardLayout: React.FC = () => {
                   })}
                 </nav>
 
-                <div className="pt-3 border-t border-slate-200 space-y-1">
+                <div className="pt-3 border-t border-slate-800 space-y-1">
                   <Link
                     to="/"
-                    className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium text-slate-600 hover:bg-slate-50"
+                    className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium text-slate-300 hover:bg-white/5"
                   >
                     <ExternalLink className="w-4 h-4 text-slate-400" />
                     <span>Public Website</span>
                   </Link>
                   <button
                     onClick={handleSignOut}
-                    className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold text-rose-600 hover:bg-rose-50"
+                    className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold text-rose-400 hover:bg-rose-500/10"
                   >
                     <LogOut className="w-4 h-4" />
                     <span>Sign Out</span>
@@ -340,12 +453,48 @@ export const DashboardLayout: React.FC = () => {
           )}
 
           {/* Sub-view Outlet */}
-          <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+          <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 pb-20 lg:pb-8">
             <div className="max-w-6xl mx-auto">
               <Outlet />
             </div>
           </main>
+
+          {/* Compact Mobile Bottom Navigation Bar */}
+          <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-30 bg-[#0B0F19] border-t border-slate-800 px-2 py-1.5 flex items-center justify-around">
+            {activeNavItems.slice(0, 5).map((item) => {
+              const Icon = item.icon;
+              return (
+                <NavLink
+                  key={item.href}
+                  to={item.href}
+                  end={item.end}
+                  className={({ isActive }) =>
+                    `flex flex-col items-center gap-0.5 px-2.5 py-1.5 rounded-xl text-[10px] font-semibold transition-colors ${
+                      isActive ? 'text-purple-400' : 'text-slate-400 hover:text-white'
+                    }`
+                  }
+                >
+                  <Icon className="w-4 h-4" />
+                  <span className="truncate max-w-[64px]">{item.label.split(' ')[0]}</span>
+                </NavLink>
+              );
+            })}
+          </nav>
         </div>
+
+        {/* Global Razorpay Checkout Modal for Dashboard Enrollments */}
+        {checkoutEnrollmentId && (
+          <CheckoutModal
+            isOpen={Boolean(checkoutEnrollmentId)}
+            onClose={() => setCheckoutEnrollmentId(null)}
+            enrollmentId={checkoutEnrollmentId}
+            onPaymentSuccess={async () => {
+              setCheckoutEnrollmentId(null);
+              await refreshDashboard();
+              showToast('Payment verified! Your Enrolled Student Dashboard is now unlocked.');
+            }}
+          />
+        )}
       </div>
     </DashboardContext.Provider>
   );

@@ -197,3 +197,4 @@ export const AdminCertificates: React.FC = () => {
     </div>
   );
 };
+

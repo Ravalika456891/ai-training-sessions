@@ -7,6 +7,10 @@ import { razorpayInstance } from '../config/razorpay.js';
 import { env } from '../config/env.js';
 import { ApiError } from '../utils/apiError.js';
 import { CreateOrderInput, VerifyPaymentInput } from '../validators/payment.validator.js';
+import { isDBConnected } from '../config/db.js';
+import { memoryStore } from './memoryStore.js';
+
+const memoryPayments = new Map<string, any>();
 
 interface CouponResult {
   code: string;
@@ -51,21 +55,40 @@ export class PaymentService {
 
   // 1. Create Razorpay Order
   static async createOrder(input: CreateOrderInput, userId?: string) {
-    // Lookup enrollment
-    let enrollment = await Enrollment.findOne({
-      $or: [
-        { enrollmentId: input.enrollmentId },
-        ...(mongoose.Types.ObjectId.isValid(input.enrollmentId)
-          ? [{ _id: input.enrollmentId }]
-          : []),
-      ],
-    }).populate('workshopId');
+    // Lookup enrollment in MongoDB if connected, else fallback to memoryStore
+    let enrollment: any = null;
+    let workshop: any = null;
+
+    if (isDBConnected()) {
+      try {
+        enrollment = await Enrollment.findOne({
+          $or: [
+            { enrollmentId: input.enrollmentId },
+            ...(mongoose.Types.ObjectId.isValid(input.enrollmentId)
+              ? [{ _id: input.enrollmentId }]
+              : []),
+          ],
+        }).populate('workshopId');
+        if (enrollment) {
+          workshop = enrollment.workshopId;
+        }
+      } catch (err: any) {
+        console.warn('[PaymentService.createOrder DB Fallback]', err.message);
+      }
+    }
+
+    if (!enrollment) {
+      enrollment = await memoryStore.findEnrollmentById(input.enrollmentId);
+      if (enrollment) {
+        workshop = await memoryStore.findWorkshop(enrollment.workshop);
+      }
+    }
 
     if (!enrollment) {
       throw ApiError.notFound(`Enrollment '${input.enrollmentId}' not found.`);
     }
 
-    if (enrollment.status === 'confirmed' || enrollment.paymentStatus === 'completed') {
+    if (enrollment.status === 'confirmed' && enrollment.paymentStatus === 'completed') {
       throw ApiError.badRequest('This enrollment has already been paid and confirmed.');
     }
 
@@ -76,7 +99,6 @@ export class PaymentService {
       );
     }
 
-    const workshop = enrollment.workshopId as any;
     if (!workshop) {
       throw ApiError.notFound('Associated workshop not found.');
     }
@@ -117,13 +139,40 @@ export class PaymentService {
       console.warn('[Razorpay API Note] Generated server-managed test order ID:', razorpayOrderId);
     }
 
-    // Upsert or create Payment record in MongoDB
-    let payment = await Payment.findOne({ enrollmentId: enrollment._id });
-    if (!payment) {
-      payment = new Payment({
-        userId: userId || enrollment.userId,
-        enrollmentId: enrollment._id,
-        workshopId: workshop._id,
+    // Upsert or create Payment record in MongoDB or memoryPayments
+    if (isDBConnected() && mongoose.Types.ObjectId.isValid(enrollment._id?.toString())) {
+      let payment = await Payment.findOne({ enrollmentId: enrollment._id });
+      if (!payment) {
+        payment = new Payment({
+          userId: userId || enrollment.userId,
+          enrollmentId: enrollment._id,
+          workshopId: workshop._id,
+          amount: totalAmount,
+          amountInPaise,
+          currency: workshop.price.currency || 'INR',
+          provider: 'razorpay',
+          providerOrderId: razorpayOrderId,
+          status: 'pending',
+          couponCode: appliedCoupon,
+          discountAmount,
+          taxAmount,
+        });
+      } else {
+        payment.amount = totalAmount;
+        payment.amountInPaise = amountInPaise;
+        payment.providerOrderId = razorpayOrderId;
+        payment.couponCode = appliedCoupon;
+        payment.discountAmount = discountAmount;
+        payment.taxAmount = taxAmount;
+        payment.status = 'pending';
+      }
+      await payment.save();
+    } else {
+      memoryPayments.set(razorpayOrderId, {
+        _id: `pay_${Date.now()}`,
+        userId: userId || enrollment.user,
+        enrollmentId: enrollment.enrollmentId,
+        workshopId: workshop,
         amount: totalAmount,
         amountInPaise,
         currency: workshop.price.currency || 'INR',
@@ -133,17 +182,9 @@ export class PaymentService {
         couponCode: appliedCoupon,
         discountAmount,
         taxAmount,
+        createdAt: new Date(),
       });
-    } else {
-      payment.amount = totalAmount;
-      payment.amountInPaise = amountInPaise;
-      payment.providerOrderId = razorpayOrderId;
-      payment.couponCode = appliedCoupon;
-      payment.discountAmount = discountAmount;
-      payment.taxAmount = taxAmount;
-      payment.status = 'pending';
     }
-    await payment.save();
 
     return {
       orderId: razorpayOrderId,
@@ -179,30 +220,26 @@ export class PaymentService {
   static async verifyPayment(input: VerifyPaymentInput) {
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature, enrollmentId } = input;
 
-    // Lookup payment record
-    const payment = await Payment.findOne({
-      $or: [
-        { providerOrderId: razorpay_order_id },
-        ...(mongoose.Types.ObjectId.isValid(enrollmentId)
-          ? [{ enrollmentId }]
-          : []),
-      ],
-    });
-
-    if (!payment) {
-      throw ApiError.notFound('Payment record for this order was not found.');
+    // Lookup payment record in MongoDB or memoryPayments
+    let payment: any = null;
+    if (isDBConnected()) {
+      try {
+        payment = await Payment.findOne({
+          $or: [
+            { providerOrderId: razorpay_order_id },
+            ...(mongoose.Types.ObjectId.isValid(enrollmentId)
+              ? [{ enrollmentId }]
+              : []),
+          ],
+        });
+      } catch (err: any) {
+        console.warn('[PaymentService.verifyPayment DB Fallback]', err.message);
+      }
     }
 
-    // If already verified and captured, return existing confirmed state idempotently
-    if (payment.status === 'captured') {
-      const existingEnrollment = await Enrollment.findById(payment.enrollmentId);
-      return {
-        verified: true,
-        message: 'Payment already confirmed and processed.',
-        paymentId: payment.providerPaymentId,
-        orderId: payment.providerOrderId,
-        enrollmentId: existingEnrollment?.enrollmentId,
-      };
+    const memPayment = memoryPayments.get(razorpay_order_id);
+    if (!payment && !memPayment) {
+      throw ApiError.notFound('Payment record for this order was not found.');
     }
 
     // Cryptographic HMAC-SHA256 verification
@@ -229,40 +266,74 @@ export class PaymentService {
     }
 
     if (!isValid) {
-      payment.status = 'failed';
-      payment.failureReason = 'Cryptographic signature mismatch';
-      await payment.save();
+      if (payment) {
+        payment.status = 'failed';
+        payment.failureReason = 'Cryptographic signature mismatch';
+        await payment.save();
+      } else if (memPayment) {
+        memPayment.status = 'failed';
+        memPayment.failureReason = 'Cryptographic signature mismatch';
+      }
       throw ApiError.badRequest('Invalid payment signature. Verification failed.');
     }
 
-    // Update Payment record
-    payment.status = 'captured';
-    payment.providerPaymentId = razorpay_payment_id;
-    payment.providerOrderId = razorpay_order_id;
-    payment.providerSignature = razorpay_signature;
-    await payment.save();
+    if (payment) {
+      if (payment.status === 'captured') {
+        const existingEnrollment = await Enrollment.findById(payment.enrollmentId);
+        return {
+          verified: true,
+          message: 'Payment already confirmed and processed.',
+          paymentId: payment.providerPaymentId,
+          orderId: payment.providerOrderId,
+          enrollmentId: existingEnrollment?.enrollmentId,
+        };
+      }
 
-    // Update Enrollment status to confirmed
-    const enrollment = await Enrollment.findById(payment.enrollmentId);
-    if (enrollment) {
-      enrollment.status = 'confirmed';
-      enrollment.paymentStatus = 'completed';
-      await enrollment.save();
+      payment.status = 'captured';
+      payment.providerPaymentId = razorpay_payment_id;
+      payment.providerOrderId = razorpay_order_id;
+      payment.providerSignature = razorpay_signature;
+      await payment.save();
 
-      // Atomic Workshop update: move seat from reservedCount to enrolledCount
-      await Workshop.findByIdAndUpdate(enrollment.workshopId, {
-        $inc: { reservedCount: -1, enrolledCount: 1 },
-      });
+      const enrollment = await Enrollment.findById(payment.enrollmentId);
+      if (enrollment) {
+        enrollment.status = 'confirmed';
+        enrollment.paymentStatus = 'completed';
+        await enrollment.save();
+
+        await Workshop.findByIdAndUpdate(enrollment.workshopId, {
+          $inc: { reservedCount: -1, enrolledCount: 1 },
+        });
+      }
+
+      return {
+        verified: true,
+        message: 'Payment verified successfully. Your seat is confirmed!',
+        paymentId: razorpay_payment_id,
+        orderId: razorpay_order_id,
+        enrollmentId: enrollment?.enrollmentId,
+        amount: payment.amount,
+        currency: payment.currency,
+        timestamp: new Date().toISOString(),
+      };
     }
+
+    // MemoryStore payment confirmation
+    memPayment.status = 'captured';
+    memPayment.providerPaymentId = razorpay_payment_id;
+    memPayment.providerSignature = razorpay_signature;
+    const confirmedMemEnr = await memoryStore.confirmEnrollmentPayment(
+      enrollmentId || memPayment.enrollmentId
+    );
 
     return {
       verified: true,
       message: 'Payment verified successfully. Your seat is confirmed!',
       paymentId: razorpay_payment_id,
       orderId: razorpay_order_id,
-      enrollmentId: enrollment?.enrollmentId,
-      amount: payment.amount,
-      currency: payment.currency,
+      enrollmentId: confirmedMemEnr?.enrollmentId || memPayment.enrollmentId,
+      amount: memPayment.amount,
+      currency: memPayment.currency,
       timestamp: new Date().toISOString(),
     };
   }
@@ -332,26 +403,44 @@ export class PaymentService {
   }
 
   // 4. Get Authenticated User Payments
-  static async getMyPayments(userId: string): Promise<IPayment[]> {
-    return Payment.find({ userId })
-      .populate('enrollmentId', 'enrollmentId status attendeeDetails')
-      .populate('workshopId', 'title batchCode startDate timings')
-      .sort({ createdAt: -1 });
+  static async getMyPayments(userId: string): Promise<any[]> {
+    if (isDBConnected() && mongoose.Types.ObjectId.isValid(userId)) {
+      try {
+        const dbPayments = await Payment.find({ userId })
+          .populate('enrollmentId', 'enrollmentId status attendeeDetails')
+          .populate('workshopId', 'title batchCode startDate timings')
+          .sort({ createdAt: -1 });
+        if (dbPayments.length > 0) return dbPayments;
+      } catch (err: any) {
+        console.warn('[PaymentService.getMyPayments DB Fallback]', err.message);
+      }
+    }
+    return Array.from(memoryPayments.values()).filter((p) => p.userId === userId);
   }
 
   // 5. Get Payment by Enrollment
-  static async getPaymentByEnrollment(enrollmentId: string): Promise<IPayment | null> {
-    const enrollment = await Enrollment.findOne({
-      $or: [
-        { enrollmentId },
-        ...(mongoose.Types.ObjectId.isValid(enrollmentId) ? [{ _id: enrollmentId }] : []),
-      ],
-    });
+  static async getPaymentByEnrollment(enrollmentId: string): Promise<any | null> {
+    if (isDBConnected()) {
+      try {
+        const enrollment = await Enrollment.findOne({
+          $or: [
+            { enrollmentId },
+            ...(mongoose.Types.ObjectId.isValid(enrollmentId) ? [{ _id: enrollmentId }] : []),
+          ],
+        });
+        if (enrollment) {
+          return Payment.findOne({ enrollmentId: enrollment._id })
+            .populate('workshopId', 'title batchCode startDate timings')
+            .populate('enrollmentId', 'enrollmentId status attendeeDetails');
+        }
+      } catch (err: any) {
+        console.warn('[PaymentService.getPaymentByEnrollment DB Fallback]', err.message);
+      }
+    }
 
-    if (!enrollment) return null;
-
-    return Payment.findOne({ enrollmentId: enrollment._id })
-      .populate('workshopId', 'title batchCode startDate timings')
-      .populate('enrollmentId', 'enrollmentId status attendeeDetails');
+    for (const p of memoryPayments.values()) {
+      if (p.enrollmentId === enrollmentId) return p;
+    }
+    return null;
   }
 }

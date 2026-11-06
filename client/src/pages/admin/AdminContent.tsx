@@ -246,3 +246,4 @@ export const AdminContent: React.FC = () => {
     </div>
   );
 };
+

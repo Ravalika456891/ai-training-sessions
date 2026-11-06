@@ -1,274 +1,547 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import {
   GraduationCap,
   Video,
-  Download,
-  Upload,
+  BookOpen,
+  ClipboardCheck,
   Award,
   TrendingUp,
   Clock,
   Calendar,
   ArrowRight,
-  Sparkles
+  Sparkles,
+  CheckCircle2,
+  CreditCard,
+  User,
+  Users,
+  ShieldCheck,
+  Loader2,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useDashboard } from './DashboardLayout';
-import { Button } from '../../components/common/Button';
 
 export const DashboardOverview: React.FC = () => {
   const { user } = useAuth();
-  const { dashboardData, progress } = useDashboard();
+  const [searchParams] = useSearchParams();
+  const {
+    dashboardData,
+    progress,
+    isLoading,
+    isEnrolling,
+    enrollInBatch,
+    openCheckout,
+  } = useDashboard();
 
   const workshops = dashboardData?.workshops || [];
+  const availableWorkshops = dashboardData?.availableWorkshops || [];
   const submissions = dashboardData?.submissions || [];
   const certificates = dashboardData?.certificates || [];
+  const hasConfirmedEnrollment = Boolean(
+    dashboardData?.hasConfirmedEnrollment || workshops.some((w: any) => w.isAuthorized)
+  );
 
-  const primaryWorkshop = workshops[0];
-  const isPaidConfirmed = primaryWorkshop?.isAuthorized;
+  const confirmedWorkshop = workshops.find((w: any) => w.isAuthorized) || null;
+  const pendingWorkshop = workshops.find((w: any) => !w.isAuthorized) || null;
+  const preservedBatchId =
+    searchParams.get('batch') || sessionStorage.getItem('ailp_selected_batch');
+
+  // Scroll to available workshops when clicking Explore Workshops
+  const scrollToBatches = () => {
+    const el = document.getElementById('available-batches');
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    if (searchParams.get('batch')) {
+      sessionStorage.setItem('ailp_selected_batch', searchParams.get('batch')!);
+    }
+  }, [searchParams]);
+
+  if (isLoading) {
+    return (
+      <div className="p-12 rounded-3xl bg-white border border-slate-200 flex flex-col items-center justify-center gap-3 text-slate-500">
+        <Loader2 className="w-6 h-6 animate-spin text-indigo-600" />
+        <span className="text-xs font-semibold">Loading your workspace...</span>
+      </div>
+    );
+  }
+
+  // ============================================================================
+  // USER TYPE 2: REGISTERED USER (Signed In, No Confirmed Enrollments Yet)
+  // ============================================================================
+  if (!hasConfirmedEnrollment) {
+    const highlightedBatch =
+      availableWorkshops.find(
+        (b: any) => b._id === preservedBatchId || b.batchCode === preservedBatchId
+      ) || availableWorkshops[0];
+
+    return (
+      <div className="space-y-8">
+        {/* 1. Personalized Welcome Banner (Dark Navy & Purple) */}
+        <div className="p-6 sm:p-8 rounded-3xl bg-[#0B0F19] text-white border border-slate-800 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="space-y-2">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/15 border border-purple-500/30 text-purple-300 text-xs font-semibold">
+              <Sparkles className="w-3.5 h-3.5 text-purple-400" />
+              <span>Welcome to AI Launchpad</span>
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
+              Hello, {user?.name || 'Learner'}!
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-300 max-w-xl leading-relaxed">
+              Your learner account is ready. Select an upcoming 2-Day Hands-On AI Bootcamp cohort below and complete enrollment to unlock your live classes, prompt libraries, assignments, and certificate.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-3 shrink-0">
+            <button
+              onClick={scrollToBatches}
+              className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white text-xs font-bold shadow-lg transition-all cursor-pointer"
+            >
+              <span>Explore Workshops</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
+            <Link
+              to="/dashboard/profile"
+              className="inline-flex items-center gap-2 px-4 py-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-200 text-xs font-semibold transition-colors"
+            >
+              <User className="w-4 h-4 text-purple-400" />
+              <span>Profile Settings</span>
+            </Link>
+          </div>
+        </div>
+
+        {/* 2. Clear 3-Step Enrollment & Payment Guide */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-xs flex items-start gap-3.5">
+            <div className="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 font-black text-xs flex items-center justify-center shrink-0 border border-indigo-200">
+              1
+            </div>
+            <div>
+              <h3 className="text-xs font-bold text-[#0F172A]">Choose Your Weekend Batch</h3>
+              <p className="text-[11px] text-slate-500 mt-1 leading-relaxed">
+                Pick a Saturday & Sunday cohort that fits your schedule. Seats are capped at 60 learners.
+              </p>
+            </div>
+          </div>
+
+          <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-xs flex items-start gap-3.5">
+            <div className="w-8 h-8 rounded-xl bg-purple-50 text-purple-600 font-black text-xs flex items-center justify-center shrink-0 border border-purple-200">
+              2
+            </div>
+            <div>
+              <h3 className="text-xs font-bold text-[#0F172A]">Complete Verified Payment</h3>
+              <p className="text-[11px] text-slate-500 mt-1 leading-relaxed">
+                Confirm your seat securely via Razorpay (UPI, Cards, NetBanking) with instant GST receipt.
+              </p>
+            </div>
+          </div>
+
+          <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-xs flex items-start gap-3.5">
+            <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 font-black text-xs flex items-center justify-center shrink-0 border border-emerald-200">
+              3
+            </div>
+            <div>
+              <h3 className="text-xs font-bold text-[#0F172A]">Start Learning Immediately</h3>
+              <p className="text-[11px] text-slate-500 mt-1 leading-relaxed">
+                Your dashboard automatically unlocks Live Classes, Slides, Prompt Templates, and Assignments.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* 3. Pending Reservation Callout (if the user already started enrollment) */}
+        {pendingWorkshop && (
+          <div className="p-6 rounded-3xl bg-amber-50/90 border border-amber-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-md bg-amber-100 text-amber-800 border border-amber-300">
+                  Seat Reserved • Payment Pending
+                </span>
+                <span className="text-xs font-mono font-bold text-slate-600">
+                  ID: {pendingWorkshop.enrollmentId}
+                </span>
+              </div>
+              <h3 className="text-base font-extrabold text-[#0F172A]">
+                {pendingWorkshop.workshop?.title} ({pendingWorkshop.workshop?.batchCode})
+              </h3>
+              <p className="text-xs text-slate-600">
+                Complete your payment to confirm your enrollment and unlock all learning modules.
+              </p>
+            </div>
+
+            <button
+              onClick={() => openCheckout(pendingWorkshop.enrollmentId)}
+              className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white text-xs font-bold shadow-md transition-all cursor-pointer shrink-0"
+            >
+              <CreditCard className="w-4 h-4" />
+              <span>Complete Payment Now</span>
+            </button>
+          </div>
+        )}
+
+        {/* 4. Preserved Workshop Selection from Public Landing Page */}
+        {!pendingWorkshop && highlightedBatch && preservedBatchId && (
+          <div className="p-6 rounded-3xl bg-indigo-50/70 border border-indigo-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="space-y-1">
+              <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-md bg-indigo-100 text-indigo-700">
+                Saved Selection
+              </span>
+              <h3 className="text-base font-extrabold text-[#0F172A]">
+                Continue Enrolling in {highlightedBatch.batchCode}
+              </h3>
+              <p className="text-xs text-slate-600">
+                {new Date(highlightedBatch.startDate).toLocaleDateString('en-US', {
+                  month: 'short',
+                  day: 'numeric',
+                })}{' '}
+                –{' '}
+                {new Date(highlightedBatch.endDate).toLocaleDateString('en-US', {
+                  month: 'short',
+                  day: 'numeric',
+                  year: 'numeric',
+                })}{' '}
+                • {highlightedBatch.timings} • ₹
+                {highlightedBatch.price?.basePrice?.toLocaleString('en-IN')} + 18% GST
+              </p>
+            </div>
+            <button
+              disabled={isEnrolling}
+              onClick={() => enrollInBatch(highlightedBatch._id)}
+              className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-sm transition-all cursor-pointer shrink-0 disabled:opacity-60"
+            >
+              <span>{isEnrolling ? 'Reserving...' : 'Continue to Enrollment & Payment'}</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          </div>
+        )}
+
+        {/* 5. Available Workshop Batches */}
+        <div id="available-batches" className="space-y-4 scroll-mt-20">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-lg font-extrabold text-[#0F172A]">Available Workshop Batches</h3>
+              <p className="text-xs text-slate-500">
+                Select any live weekend cohort below to reserve your seat and proceed to checkout.
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {availableWorkshops.map((batch: any) => {
+              const basePrice = batch.price?.basePrice ?? 1999;
+              const isFree = Boolean(batch.price?.isFree || basePrice === 0);
+              const dateRange = `${new Date(batch.startDate).toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric',
+              })} – ${new Date(batch.endDate).toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric',
+              })}`;
+
+              return (
+                <div
+                  key={batch._id}
+                  className="p-6 rounded-3xl bg-white border border-slate-200 hover:border-indigo-300 shadow-xs flex flex-col justify-between space-y-5 transition-all"
+                >
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="font-mono text-xs font-bold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-lg border border-indigo-200">
+                        {batch.batchCode}
+                      </span>
+                      <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
+                        {batch.availableSeats} of {batch.capacity} seats open
+                      </span>
+                    </div>
+
+                    <div>
+                      <h4 className="text-base font-extrabold text-[#0F172A]">{batch.title}</h4>
+                      <p className="text-xs text-slate-500 mt-1 line-clamp-2">
+                        {batch.description}
+                      </p>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2.5 pt-1 text-xs">
+                      <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center gap-2">
+                        <Calendar className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+                        <span className="font-semibold text-[#0F172A] truncate">{dateRange}</span>
+                      </div>
+                      <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center gap-2">
+                        <Clock className="w-3.5 h-3.5 text-purple-600 shrink-0" />
+                        <span className="font-semibold text-[#0F172A] truncate">{batch.timings}</span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 text-xs text-slate-600 pt-1">
+                      <Users className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+                      <span>
+                        Instructor: <strong className="text-[#0F172A]">{batch.instructor?.name || 'Vikram Malhotra'}</strong>
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="pt-4 border-t border-slate-100 flex items-center justify-between gap-3">
+                    <div>
+                      <span className="text-[10px] uppercase font-bold text-slate-400 block">
+                        Tuition Fee
+                      </span>
+                      <span className="text-lg font-black text-[#0F172A]">
+                        {isFree ? 'Free' : `₹${basePrice.toLocaleString('en-IN')}`}
+                      </span>
+                      {!isFree && (
+                        <span className="text-[10px] text-slate-500 ml-1">+ 18% GST</span>
+                      )}
+                    </div>
+
+                    <button
+                      disabled={isEnrolling}
+                      onClick={() => enrollInBatch(batch._id)}
+                      className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white text-xs font-bold shadow-sm transition-all cursor-pointer disabled:opacity-60"
+                    >
+                      <span>{isFree ? 'Enroll for Free' : 'Enroll & Pay'}</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ============================================================================
+  // USER TYPE 3: ENROLLED STUDENT (Signed In With Confirmed Workshop Enrollment)
+  // ============================================================================
+  const currentProgress = progress[0] || {
+    percentage: 25,
+    day1Attended: false,
+    day2Attended: false,
+    projectSubmitted: submissions.length > 0,
+    certificateEarned: certificates.length > 0,
+  };
+  const nextSession = confirmedWorkshop?.sessions?.[0] || dashboardData?.upcomingClass;
 
   return (
     <div className="space-y-6">
-      {/* Welcome Banner */}
-      <div className="p-6 sm:p-8 rounded-3xl bg-white border border-slate-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div className="space-y-1.5">
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-blue-600 bg-blue-50 px-2 py-0.5 rounded-lg border border-blue-200">
-              Welcome back
-            </span>
+      {/* 1. Enrolled Student Welcome Banner & Continue Learning Button */}
+      <div className="p-6 sm:p-8 rounded-3xl bg-[#0B0F19] text-white border border-slate-800 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="space-y-2">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs font-semibold">
+            <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+            <span>Confirmed Student • {confirmedWorkshop.workshop?.batchCode}</span>
           </div>
-          <h2 className="text-xl sm:text-2xl font-black text-[#0F172A] tracking-tight">
-            Hi, {user?.name || 'Learner'}! 👋
+          <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
+            Welcome back, {user?.name || 'Student'}!
           </h2>
-          <p className="text-xs sm:text-sm text-slate-500 max-w-xl">
-            Track your bootcamp journey, access live session links, download enterprise prompt starter packs, and submit your capstone project.
+          <p className="text-xs sm:text-sm text-slate-300 max-w-xl leading-relaxed">
+            You are enrolled in <strong>{confirmedWorkshop.workshop?.title}</strong>. Pick up right where you left off with your live sessions, learning materials, and capstone assignment.
           </p>
         </div>
 
-        <div className="flex items-center gap-3 shrink-0">
-          <Link to="/dashboard/live-classes">
-            <Button variant="primary" size="md" rightIcon={<Video className="w-4 h-4" />}>
-              Live Classroom
-            </Button>
+        <div className="flex flex-wrap items-center gap-3 shrink-0">
+          <Link
+            to="/dashboard/materials"
+            className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white text-xs font-bold shadow-lg transition-all"
+          >
+            <span>Continue Learning</span>
+            <ArrowRight className="w-4 h-4" />
           </Link>
-          <Link to="/dashboard/materials">
-            <Button variant="outline" size="md" rightIcon={<Download className="w-4 h-4" />}>
-              Materials
-            </Button>
+          <Link
+            to="/dashboard/live-classes"
+            className="inline-flex items-center gap-2 px-4 py-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-200 text-xs font-semibold transition-colors"
+          >
+            <Video className="w-4 h-4 text-purple-400" />
+            <span>Live Classes</span>
           </Link>
         </div>
       </div>
 
-      {/* Metrics Row */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-2">
-          <div className="flex items-center justify-between text-slate-500">
-            <span className="text-xs font-semibold">Active Cohorts</span>
-            <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
-              <GraduationCap className="w-4 h-4" />
+      {/* 2. Core Student Overview Cards: Current Workshop, Upcoming Class, Overall Progress */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+        {/* Card A: Current Workshop */}
+        <div className="p-6 rounded-3xl bg-white border border-slate-200 shadow-xs flex flex-col justify-between space-y-4">
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-indigo-600 bg-indigo-50 px-2.5 py-0.5 rounded-md border border-indigo-200">
+                Current Workshop
+              </span>
+              <GraduationCap className="w-5 h-5 text-indigo-600" />
             </div>
-          </div>
-          <div className="text-2xl font-black text-[#0F172A]">{workshops.length}</div>
-          <p className="text-[11px] text-slate-500">
-            {workshops.length > 0 ? `${workshops.length} cohort registered` : 'No cohorts enrolled'}
-          </p>
-        </div>
-
-        <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-2">
-          <div className="flex items-center justify-between text-slate-500">
-            <span className="text-xs font-semibold">Project Submissions</span>
-            <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
-              <Upload className="w-4 h-4" />
+            <div>
+              <h3 className="text-base font-extrabold text-[#0F172A]">
+                {confirmedWorkshop.workshop?.title}
+              </h3>
+              <p className="text-xs text-slate-500 font-mono mt-0.5">
+                Batch: {confirmedWorkshop.workshop?.batchCode}
+              </p>
             </div>
-          </div>
-          <div className="text-2xl font-black text-[#0F172A]">{submissions.length}</div>
-          <p className="text-[11px] text-slate-500">
-            {submissions.length > 0 ? 'Capstone submitted' : 'Pending submission'}
-          </p>
-        </div>
-
-        <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-2">
-          <div className="flex items-center justify-between text-slate-500">
-            <span className="text-xs font-semibold">Certificates</span>
-            <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
-              <Award className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="text-2xl font-black text-[#0F172A]">{certificates.length}</div>
-          <p className="text-[11px] text-slate-500">
-            {certificates.length > 0 ? 'Verified & Issued' : 'Unlocked after review'}
-          </p>
-        </div>
-
-        <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-2">
-          <div className="flex items-center justify-between text-slate-500">
-            <span className="text-xs font-semibold">Overall Progress</span>
-            <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
-              <TrendingUp className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="text-2xl font-black text-blue-600">
-            {progress[0]?.percentage || (workshops.length > 0 ? 25 : 0)}%
-          </div>
-          <p className="text-[11px] text-slate-500">Curriculum completion</p>
-        </div>
-      </div>
-
-      {/* Main Focus: Live Workshop Status Card */}
-      {primaryWorkshop ? (
-        <div className="p-6 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-5">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-blue-600 text-white flex items-center justify-center">
-                <Video className="w-5 h-5" />
+            <div className="space-y-1.5 text-xs text-slate-600 pt-1">
+              <div className="flex items-center gap-2">
+                <Calendar className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+                <span>
+                  {new Date(confirmedWorkshop.workshop?.startDate).toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                  })}{' '}
+                  –{' '}
+                  {new Date(confirmedWorkshop.workshop?.endDate).toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric',
+                  })}
+                </span>
               </div>
-              <div>
-                <h3 className="font-extrabold text-base text-[#0F172A]">
-                  {primaryWorkshop.workshop?.title || 'AI Launchpad Bootcamp'}
-                </h3>
-                <p className="text-xs text-slate-500 font-mono">
-                  Cohort Code: {primaryWorkshop.workshop?.batchCode}
-                </p>
+              <div className="flex items-center gap-2">
+                <User className="w-3.5 h-3.5 text-purple-600 shrink-0" />
+                <span>Instructor: {confirmedWorkshop.workshop?.instructor?.name || 'Vikram Malhotra'}</span>
               </div>
             </div>
+          </div>
 
-            <div className="flex items-center gap-2">
-              <span
-                className={`text-[11px] font-bold px-2.5 py-1 rounded-lg border uppercase tracking-wider ${
-                  isPaidConfirmed
-                    ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                    : 'bg-amber-50 text-amber-700 border-amber-200'
-                }`}
-              >
-                {isPaidConfirmed ? 'Seat Confirmed' : 'Payment Required'}
+          <Link
+            to="/dashboard/workshops"
+            className="inline-flex items-center justify-between pt-3 border-t border-slate-100 text-xs font-bold text-indigo-600 hover:text-indigo-700"
+          >
+            <span>View Curriculum & Schedule</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
+        </div>
+
+        {/* Card B: Upcoming Class */}
+        <div className="p-6 rounded-3xl bg-white border border-slate-200 shadow-xs flex flex-col justify-between space-y-4">
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-purple-600 bg-purple-50 px-2.5 py-0.5 rounded-md border border-purple-200">
+                Upcoming Class
+              </span>
+              <Video className="w-5 h-5 text-purple-600" />
+            </div>
+            <div>
+              <h3 className="text-base font-extrabold text-[#0F172A]">
+                {nextSession?.title || 'Day 1: LLM Foundations & Prompt Engineering'}
+              </h3>
+              <p className="text-xs text-slate-500 mt-0.5">
+                {confirmedWorkshop.workshop?.timings || '10:00 AM – 3:00 PM IST'}
+              </p>
+            </div>
+            <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/80 text-xs flex items-center justify-between">
+              <span className="text-slate-500">Meeting Passcode:</span>
+              <span className="font-mono font-bold text-indigo-600">
+                {confirmedWorkshop.sessionAccess?.meetingPasscode || 'AILP2026'}
               </span>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
-            <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center gap-3">
-              <Calendar className="w-4 h-4 text-blue-600 shrink-0" />
-              <div>
-                <div className="text-[10px] text-slate-500 font-semibold uppercase">Schedule</div>
-                <div className="font-bold text-[#0F172A]">Saturday & Sunday</div>
-              </div>
-            </div>
-
-            <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center gap-3">
-              <Clock className="w-4 h-4 text-blue-600 shrink-0" />
-              <div>
-                <div className="text-[10px] text-slate-500 font-semibold uppercase">Timings</div>
-                <div className="font-bold text-[#0F172A]">{primaryWorkshop.workshop?.timings || '10:00 AM – 3:00 PM IST'}</div>
-              </div>
-            </div>
-
-            <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center gap-3">
-              <GraduationCap className="w-4 h-4 text-blue-600 shrink-0" />
-              <div>
-                <div className="text-[10px] text-slate-500 font-semibold uppercase">Mentor</div>
-                <div className="font-bold text-[#0F172A]">
-                  {primaryWorkshop.workshop?.instructor?.name || 'Lead AI Engineer'}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div className="space-y-1">
-              <h4 className="text-xs font-bold text-[#0F172A] flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5 text-blue-600" />
-                <span>Virtual Classroom Access</span>
-              </h4>
-              <p className="text-[11px] text-slate-500">
-                {isPaidConfirmed
-                  ? 'Your classroom seat is unlocked. Links activate 30 minutes before the live weekend session.'
-                  : 'Enrollment payment is pending. Complete payment to receive your HD classroom pass.'}
-              </p>
-            </div>
-
-            {isPaidConfirmed ? (
-              <a
-                href={primaryWorkshop.sessionAccess?.joinUrl || '#'}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-sm transition-all cursor-pointer shrink-0"
-              >
-                <Video className="w-4 h-4" />
-                <span>Enter Live Classroom</span>
-              </a>
-            ) : (
-              <a
-                href="/#pricing"
-                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-sm transition-all cursor-pointer shrink-0"
-              >
-                <span>Complete Payment (₹1,999)</span>
-              </a>
-            )}
-          </div>
-        </div>
-      ) : (
-        <div className="p-8 rounded-3xl bg-white border border-slate-200 text-center space-y-4">
-          <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mx-auto">
-            <GraduationCap className="w-6 h-6" />
-          </div>
-          <div>
-            <h3 className="font-bold text-base text-[#0F172A]">No Enrolled Workshops Yet</h3>
-            <p className="text-xs text-slate-500 mt-1 max-w-md mx-auto">
-              Select an upcoming 2-Day live cohort to get hands-on mentorship, code templates, and an accredited certificate.
-            </p>
-          </div>
-          <Link to="/#pricing">
-            <Button variant="primary" size="md" rightIcon={<ArrowRight className="w-4 h-4" />}>
-              Explore Cohorts & Register
-            </Button>
+          <Link
+            to="/dashboard/live-classes"
+            className="inline-flex items-center justify-between pt-3 border-t border-slate-100 text-xs font-bold text-purple-600 hover:text-purple-700"
+          >
+            <span>Open Live Classroom</span>
+            <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
-      )}
 
-      {/* Quick Action Grid */}
+        {/* Card C: Overall Progress */}
+        <div className="p-6 rounded-3xl bg-white border border-slate-200 shadow-xs flex flex-col justify-between space-y-4">
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-md border border-emerald-200">
+                Overall Progress
+              </span>
+              <TrendingUp className="w-5 h-5 text-emerald-600" />
+            </div>
+
+            <div className="flex items-baseline justify-between">
+              <span className="text-3xl font-black text-[#0F172A]">
+                {currentProgress.percentage}%
+              </span>
+              <span className="text-xs text-slate-500 font-medium">Bootcamp Completion</span>
+            </div>
+
+            <div className="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
+              <div
+                className="bg-gradient-to-r from-indigo-600 to-purple-600 h-2.5 rounded-full transition-all"
+                style={{ width: `${Math.max(15, currentProgress.percentage)}%` }}
+              />
+            </div>
+
+            <div className="space-y-1.5 pt-1 text-xs">
+              <div className="flex items-center gap-2 text-emerald-700 font-semibold">
+                <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                <span>Workshop Seat Confirmed</span>
+              </div>
+              <div
+                className={`flex items-center gap-2 ${
+                  submissions.length > 0 ? 'text-emerald-700 font-semibold' : 'text-slate-500'
+                }`}
+              >
+                <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                <span>
+                  {submissions.length > 0
+                    ? 'Capstone Assignment Submitted'
+                    : 'Submit Capstone Assignment'}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <Link
+            to="/dashboard/certificates"
+            className="inline-flex items-center justify-between pt-3 border-t border-slate-100 text-xs font-bold text-emerald-700 hover:text-emerald-800"
+          >
+            <span>Check Certificate Eligibility</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
+        </div>
+      </div>
+
+      {/* 3. Quick Navigation Cards to Learning Modules */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Link
           to="/dashboard/materials"
-          className="p-5 rounded-2xl bg-white border border-slate-200 hover:border-blue-600 transition-all shadow-xs group"
+          className="p-5 rounded-2xl bg-white border border-slate-200 hover:border-indigo-500 transition-all shadow-xs group"
         >
-          <div className="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center mb-3 group-hover:scale-105 transition-transform">
-            <Download className="w-4 h-4" />
+          <div className="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center mb-3">
+            <BookOpen className="w-4 h-4" />
           </div>
-          <h4 className="font-bold text-sm text-[#0F172A] group-hover:text-blue-600 transition-colors">
+          <h4 className="font-bold text-sm text-[#0F172A] group-hover:text-indigo-600 transition-colors">
             Learning Materials
           </h4>
           <p className="text-[11px] text-slate-500 mt-1">
-            Download 10-prompt enterprise kits, instructions, and React boilerplates.
+            Access slides, notes, prompt templates, and starter project repositories.
           </p>
         </Link>
 
         <Link
           to="/dashboard/assignments"
-          className="p-5 rounded-2xl bg-white border border-slate-200 hover:border-blue-600 transition-all shadow-xs group"
+          className="p-5 rounded-2xl bg-white border border-slate-200 hover:border-purple-500 transition-all shadow-xs group"
         >
-          <div className="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center mb-3 group-hover:scale-105 transition-transform">
-            <Upload className="w-4 h-4" />
+          <div className="w-9 h-9 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center mb-3">
+            <ClipboardCheck className="w-4 h-4" />
           </div>
-          <h4 className="font-bold text-sm text-[#0F172A] group-hover:text-blue-600 transition-colors">
-            Submit Capstone
+          <h4 className="font-bold text-sm text-[#0F172A] group-hover:text-purple-600 transition-colors">
+            Assignments & Feedback
           </h4>
           <p className="text-[11px] text-slate-500 mt-1">
-            Submit your GitHub repository and live application demo for mentor evaluation.
+            View assigned tasks, submit your capstone project, and read instructor feedback.
           </p>
         </Link>
 
         <Link
           to="/dashboard/certificates"
-          className="p-5 rounded-2xl bg-white border border-slate-200 hover:border-blue-600 transition-all shadow-xs group"
+          className="p-5 rounded-2xl bg-white border border-slate-200 hover:border-indigo-500 transition-all shadow-xs group"
         >
-          <div className="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center mb-3 group-hover:scale-105 transition-transform">
+          <div className="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center mb-3">
             <Award className="w-4 h-4" />
           </div>
-          <h4 className="font-bold text-sm text-[#0F172A] group-hover:text-blue-600 transition-colors">
-            Certificates & Badges
+          <h4 className="font-bold text-sm text-[#0F172A] group-hover:text-indigo-600 transition-colors">
+            Certificates
           </h4>
           <p className="text-[11px] text-slate-500 mt-1">
-            View, share, and verify your cryptographically signed completion certificate.
+            Track completion eligibility, download your certificate, and verify credentials.
           </p>
         </Link>
       </div>

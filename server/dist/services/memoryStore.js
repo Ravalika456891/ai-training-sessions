@@ -40,6 +40,8 @@ class MemoryStoreService {
   sessions = /* @__PURE__ */ new Map();
   resources = /* @__PURE__ */ new Map();
   certificates = /* @__PURE__ */ new Map();
+  submissions = /* @__PURE__ */ new Map();
+  assignments = /* @__PURE__ */ new Map();
   auditLogs = [];
   settings = {
     key: "global_settings",
@@ -83,13 +85,17 @@ class MemoryStoreService {
     },
     updatedAt: /* @__PURE__ */ new Date()
   };
-  isInitialized = false;
+  initPromise = null;
   constructor() {
-    this.init();
+    this.initPromise = this.runInit();
   }
   async init() {
-    if (this.isInitialized) return;
-    this.isInitialized = true;
+    if (!this.initPromise) {
+      this.initPromise = this.runInit();
+    }
+    await this.initPromise;
+  }
+  async runInit() {
     const adminPasswordHash = await import_bcryptjs.default.hash(import_env.env.ADMIN_PASSWORD, 10);
     const adminId = "mem_user_admin_001";
     this.users.set(adminId, {
@@ -318,6 +324,29 @@ class MemoryStoreService {
     for (const r of defaultResources) {
       this.resources.set(r._id, r);
     }
+    const defaultAssignments = [
+      {
+        _id: "assign_day1",
+        title: "Day 1 Deliverable: Custom Grounded AI Assistant & Prompt Library",
+        description: "Configure a domain-specific AI assistant with system prompt instructions, structured JSON output schema, and knowledge base grounding.",
+        dayNumber: 1,
+        workshopBatchCode: "ALL",
+        isRequiredForCertificate: true,
+        createdAt: /* @__PURE__ */ new Date()
+      },
+      {
+        _id: "assign_day2",
+        title: "Day 2 Capstone: Multi-Step AI Workflow & Functional Web Prototype",
+        description: "Build and deploy a working multi-step AI automation or full-stack web prototype and submit your repository and live demo links.",
+        dayNumber: 2,
+        workshopBatchCode: "ALL",
+        isRequiredForCertificate: true,
+        createdAt: /* @__PURE__ */ new Date()
+      }
+    ];
+    for (const a of defaultAssignments) {
+      this.assignments.set(a._id, a);
+    }
   }
   // --- User Operations ---
   async findUserByEmail(email) {
@@ -403,15 +432,15 @@ class MemoryStoreService {
     const num = Math.floor(1e3 + Math.random() * 9e3);
     const enrollmentId = `AILP-${(/* @__PURE__ */ new Date()).getFullYear()}-${num}`;
     const _id = "mem_enr_" + Date.now();
+    const isFreeConfirmed = data.paymentStatus === "completed";
     const enrollment = {
       _id,
       enrollmentId,
       user: data.userId,
       workshop: data.workshopId,
-      status: "reserved",
+      status: isFreeConfirmed ? "confirmed" : "reserved",
       paymentStatus: data.paymentStatus || "pending",
-      reservedUntil: new Date(Date.now() + 15 * 60 * 1e3),
-      // 15 mins
+      reservedUntil: isFreeConfirmed ? new Date(Date.now() + 365 * 24 * 60 * 60 * 1e3) : new Date(Date.now() + 15 * 60 * 1e3),
       attendeeDetails: data.attendeeDetails,
       day1Attended: false,
       day2Attended: false,
@@ -421,9 +450,38 @@ class MemoryStoreService {
     const workshop = this.workshops.get(data.workshopId);
     if (workshop && workshop.availableSeats > 0) {
       workshop.availableSeats -= 1;
-      workshop.reservedCount += 1;
+      if (isFreeConfirmed) {
+        workshop.enrolledCount += 1;
+      } else {
+        workshop.reservedCount += 1;
+      }
     }
     return enrollment;
+  }
+  async confirmEnrollmentPayment(enrollmentId) {
+    await this.init();
+    const enr = await this.findEnrollmentById(enrollmentId);
+    if (enr) {
+      const wasConfirmed = enr.status === "confirmed";
+      enr.status = "confirmed";
+      enr.paymentStatus = "completed";
+      if (!wasConfirmed) {
+        const ws = this.workshops.get(enr.workshop);
+        if (ws) {
+          ws.reservedCount = Math.max(0, ws.reservedCount - 1);
+          ws.enrolledCount += 1;
+        }
+      }
+      return enr;
+    }
+    for (const reg of this.registrations.values()) {
+      if (reg._id === enrollmentId || `REG-${reg._id.slice(-6).toUpperCase()}` === enrollmentId || reg._id.toUpperCase() === enrollmentId) {
+        reg.registrationStatus = "confirmed";
+        reg.paymentStatus = "paid";
+        reg.updatedAt = /* @__PURE__ */ new Date();
+      }
+    }
+    return null;
   }
   async getEnrollmentsByUserId(userId) {
     await this.init();
@@ -603,6 +661,27 @@ class MemoryStoreService {
     const item = { ...cert, _id };
     this.certificates.set(_id.toString(), item);
     return item;
+  }
+  async getAllSubmissions() {
+    await this.init();
+    return Array.from(this.submissions.values());
+  }
+  async saveSubmission(sub) {
+    await this.init();
+    const _id = sub._id || "sub_" + Date.now();
+    const item = {
+      ...sub,
+      _id,
+      status: sub.status || "submitted",
+      createdAt: sub.createdAt || /* @__PURE__ */ new Date(),
+      updatedAt: /* @__PURE__ */ new Date()
+    };
+    this.submissions.set(_id.toString(), item);
+    return item;
+  }
+  async getAllAssignments() {
+    await this.init();
+    return Array.from(this.assignments.values());
   }
   async createAuditLog(entry) {
     await this.init();

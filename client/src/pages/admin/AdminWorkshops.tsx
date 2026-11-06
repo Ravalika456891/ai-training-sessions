@@ -409,3 +409,4 @@ export const AdminWorkshops: React.FC = () => {
     </div>
   );
 };
+

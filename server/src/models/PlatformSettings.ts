@@ -112,3 +112,4 @@ export const PlatformSettings = mongoose.model<IPlatformSettings>(
   'PlatformSettings',
   PlatformSettingsSchema
 );
+

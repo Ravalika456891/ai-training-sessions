@@ -80,3 +80,4 @@ export const LearningResource = mongoose.model<ILearningResource>(
   'LearningResource',
   LearningResourceSchema
 );
+
