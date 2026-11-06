@@ -26,6 +26,24 @@ export interface IWorkshop extends Document {
     isFree: boolean;
   };
   status: 'draft' | 'published' | 'archived' | 'completed';
+  thumbnailUrl?: string;
+  registrationDeadline?: Date;
+  liveSessionUrl?: string;
+  meetingPasscode?: string;
+  day1Session?: {
+    title?: string;
+    startTime?: string;
+    endTime?: string;
+    liveUrl?: string;
+    instructorName?: string;
+  };
+  day2Session?: {
+    title?: string;
+    startTime?: string;
+    endTime?: string;
+    liveUrl?: string;
+    instructorName?: string;
+  };
   curriculum?: any[];
   learningOutcomes?: any[];
   aiTools?: any[];
@@ -111,6 +129,35 @@ const WorkshopSchema = new Schema<IWorkshop>(
       enum: ['draft', 'published', 'archived', 'completed'],
       default: 'draft',
       index: true,
+    },
+    thumbnailUrl: {
+      type: String,
+      trim: true,
+    },
+    registrationDeadline: {
+      type: Date,
+    },
+    liveSessionUrl: {
+      type: String,
+      trim: true,
+    },
+    meetingPasscode: {
+      type: String,
+      trim: true,
+    },
+    day1Session: {
+      title: { type: String, default: 'Day 1: LLM Foundations, Prompt Engineering & Custom Assistants' },
+      startTime: { type: String, default: '10:00 AM IST' },
+      endTime: { type: String, default: '3:00 PM IST' },
+      liveUrl: { type: String, default: 'https://meet.google.com/ailp-day1-cohort' },
+      instructorName: { type: String },
+    },
+    day2Session: {
+      title: { type: String, default: 'Day 2: Multi-Step AI Workflows, Prototypes & Deployment' },
+      startTime: { type: String, default: '10:00 AM IST' },
+      endTime: { type: String, default: '3:00 PM IST' },
+      liveUrl: { type: String, default: 'https://meet.google.com/ailp-day2-cohort' },
+      instructorName: { type: String },
     },
     curriculum: { type: [Schema.Types.Mixed], default: [] },
     learningOutcomes: { type: [Schema.Types.Mixed], default: [] },

@@ -22,9 +22,10 @@ export const SignInPage: React.FC = () => {
   // If already authenticated, redirect immediately
   useEffect(() => {
     if (user) {
-      navigate(redirect, { replace: true });
+      const target = !searchParams.get('redirect') && user.role === 'admin' ? '/admin' : redirect;
+      navigate(target, { replace: true });
     }
-  }, [user, navigate, redirect]);
+  }, [user, navigate, redirect, searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,8 +38,9 @@ export const SignInPage: React.FC = () => {
     setError(null);
 
     try {
-      await login(email.trim(), password);
-      navigate(redirect, { replace: true });
+      const loggedInUser = await login(email.trim(), password);
+      const target = !searchParams.get('redirect') && loggedInUser?.role === 'admin' ? '/admin' : redirect;
+      navigate(target, { replace: true });
     } catch (err: any) {
       setError(err.message || 'Invalid email or password. Please try again.');
     } finally {

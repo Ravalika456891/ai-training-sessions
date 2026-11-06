@@ -5,7 +5,7 @@ interface AuthContextType {
   user: ApiUser | null;
   isLoading: boolean;
   isAuthenticated: boolean;
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<ApiUser | null>;
   registerUser: (data: {
     name: string;
     email: string;
@@ -42,13 +42,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     refreshUser();
   }, []);
 
-  const login = async (email: string, password: string) => {
+  const login = async (email: string, password: string): Promise<ApiUser | null> => {
     setIsLoading(true);
     try {
       const res = await api.login(email, password);
       if (res.success && res.data?.user) {
         setUser(res.data.user);
+        return res.data.user;
       }
+      return null;
     } finally {
       setIsLoading(false);
     }

@@ -28,6 +28,20 @@ import { DashboardCertificates } from './pages/dashboard/DashboardCertificates';
 import { DashboardPayments } from './pages/dashboard/DashboardPayments';
 import { DashboardProfile } from './pages/dashboard/DashboardProfile';
 
+// Admin Dashboard Pages (Phase 6 — RBAC Protected)
+import { AdminLayout } from './pages/admin/AdminLayout';
+import { AdminOverview } from './pages/admin/AdminOverview';
+import { AdminStudents } from './pages/admin/AdminStudents';
+import { AdminWorkshops } from './pages/admin/AdminWorkshops';
+import { AdminSessions } from './pages/admin/AdminSessions';
+import { AdminInstructors } from './pages/admin/AdminInstructors';
+import { AdminEnrollments } from './pages/admin/AdminEnrollments';
+import { AdminPayments } from './pages/admin/AdminPayments';
+import { AdminContent } from './pages/admin/AdminContent';
+import { AdminCertificates } from './pages/admin/AdminCertificates';
+import { AdminAnalytics } from './pages/admin/AdminAnalytics';
+import { AdminSettings } from './pages/admin/AdminSettings';
+
 export const App: React.FC = () => {
   return (
     <AuthProvider>
@@ -64,6 +78,28 @@ export const App: React.FC = () => {
             <Route path="certificates" element={<DashboardCertificates />} />
             <Route path="payments" element={<DashboardPayments />} />
             <Route path="profile" element={<DashboardProfile />} />
+          </Route>
+
+          {/* Protected Administrator Dashboard Routes (RBAC: Admin Only) */}
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute allowedRoles={['admin']}>
+                <AdminLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<AdminOverview />} />
+            <Route path="students" element={<AdminStudents />} />
+            <Route path="workshops" element={<AdminWorkshops />} />
+            <Route path="sessions" element={<AdminSessions />} />
+            <Route path="instructors" element={<AdminInstructors />} />
+            <Route path="enrollments" element={<AdminEnrollments />} />
+            <Route path="payments" element={<AdminPayments />} />
+            <Route path="content" element={<AdminContent />} />
+            <Route path="certificates" element={<AdminCertificates />} />
+            <Route path="analytics" element={<AdminAnalytics />} />
+            <Route path="settings" element={<AdminSettings />} />
           </Route>
 
           {/* Wildcard Fallback */}

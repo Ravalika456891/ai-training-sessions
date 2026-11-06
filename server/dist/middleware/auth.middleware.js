@@ -79,6 +79,9 @@ const authenticate = async (req, _res, next) => {
     if (!user) {
       throw import_apiError.ApiError.unauthorized("User account no longer exists.");
     }
+    if (user.accountStatus === "suspended" || user.accountStatus === "deactivated") {
+      throw import_apiError.ApiError.forbidden("Your account has been suspended or deactivated by an administrator.");
+    }
     req.user = user;
     next();
   } catch (error) {

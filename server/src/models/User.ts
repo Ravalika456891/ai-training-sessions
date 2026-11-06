@@ -13,6 +13,10 @@ export interface IUser extends Document {
   googleId?: string;
   avatarUrl?: string;
   role: 'learner' | 'instructor' | 'admin' | 'support';
+  accountStatus: 'active' | 'suspended' | 'deactivated';
+  bio?: string;
+  expertise?: string[];
+  availabilityStatus?: 'available' | 'busy' | 'unavailable';
   userCategory?: 'student' | 'working_professional' | 'founder' | 'creator' | 'other';
   experienceLevel?: 'beginner' | 'intermediate' | 'advanced';
   marketingConsent: boolean;
@@ -62,6 +66,26 @@ const UserSchema = new Schema<IUser>(
       enum: ['learner', 'instructor', 'admin', 'support'],
       default: 'learner',
       index: true,
+    },
+    accountStatus: {
+      type: String,
+      enum: ['active', 'suspended', 'deactivated'],
+      default: 'active',
+      index: true,
+    },
+    bio: {
+      type: String,
+      trim: true,
+      maxlength: [1000, 'Bio cannot exceed 1000 characters'],
+    },
+    expertise: {
+      type: [String],
+      default: [],
+    },
+    availabilityStatus: {
+      type: String,
+      enum: ['available', 'busy', 'unavailable'],
+      default: 'available',
     },
     userCategory: {
       type: String,

@@ -159,3 +159,67 @@ Open your browser at: `http://localhost:5173`
 | `POST` | `/api/admin/attendance` | Admin | Updates Day 1 / Day 2 attendance status for an attendee |
 | `POST` | `/api/admin/certificates/issue`| Admin | Issues official certificate with unique serial number |
 | `GET` | `/api/certificates/verify/:serial`| Public | Validates authentic certificate details for employers & recruiters |
+
+---
+
+## Phase 6: Enterprise RBAC Admin Dashboard (`/admin`)
+
+The platform includes a dedicated, role-protected SaaS **Admin Operations Dashboard** at `/admin` built with React, TypeScript, Tailwind CSS, Express, and MongoDB Atlas.
+
+### Admin Frontend Modules (`client/src/pages/admin/`)
+1. **Overview (`/admin`):** Live database metrics (`totalRegisteredStudents`, `activeStudents`, `totalWorkshops`, `upcomingWorkshops`, `confirmedEnrollments`, `pendingEnrollments`, `verifiedRevenue`, `attendancePercentage`), Enrollment & Revenue trend charts, Recent registrations, Upcoming sessions, and Pending administrative actions.
+2. **Student Management (`/admin/students`):** Searchable, filterable, paginated learner directory; detailed student modal (enrollment history, payment ledger, issued certificates); account status controls (`active` / `suspended` / `deactivated`). Strictly strips `passwordHash`, `resetPasswordToken`, and session tokens.
+3. **Workshop Management (`/admin/workshops`):** Create/edit workshops, set pricing & seat capacity, upload banner image URLs, assign instructors, publish/unpublish/archive, and strictly prevent deleting workshops with existing enrollment or payment records.
+4. **Batch & Session Management (`/admin/sessions`):** Configure Day 1 & Day 2 live schedules, timezone, instructor assignments, meeting links, passcodes, seat capacity, and registration deadlines.
+5. **Instructor Management (`/admin/instructors`):** Create and edit instructor profiles, biographies, expertise tags, availability status (`available` / `busy` / `on_leave`), and workshop batch assignments.
+6. **Registration Management (`/admin/enrollments`):** Unified enrollment & registration ledger with search, batch/status/payment filtering, pagination, and authorized enrollment cancellation that keeps seat inventory consistent.
+7. **Payment Management (`/admin/payments`):** Razorpay transaction ledger, verified revenue metrics, CSV financial report export, cryptographic HMAC-SHA256 signature verification, and Razorpay gateway reconciliation. **Security Policy:** Administrators are strictly prevented from manually marking an unverified payment as paid (`403 Forbidden`).
+8. **Content Management (`/admin/content`):** Manage PDFs, prompt templates, code repositories, assignments, FAQs, and testimonials with `enrolled_only` vs. `public` access permissions.
+9. **Certificates (`/admin/certificates`):** View completion eligibility queue, approve & issue cryptographically signed certificates (preventing duplicate issuance with `409 Conflict`), and revoke certificates with a mandatory audit reason.
+10. **Analytics (`/admin/analytics`):** Workshop performance table, revenue breakdown, attendance analytics, learning completion funnel, and learner demographics.
+11. **Platform Settings & Audit Logs (`/admin/settings`):** Configure website branding, registration rules, workshop defaults, instructor permissions, notification preferences, and inspect the immutable `AuditLog` security trail.
+
+### Phase 6 Admin REST API Reference (`/api/admin/*`)
+
+All `/api/admin/*` endpoints require both `authenticate` (valid HTTP-only session cookie + `accountStatus === 'active'`) and `requireRole('admin')`.
+
+| Method | Endpoint | Access | Description |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/api/admin/dashboard` | Admin | Live database metrics, enrollment/revenue trends, recent registrations |
+| `GET` | `/api/admin/students` | Admin | Paginated, searchable, filterable student directory (sanitized) |
+| `GET` | `/api/admin/students/:id` | Admin | Detailed student profile, enrollments, payments, and certificates |
+| `PATCH` | `/api/admin/students/:id/status` | Admin | Update student `accountStatus` (`active`, `suspended`, `deactivated`) |
+| `GET` | `/api/admin/workshops` | Admin | List all workshops (published, draft, archived, completed) |
+| `POST` | `/api/admin/workshops` | Admin | Create a new workshop batch |
+| `PATCH` | `/api/admin/workshops/:id` | Admin | Update workshop details, pricing, capacity, instructor, or status |
+| `DELETE` | `/api/admin/workshops/:id` | Admin | Delete empty draft workshop (blocks deletion if enrollments/payments exist) |
+| `GET` | `/api/admin/sessions` | Admin | List Day 1 & Day 2 workshop sessions |
+| `POST` | `/api/admin/sessions` | Admin | Create or update Day 1 / Day 2 session schedule & live link |
+| `GET` | `/api/admin/instructors` | Admin | List instructors with assigned batches & session counts |
+| `POST` | `/api/admin/instructors` | Admin | Create or promote instructor profile |
+| `PATCH` | `/api/admin/instructors/:id` | Admin | Update instructor bio, expertise, availability, or batch assignment |
+| `GET` | `/api/admin/enrollments` | Admin | Searchable, filterable, paginated enrollments & registrations |
+| `PATCH` | `/api/admin/enrollments/:id/cancel` | Admin | Cancel enrollment with audit reason & release reserved seat |
+| `GET` | `/api/admin/payments` | Admin | List Razorpay transactions & financial summary |
+| `GET` | `/api/admin/payments/export` | Admin | Export verified financial ledger as CSV |
+| `POST` | `/api/admin/payments/:id/reconcile` | Admin | Cryptographically verify signature or reconcile with Razorpay gateway |
+| `GET` | `/api/admin/content` | Admin | List learning resources, PDFs, prompts, FAQs, and testimonials |
+| `POST` | `/api/admin/content` | Admin | Create learning resource or FAQ/testimonial |
+| `PATCH` | `/api/admin/content/:id` | Admin | Update learning resource |
+| `DELETE` | `/api/admin/content/:id` | Admin | Delete learning resource |
+| `GET` | `/api/admin/assignments` | Admin | List assignments and learner project submissions |
+| `POST` | `/api/admin/assignments` | Admin | Create cohort assignment |
+| `PATCH` | `/api/admin/submissions/:id/review` | Admin | Grade learner project submission (`approved` / `needs_revision`) |
+| `GET` | `/api/admin/certificates` | Admin | List issued certificates and completion eligibility queue |
+| `POST` | `/api/admin/certificates/issue` | Admin | Issue cryptographically signed certificate (prevents duplicates) |
+| `PATCH` | `/api/admin/certificates/:id/revoke`| Admin | Revoke certificate with mandatory audit reason |
+| `GET` | `/api/admin/analytics` | Admin | Comprehensive enrollment, revenue, attendance & completion analytics |
+| `GET` | `/api/admin/settings` | Admin | Retrieve global `PlatformSettings` |
+| `PATCH` | `/api/admin/settings` | Admin | Update branding, registration defaults, and permissions |
+| `GET` | `/api/admin/audit-logs` | Admin | Retrieve immutable administrator security audit logs |
+
+### Running Automated Security & API Tests
+```bash
+npm --prefix server run build
+node server/scripts/test-admin-phase6.mjs
+```

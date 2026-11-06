@@ -26,7 +26,6 @@ export const Navbar: React.FC<NavbarProps> = ({
   onRegisterClick,
   onOpenAuthModal,
   onOpenLearnerDashboard,
-  onOpenAdminConsole,
 }) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
@@ -180,7 +179,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               <div className="flex items-center gap-2 shrink-0">
                 {user.role === 'admin' && (
                   <button
-                    onClick={onOpenAdminConsole}
+                    onClick={() => navigate('/admin')}
                     className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-blue-200 bg-blue-50 hover:bg-blue-100 text-xs font-semibold text-blue-700 transition-all shadow-xs active:scale-95 cursor-pointer whitespace-nowrap shrink-0"
                   >
                     <ShieldAlert className="w-3.5 h-3.5 text-blue-600 shrink-0" />
@@ -240,7 +239,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                           <button
                             onClick={() => {
                               setIsUserMenuOpen(false);
-                              if (onOpenAdminConsole) onOpenAdminConsole();
+                              navigate('/admin');
                             }}
                             className="w-full text-left px-3 py-2 text-xs font-semibold text-blue-700 hover:bg-blue-50 rounded-lg flex items-center gap-2 transition-colors cursor-pointer"
                           >
@@ -348,7 +347,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                       <button
                         onClick={() => {
                           setIsMobileMenuOpen(false);
-                          if (onOpenAdminConsole) onOpenAdminConsole();
+                          navigate('/admin');
                         }}
                         className="w-full text-left px-3 py-2 rounded-lg bg-blue-50 border border-blue-200 text-xs font-semibold text-blue-700 flex items-center gap-2"
                       >

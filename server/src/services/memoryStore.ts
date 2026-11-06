@@ -10,6 +10,10 @@ export interface IMemoryUser {
   googleId?: string;
   avatarUrl?: string;
   role: 'learner' | 'instructor' | 'admin' | 'support';
+  accountStatus?: 'active' | 'suspended' | 'deactivated';
+  bio?: string;
+  expertise?: string[];
+  availabilityStatus?: 'available' | 'busy' | 'unavailable';
   userCategory?: 'student' | 'working_professional' | 'founder' | 'creator' | 'other';
   experienceLevel?: 'beginner' | 'intermediate' | 'advanced';
   marketingConsent: boolean;
@@ -46,7 +50,11 @@ export interface IMemoryWorkshop {
     taxPercentage: number;
     isFree: boolean;
   };
-  status: 'draft' | 'published' | 'completed' | 'cancelled';
+  status: 'draft' | 'published' | 'archived' | 'completed' | 'cancelled';
+  thumbnailUrl?: string;
+  registrationDeadline?: Date;
+  liveSessionUrl?: string;
+  meetingPasscode?: string;
 }
 
 export interface IMemoryRegistration {
@@ -84,6 +92,52 @@ class MemoryStoreService {
   private workshops: Map<string, IMemoryWorkshop> = new Map();
   private enrollments: Map<string, IMemoryEnrollment> = new Map();
   private registrations: Map<string, IMemoryRegistration> = new Map();
+  private sessions: Map<string, any> = new Map();
+  private resources: Map<string, any> = new Map();
+  private certificates: Map<string, any> = new Map();
+  private auditLogs: any[] = [];
+  private settings: any = {
+    key: 'global_settings',
+    branding: {
+      siteName: 'AI Launchpad',
+      tagline: '2-Day Hands-On AI Bootcamp',
+      supportEmail: 'admissions@ailaunchpad.edu',
+      supportPhone: '+91 98765 43210',
+      primaryColor: '#2563EB',
+    },
+    registration: {
+      allowPublicRegistration: true,
+      requireEmailVerification: false,
+      maxSeatsPerBatch: 60,
+      reservationHoldMinutes: 15,
+      waitlistEnabled: true,
+    },
+    workshopDefaults: {
+      defaultBasePrice: 1999,
+      defaultCurrency: 'INR',
+      defaultTaxPercentage: 18,
+      defaultTimezone: 'Asia/Kolkata (IST)',
+      defaultTimings: '10:00 AM – 3:00 PM IST',
+    },
+    emailTemplates: {
+      registrationConfirmationSubject: 'Welcome to AI Launchpad — Your Cohort Registration Details',
+      paymentReceiptSubject: 'Confirmed: Your AI Launchpad Bootcamp Seat & Payment Receipt',
+      certificateIssuedSubject: 'Congratulations! Your Official AI Launchpad Certificate is Ready',
+      reminderHoursBeforeSession: 24,
+    },
+    instructorPermissions: {
+      canMarkAttendance: true,
+      canReviewSubmissions: true,
+      canUploadMaterials: true,
+      canViewStudentEmails: true,
+    },
+    notifications: {
+      notifyAdminOnNewEnrollment: true,
+      notifyAdminOnPaymentFailure: true,
+      notifyStudentOnCertificateIssue: true,
+    },
+    updatedAt: new Date(),
+  };
   private isInitialized = false;
 
   constructor() {
@@ -207,6 +261,132 @@ class MemoryStoreService {
 
     for (const w of defaultWorkshops) {
       this.workshops.set(w._id, w);
+      this.sessions.set(`${w._id}_day1`, {
+        _id: `${w._id}_day1`,
+        workshopId: w._id,
+        batchCode: w.batchCode,
+        dayNumber: 1,
+        title: 'Day 1: LLM Foundations, Prompt Architecture & Custom Assistants',
+        sessionDate: w.startDate,
+        startTime: '10:00 AM',
+        endTime: '3:00 PM',
+        timezone: w.timezone,
+        instructorName: w.instructor.name,
+        liveSessionUrl: 'https://meet.google.com/ailp-day1-cohort',
+        meetingPasscode: 'AILP2026',
+        capacity: w.capacity,
+        registrationDeadline: new Date(new Date(w.startDate).getTime() - 24 * 60 * 60 * 1000),
+        status: 'scheduled',
+      });
+      this.sessions.set(`${w._id}_day2`, {
+        _id: `${w._id}_day2`,
+        workshopId: w._id,
+        batchCode: w.batchCode,
+        dayNumber: 2,
+        title: 'Day 2: Multi-Step AI Workflows, React Prototypes & Production Ship',
+        sessionDate: w.endDate,
+        startTime: '10:00 AM',
+        endTime: '3:00 PM',
+        timezone: w.timezone,
+        instructorName: w.instructor.name,
+        liveSessionUrl: 'https://meet.google.com/ailp-day2-cohort',
+        meetingPasscode: 'AILP2026',
+        capacity: w.capacity,
+        registrationDeadline: new Date(new Date(w.startDate).getTime() - 24 * 60 * 60 * 1000),
+        status: 'scheduled',
+      });
+    }
+
+    // Seed Default Instructors
+    const inst1Id = 'mem_user_inst_001';
+    this.users.set(inst1Id, {
+      _id: inst1Id,
+      name: 'Vikram Malhotra',
+      email: 'vikram@ailaunchpad.edu',
+      passwordHash: adminPasswordHash,
+      role: 'instructor',
+      accountStatus: 'active',
+      bio: 'Over 12 years building production software and 4 years leading enterprise LLM integrations. Mentored over 1,500 professionals.',
+      expertise: ['LLM Architecture', 'RAG Systems', 'Prompt Engineering', 'TypeScript'],
+      availabilityStatus: 'available',
+      phone: { countryCode: '+91', number: '9888888881' },
+      marketingConsent: true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      async comparePassword(pwd: string) {
+        return bcrypt.compare(pwd, this.passwordHash || '');
+      },
+    });
+
+    const inst2Id = 'mem_user_inst_002';
+    this.users.set(inst2Id, {
+      _id: inst2Id,
+      name: 'Ananya Sharma',
+      email: 'ananya@ailaunchpad.edu',
+      passwordHash: adminPasswordHash,
+      role: 'instructor',
+      accountStatus: 'active',
+      bio: 'Specialist in agentic AI architectures and LLM evals. Former AI Lead at hyper-growth tech startups.',
+      expertise: ['AI Agents', 'n8n & Make Workflows', 'LLM Evals', 'Full-Stack AI'],
+      availabilityStatus: 'available',
+      phone: { countryCode: '+91', number: '9888888882' },
+      marketingConsent: true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      async comparePassword(pwd: string) {
+        return bcrypt.compare(pwd, this.passwordHash || '');
+      },
+    });
+
+    // Seed Default Learning Resources
+    const defaultResources = [
+      {
+        _id: 'res_001',
+        title: 'Module 1 & 2: Reusable 10-Prompt Enterprise Library',
+        category: 'prompt_template',
+        description: 'Battle-tested system prompt templates for GPT-4o, Claude 3.5 Sonnet, and Gemini 2.0.',
+        url: 'https://ai-training-sessions-zeta.vercel.app/#curriculum',
+        workshopBatchCode: 'ALL',
+        accessLevel: 'enrolled_only',
+        isPublished: true,
+        createdAt: new Date(),
+      },
+      {
+        _id: 'res_002',
+        title: 'Module 3: Custom Assistant Grounding & RAG PDF Guide',
+        category: 'pdf',
+        description: 'Step-by-step architecture playbook for building hallucination-free enterprise AI assistants.',
+        url: 'https://ai-training-sessions-zeta.vercel.app/#curriculum',
+        workshopBatchCode: 'ALL',
+        accessLevel: 'enrolled_only',
+        isPublished: true,
+        createdAt: new Date(),
+      },
+      {
+        _id: 'res_003',
+        title: 'Module 5: React + Tailwind AI Prototype Starter Repository',
+        category: 'code_repo',
+        description: 'Production-ready full-stack starter kit with streaming LLM responses and tool calling.',
+        url: 'https://github.com/example/ai-prototype-starter',
+        workshopBatchCode: 'ALL',
+        accessLevel: 'enrolled_only',
+        isPublished: true,
+        createdAt: new Date(),
+      },
+      {
+        _id: 'res_004',
+        title: 'Day 2 Capstone: Production AI Workflow & App Deliverable',
+        category: 'assignment',
+        description: 'Build and deploy a working AI assistant or multi-step automation workflow and submit your repository URL.',
+        url: 'https://ai-training-sessions-zeta.vercel.app/dashboard/assignments',
+        workshopBatchCode: 'ALL',
+        accessLevel: 'enrolled_only',
+        isPublished: true,
+        createdAt: new Date(),
+      },
+    ];
+    for (const r of defaultResources) {
+      this.resources.set(r._id, r);
     }
   }
 
@@ -422,6 +602,189 @@ class MemoryStoreService {
     return Array.from(this.registrations.values()).sort(
       (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
     );
+  }
+
+  // --- Admin Extended Operations ---
+  async getAllUsers(): Promise<IMemoryUser[]> {
+    await this.init();
+    return Array.from(this.users.values()).sort(
+      (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
+    );
+  }
+
+  async updateUser(id: string, updates: Partial<IMemoryUser>): Promise<IMemoryUser | null> {
+    await this.init();
+    const user = this.users.get(id);
+    if (!user) return null;
+    Object.assign(user, updates, { updatedAt: new Date() });
+    this.users.set(id, user);
+    return user;
+  }
+
+  async getAllWorkshops(): Promise<IMemoryWorkshop[]> {
+    await this.init();
+    return Array.from(this.workshops.values());
+  }
+
+  async createWorkshop(data: Partial<IMemoryWorkshop>): Promise<IMemoryWorkshop> {
+    await this.init();
+    const _id = 'ws_' + Date.now();
+    const capacity = Number(data.capacity) || 60;
+    const ws: IMemoryWorkshop = {
+      _id,
+      title: data.title || 'AI Launchpad — 2-Day Hands-On AI Bootcamp',
+      slug: data.slug || `ai-launchpad-${Date.now()}`,
+      batchCode: (data.batchCode || `AILP-${Date.now().toString().slice(-4)}`).toUpperCase(),
+      description: data.description || 'Hands-on AI Engineering Bootcamp',
+      instructor: data.instructor || {
+        name: 'Vikram Malhotra',
+        role: 'Staff AI Engineer',
+        bio: 'Enterprise AI Architect',
+        avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
+      },
+      startDate: data.startDate ? new Date(data.startDate) : new Date(),
+      endDate: data.endDate ? new Date(data.endDate) : new Date(Date.now() + 86400000),
+      timings: data.timings || '10:00 AM – 3:00 PM IST',
+      timezone: data.timezone || 'Asia/Kolkata (IST)',
+      capacity,
+      enrolledCount: 0,
+      reservedCount: 0,
+      availableSeats: capacity,
+      price: data.price || {
+        basePrice: 1999,
+        currency: 'INR',
+        taxPercentage: 18,
+        isFree: false,
+      },
+      status: data.status || 'published',
+      thumbnailUrl: data.thumbnailUrl,
+      registrationDeadline: data.registrationDeadline,
+      liveSessionUrl: data.liveSessionUrl,
+      meetingPasscode: data.meetingPasscode,
+    };
+    this.workshops.set(_id, ws);
+    return ws;
+  }
+
+  async updateWorkshop(id: string, updates: Partial<IMemoryWorkshop>): Promise<IMemoryWorkshop | null> {
+    await this.init();
+    const ws = await this.findWorkshop(id);
+    if (!ws) return null;
+    Object.assign(ws, updates);
+    ws.availableSeats = Math.max(0, ws.capacity - (ws.enrolledCount + ws.reservedCount));
+    this.workshops.set(ws._id, ws);
+    return ws;
+  }
+
+  async deleteWorkshop(id: string): Promise<boolean> {
+    await this.init();
+    return this.workshops.delete(id);
+  }
+
+  async getAllSessions(): Promise<any[]> {
+    await this.init();
+    return Array.from(this.sessions.values());
+  }
+
+  async upsertSession(data: any): Promise<any> {
+    await this.init();
+    const id = data._id || `${data.workshopId}_day${data.dayNumber || 1}`;
+    const existing = this.sessions.get(id) || {};
+    const updated = {
+      ...existing,
+      ...data,
+      _id: id,
+      updatedAt: new Date(),
+    };
+    this.sessions.set(id, updated);
+    return updated;
+  }
+
+  async getAllResources(): Promise<any[]> {
+    await this.init();
+    return Array.from(this.resources.values());
+  }
+
+  async createResource(data: any): Promise<any> {
+    await this.init();
+    const _id = 'res_' + Date.now();
+    const item = {
+      _id,
+      ...data,
+      isPublished: data.isPublished ?? true,
+      accessLevel: data.accessLevel || 'enrolled_only',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    this.resources.set(_id, item);
+    return item;
+  }
+
+  async updateResource(id: string, updates: any): Promise<any | null> {
+    await this.init();
+    const item = this.resources.get(id);
+    if (!item) return null;
+    Object.assign(item, updates, { updatedAt: new Date() });
+    this.resources.set(id, item);
+    return item;
+  }
+
+  async deleteResource(id: string): Promise<boolean> {
+    await this.init();
+    return this.resources.delete(id);
+  }
+
+  async getAllCertificates(): Promise<any[]> {
+    await this.init();
+    return Array.from(this.certificates.values());
+  }
+
+  async saveCertificate(cert: any): Promise<any> {
+    await this.init();
+    const _id = cert._id || 'cert_' + Date.now();
+    const item = { ...cert, _id };
+    this.certificates.set(_id.toString(), item);
+    return item;
+  }
+
+  async createAuditLog(entry: any): Promise<any> {
+    await this.init();
+    const log = {
+      _id: 'audit_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+      ...entry,
+      createdAt: new Date(),
+    };
+    this.auditLogs.unshift(log);
+    return log;
+  }
+
+  async getAuditLogs(limit = 50): Promise<any[]> {
+    await this.init();
+    return this.auditLogs.slice(0, limit);
+  }
+
+  async getSettings(): Promise<any> {
+    await this.init();
+    return this.settings;
+  }
+
+  async updateSettings(updates: any, updatedBy?: string): Promise<any> {
+    await this.init();
+    this.settings = {
+      ...this.settings,
+      branding: { ...this.settings.branding, ...(updates.branding || {}) },
+      registration: { ...this.settings.registration, ...(updates.registration || {}) },
+      workshopDefaults: { ...this.settings.workshopDefaults, ...(updates.workshopDefaults || {}) },
+      emailTemplates: { ...this.settings.emailTemplates, ...(updates.emailTemplates || {}) },
+      instructorPermissions: {
+        ...this.settings.instructorPermissions,
+        ...(updates.instructorPermissions || {}),
+      },
+      notifications: { ...this.settings.notifications, ...(updates.notifications || {}) },
+      updatedBy,
+      updatedAt: new Date(),
+    };
+    return this.settings;
   }
 }
 

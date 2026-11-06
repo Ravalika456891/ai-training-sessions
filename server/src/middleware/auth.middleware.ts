@@ -72,6 +72,10 @@ export const authenticate = async (
       throw ApiError.unauthorized('User account no longer exists.');
     }
 
+    if (user.accountStatus === 'suspended' || user.accountStatus === 'deactivated') {
+      throw ApiError.forbidden('Your account has been suspended or deactivated by an administrator.');
+    }
+
     req.user = user;
     next();
   } catch (error: any) {

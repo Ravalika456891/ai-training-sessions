@@ -49,7 +49,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         if (res.success) {
           await refreshUser();
           onClose();
-          navigate('/dashboard');
+          navigate(res.data?.user?.role === 'admin' ? '/admin' : '/dashboard');
         }
       } else {
         const payload: any = {

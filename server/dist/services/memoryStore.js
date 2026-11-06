@@ -37,6 +37,52 @@ class MemoryStoreService {
   workshops = /* @__PURE__ */ new Map();
   enrollments = /* @__PURE__ */ new Map();
   registrations = /* @__PURE__ */ new Map();
+  sessions = /* @__PURE__ */ new Map();
+  resources = /* @__PURE__ */ new Map();
+  certificates = /* @__PURE__ */ new Map();
+  auditLogs = [];
+  settings = {
+    key: "global_settings",
+    branding: {
+      siteName: "AI Launchpad",
+      tagline: "2-Day Hands-On AI Bootcamp",
+      supportEmail: "admissions@ailaunchpad.edu",
+      supportPhone: "+91 98765 43210",
+      primaryColor: "#2563EB"
+    },
+    registration: {
+      allowPublicRegistration: true,
+      requireEmailVerification: false,
+      maxSeatsPerBatch: 60,
+      reservationHoldMinutes: 15,
+      waitlistEnabled: true
+    },
+    workshopDefaults: {
+      defaultBasePrice: 1999,
+      defaultCurrency: "INR",
+      defaultTaxPercentage: 18,
+      defaultTimezone: "Asia/Kolkata (IST)",
+      defaultTimings: "10:00 AM \u2013 3:00 PM IST"
+    },
+    emailTemplates: {
+      registrationConfirmationSubject: "Welcome to AI Launchpad \u2014 Your Cohort Registration Details",
+      paymentReceiptSubject: "Confirmed: Your AI Launchpad Bootcamp Seat & Payment Receipt",
+      certificateIssuedSubject: "Congratulations! Your Official AI Launchpad Certificate is Ready",
+      reminderHoursBeforeSession: 24
+    },
+    instructorPermissions: {
+      canMarkAttendance: true,
+      canReviewSubmissions: true,
+      canUploadMaterials: true,
+      canViewStudentEmails: true
+    },
+    notifications: {
+      notifyAdminOnNewEnrollment: true,
+      notifyAdminOnPaymentFailure: true,
+      notifyStudentOnCertificateIssue: true
+    },
+    updatedAt: /* @__PURE__ */ new Date()
+  };
   isInitialized = false;
   constructor() {
     this.init();
@@ -150,6 +196,127 @@ class MemoryStoreService {
     ];
     for (const w of defaultWorkshops) {
       this.workshops.set(w._id, w);
+      this.sessions.set(`${w._id}_day1`, {
+        _id: `${w._id}_day1`,
+        workshopId: w._id,
+        batchCode: w.batchCode,
+        dayNumber: 1,
+        title: "Day 1: LLM Foundations, Prompt Architecture & Custom Assistants",
+        sessionDate: w.startDate,
+        startTime: "10:00 AM",
+        endTime: "3:00 PM",
+        timezone: w.timezone,
+        instructorName: w.instructor.name,
+        liveSessionUrl: "https://meet.google.com/ailp-day1-cohort",
+        meetingPasscode: "AILP2026",
+        capacity: w.capacity,
+        registrationDeadline: new Date(new Date(w.startDate).getTime() - 24 * 60 * 60 * 1e3),
+        status: "scheduled"
+      });
+      this.sessions.set(`${w._id}_day2`, {
+        _id: `${w._id}_day2`,
+        workshopId: w._id,
+        batchCode: w.batchCode,
+        dayNumber: 2,
+        title: "Day 2: Multi-Step AI Workflows, React Prototypes & Production Ship",
+        sessionDate: w.endDate,
+        startTime: "10:00 AM",
+        endTime: "3:00 PM",
+        timezone: w.timezone,
+        instructorName: w.instructor.name,
+        liveSessionUrl: "https://meet.google.com/ailp-day2-cohort",
+        meetingPasscode: "AILP2026",
+        capacity: w.capacity,
+        registrationDeadline: new Date(new Date(w.startDate).getTime() - 24 * 60 * 60 * 1e3),
+        status: "scheduled"
+      });
+    }
+    const inst1Id = "mem_user_inst_001";
+    this.users.set(inst1Id, {
+      _id: inst1Id,
+      name: "Vikram Malhotra",
+      email: "vikram@ailaunchpad.edu",
+      passwordHash: adminPasswordHash,
+      role: "instructor",
+      accountStatus: "active",
+      bio: "Over 12 years building production software and 4 years leading enterprise LLM integrations. Mentored over 1,500 professionals.",
+      expertise: ["LLM Architecture", "RAG Systems", "Prompt Engineering", "TypeScript"],
+      availabilityStatus: "available",
+      phone: { countryCode: "+91", number: "9888888881" },
+      marketingConsent: true,
+      createdAt: /* @__PURE__ */ new Date(),
+      updatedAt: /* @__PURE__ */ new Date(),
+      async comparePassword(pwd) {
+        return import_bcryptjs.default.compare(pwd, this.passwordHash || "");
+      }
+    });
+    const inst2Id = "mem_user_inst_002";
+    this.users.set(inst2Id, {
+      _id: inst2Id,
+      name: "Ananya Sharma",
+      email: "ananya@ailaunchpad.edu",
+      passwordHash: adminPasswordHash,
+      role: "instructor",
+      accountStatus: "active",
+      bio: "Specialist in agentic AI architectures and LLM evals. Former AI Lead at hyper-growth tech startups.",
+      expertise: ["AI Agents", "n8n & Make Workflows", "LLM Evals", "Full-Stack AI"],
+      availabilityStatus: "available",
+      phone: { countryCode: "+91", number: "9888888882" },
+      marketingConsent: true,
+      createdAt: /* @__PURE__ */ new Date(),
+      updatedAt: /* @__PURE__ */ new Date(),
+      async comparePassword(pwd) {
+        return import_bcryptjs.default.compare(pwd, this.passwordHash || "");
+      }
+    });
+    const defaultResources = [
+      {
+        _id: "res_001",
+        title: "Module 1 & 2: Reusable 10-Prompt Enterprise Library",
+        category: "prompt_template",
+        description: "Battle-tested system prompt templates for GPT-4o, Claude 3.5 Sonnet, and Gemini 2.0.",
+        url: "https://ai-training-sessions-zeta.vercel.app/#curriculum",
+        workshopBatchCode: "ALL",
+        accessLevel: "enrolled_only",
+        isPublished: true,
+        createdAt: /* @__PURE__ */ new Date()
+      },
+      {
+        _id: "res_002",
+        title: "Module 3: Custom Assistant Grounding & RAG PDF Guide",
+        category: "pdf",
+        description: "Step-by-step architecture playbook for building hallucination-free enterprise AI assistants.",
+        url: "https://ai-training-sessions-zeta.vercel.app/#curriculum",
+        workshopBatchCode: "ALL",
+        accessLevel: "enrolled_only",
+        isPublished: true,
+        createdAt: /* @__PURE__ */ new Date()
+      },
+      {
+        _id: "res_003",
+        title: "Module 5: React + Tailwind AI Prototype Starter Repository",
+        category: "code_repo",
+        description: "Production-ready full-stack starter kit with streaming LLM responses and tool calling.",
+        url: "https://github.com/example/ai-prototype-starter",
+        workshopBatchCode: "ALL",
+        accessLevel: "enrolled_only",
+        isPublished: true,
+        createdAt: /* @__PURE__ */ new Date()
+      },
+      {
+        _id: "res_004",
+        title: "Day 2 Capstone: Production AI Workflow & App Deliverable",
+        category: "assignment",
+        description: "Build and deploy a working AI assistant or multi-step automation workflow and submit your repository URL.",
+        url: "https://ai-training-sessions-zeta.vercel.app/dashboard/assignments",
+        workshopBatchCode: "ALL",
+        accessLevel: "enrolled_only",
+        isPublished: true,
+        createdAt: /* @__PURE__ */ new Date()
+      }
+    ];
+    for (const r of defaultResources) {
+      this.resources.set(r._id, r);
     }
   }
   // --- User Operations ---
@@ -307,6 +474,171 @@ class MemoryStoreService {
     return Array.from(this.registrations.values()).sort(
       (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
     );
+  }
+  // --- Admin Extended Operations ---
+  async getAllUsers() {
+    await this.init();
+    return Array.from(this.users.values()).sort(
+      (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
+    );
+  }
+  async updateUser(id, updates) {
+    await this.init();
+    const user = this.users.get(id);
+    if (!user) return null;
+    Object.assign(user, updates, { updatedAt: /* @__PURE__ */ new Date() });
+    this.users.set(id, user);
+    return user;
+  }
+  async getAllWorkshops() {
+    await this.init();
+    return Array.from(this.workshops.values());
+  }
+  async createWorkshop(data) {
+    await this.init();
+    const _id = "ws_" + Date.now();
+    const capacity = Number(data.capacity) || 60;
+    const ws = {
+      _id,
+      title: data.title || "AI Launchpad \u2014 2-Day Hands-On AI Bootcamp",
+      slug: data.slug || `ai-launchpad-${Date.now()}`,
+      batchCode: (data.batchCode || `AILP-${Date.now().toString().slice(-4)}`).toUpperCase(),
+      description: data.description || "Hands-on AI Engineering Bootcamp",
+      instructor: data.instructor || {
+        name: "Vikram Malhotra",
+        role: "Staff AI Engineer",
+        bio: "Enterprise AI Architect",
+        avatarUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80"
+      },
+      startDate: data.startDate ? new Date(data.startDate) : /* @__PURE__ */ new Date(),
+      endDate: data.endDate ? new Date(data.endDate) : new Date(Date.now() + 864e5),
+      timings: data.timings || "10:00 AM \u2013 3:00 PM IST",
+      timezone: data.timezone || "Asia/Kolkata (IST)",
+      capacity,
+      enrolledCount: 0,
+      reservedCount: 0,
+      availableSeats: capacity,
+      price: data.price || {
+        basePrice: 1999,
+        currency: "INR",
+        taxPercentage: 18,
+        isFree: false
+      },
+      status: data.status || "published",
+      thumbnailUrl: data.thumbnailUrl,
+      registrationDeadline: data.registrationDeadline,
+      liveSessionUrl: data.liveSessionUrl,
+      meetingPasscode: data.meetingPasscode
+    };
+    this.workshops.set(_id, ws);
+    return ws;
+  }
+  async updateWorkshop(id, updates) {
+    await this.init();
+    const ws = await this.findWorkshop(id);
+    if (!ws) return null;
+    Object.assign(ws, updates);
+    ws.availableSeats = Math.max(0, ws.capacity - (ws.enrolledCount + ws.reservedCount));
+    this.workshops.set(ws._id, ws);
+    return ws;
+  }
+  async deleteWorkshop(id) {
+    await this.init();
+    return this.workshops.delete(id);
+  }
+  async getAllSessions() {
+    await this.init();
+    return Array.from(this.sessions.values());
+  }
+  async upsertSession(data) {
+    await this.init();
+    const id = data._id || `${data.workshopId}_day${data.dayNumber || 1}`;
+    const existing = this.sessions.get(id) || {};
+    const updated = {
+      ...existing,
+      ...data,
+      _id: id,
+      updatedAt: /* @__PURE__ */ new Date()
+    };
+    this.sessions.set(id, updated);
+    return updated;
+  }
+  async getAllResources() {
+    await this.init();
+    return Array.from(this.resources.values());
+  }
+  async createResource(data) {
+    await this.init();
+    const _id = "res_" + Date.now();
+    const item = {
+      _id,
+      ...data,
+      isPublished: data.isPublished ?? true,
+      accessLevel: data.accessLevel || "enrolled_only",
+      createdAt: /* @__PURE__ */ new Date(),
+      updatedAt: /* @__PURE__ */ new Date()
+    };
+    this.resources.set(_id, item);
+    return item;
+  }
+  async updateResource(id, updates) {
+    await this.init();
+    const item = this.resources.get(id);
+    if (!item) return null;
+    Object.assign(item, updates, { updatedAt: /* @__PURE__ */ new Date() });
+    this.resources.set(id, item);
+    return item;
+  }
+  async deleteResource(id) {
+    await this.init();
+    return this.resources.delete(id);
+  }
+  async getAllCertificates() {
+    await this.init();
+    return Array.from(this.certificates.values());
+  }
+  async saveCertificate(cert) {
+    await this.init();
+    const _id = cert._id || "cert_" + Date.now();
+    const item = { ...cert, _id };
+    this.certificates.set(_id.toString(), item);
+    return item;
+  }
+  async createAuditLog(entry) {
+    await this.init();
+    const log = {
+      _id: "audit_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6),
+      ...entry,
+      createdAt: /* @__PURE__ */ new Date()
+    };
+    this.auditLogs.unshift(log);
+    return log;
+  }
+  async getAuditLogs(limit = 50) {
+    await this.init();
+    return this.auditLogs.slice(0, limit);
+  }
+  async getSettings() {
+    await this.init();
+    return this.settings;
+  }
+  async updateSettings(updates, updatedBy) {
+    await this.init();
+    this.settings = {
+      ...this.settings,
+      branding: { ...this.settings.branding, ...updates.branding || {} },
+      registration: { ...this.settings.registration, ...updates.registration || {} },
+      workshopDefaults: { ...this.settings.workshopDefaults, ...updates.workshopDefaults || {} },
+      emailTemplates: { ...this.settings.emailTemplates, ...updates.emailTemplates || {} },
+      instructorPermissions: {
+        ...this.settings.instructorPermissions,
+        ...updates.instructorPermissions || {}
+      },
+      notifications: { ...this.settings.notifications, ...updates.notifications || {} },
+      updatedBy,
+      updatedAt: /* @__PURE__ */ new Date()
+    };
+    return this.settings;
   }
 }
 const memoryStore = new MemoryStoreService();

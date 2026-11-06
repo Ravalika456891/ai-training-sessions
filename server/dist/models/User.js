@@ -73,6 +73,26 @@ const UserSchema = new import_mongoose.Schema(
       default: "learner",
       index: true
     },
+    accountStatus: {
+      type: String,
+      enum: ["active", "suspended", "deactivated"],
+      default: "active",
+      index: true
+    },
+    bio: {
+      type: String,
+      trim: true,
+      maxlength: [1e3, "Bio cannot exceed 1000 characters"]
+    },
+    expertise: {
+      type: [String],
+      default: []
+    },
+    availabilityStatus: {
+      type: String,
+      enum: ["available", "busy", "unavailable"],
+      default: "available"
+    },
     userCategory: {
       type: String,
       enum: ["student", "working_professional", "founder", "creator", "other"],
