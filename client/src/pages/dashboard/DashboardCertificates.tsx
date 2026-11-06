@@ -310,22 +310,22 @@ export const DashboardCertificates: React.FC = () => {
               </button>
             </div>
 
-            <div className="p-6 sm:p-8 rounded-2xl bg-[#0B0F19] text-white border-2 border-indigo-500/40 text-center space-y-3">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-600 to-purple-600 text-white flex items-center justify-center mx-auto shadow-md">
+            <div className="p-6 sm:p-8 rounded-2xl bg-gradient-to-b from-blue-50/70 to-white text-[#0F172A] border-2 border-blue-200 text-center space-y-3">
+              <div className="w-12 h-12 rounded-full bg-blue-600 text-white flex items-center justify-center mx-auto shadow-sm">
                 <Award className="w-6 h-6" />
               </div>
-              <span className="text-[10px] uppercase tracking-widest font-black text-purple-300">
+              <span className="text-[10px] uppercase tracking-widest font-black text-blue-600">
                 AI LAUNCHPAD ACADEMY
               </span>
-              <h2 className="text-xl font-black text-white">Certificate of Completion</h2>
-              <p className="text-xs text-slate-400">This certifies that</p>
-              <div className="text-lg font-black text-purple-300">
+              <h2 className="text-xl font-black text-[#0F172A]">Certificate of Completion</h2>
+              <p className="text-xs text-slate-500">This certifies that</p>
+              <div className="text-lg font-black text-blue-600">
                 {selectedCert.recipientName || 'Student'}
               </div>
-              <p className="text-xs text-slate-300 max-w-md mx-auto">
+              <p className="text-xs text-slate-600 max-w-md mx-auto">
                 has successfully completed the 2-Day Hands-On AI Bootcamp, demonstrating practical mastery in prompt engineering, AI workflows, and capstone deployment.
               </p>
-              <div className="pt-3 border-t border-slate-800 flex items-center justify-between text-[11px] font-mono text-slate-400">
+              <div className="pt-3 border-t border-slate-200 flex items-center justify-between text-[11px] font-mono text-slate-500">
                 <span>Serial: {selectedCert.serialNumber}</span>
                 <span>Date: {new Date(selectedCert.issuedAt).toLocaleDateString()}</span>
               </div>

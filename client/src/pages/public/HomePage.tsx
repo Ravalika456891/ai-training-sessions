@@ -118,25 +118,25 @@ export const HomePage: React.FC = () => {
       {showSampleBanner && (
         <aside
           aria-label="Upcoming Cohort Announcement"
-          className="bg-[#111827] border-b border-slate-800 py-2 px-4 text-xs text-slate-300 relative z-50"
+          className="bg-blue-50/90 border-b border-blue-100 py-2 px-4 text-xs text-slate-700 relative z-50"
         >
           <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
             <div className="flex items-center gap-2.5 overflow-hidden text-ellipsis whitespace-nowrap">
-              <span className="inline-block w-2 h-2 rounded-full bg-purple-400 shrink-0" />
-              <p className="font-medium text-slate-200 truncate">
+              <span className="inline-block w-2 h-2 rounded-full bg-blue-600 shrink-0" />
+              <p className="font-medium text-slate-700 truncate">
                 Next Live Cohort:{' '}
-                <span className="font-bold text-white">{currentNextBatch.dateRange}</span> • Limited to{' '}
+                <span className="font-bold text-blue-700">{currentNextBatch.dateRange}</span> • Limited to{' '}
                 {currentNextBatch.totalSeats} Seats
               </p>
               {user && (
-                <span className="hidden md:inline-flex px-2.5 py-0.5 rounded-md bg-indigo-500/20 text-indigo-200 font-semibold text-[11px] border border-indigo-400/30">
+                <span className="hidden md:inline-flex px-2.5 py-0.5 rounded-md bg-white text-blue-700 font-semibold text-[11px] border border-blue-200">
                   Signed in: {user.name} ({user.role})
                 </span>
               )}
             </div>
             <button
               onClick={() => setShowSampleBanner(false)}
-              className="text-slate-400 hover:text-white p-1 rounded transition-colors shrink-0 cursor-pointer"
+              className="text-slate-400 hover:text-slate-700 p-1 rounded transition-colors shrink-0 cursor-pointer"
               aria-label="Dismiss banner"
             >
               <X className="w-3.5 h-3.5" />
@@ -235,22 +235,22 @@ export const HomePage: React.FC = () => {
       {/* Mobile Sticky Register Pill for Guests */}
       {!user && (
         <div className="sm:hidden fixed bottom-4 left-4 right-4 z-40">
-          <div className="p-3 rounded-2xl bg-[#0B0F19] border border-slate-800 shadow-2xl flex items-center justify-between gap-3 text-white">
+          <div className="p-3 rounded-2xl bg-white/95 backdrop-blur-md border border-slate-200 shadow-2xl flex items-center justify-between gap-3">
             <div>
-              <div className="text-[11px] text-slate-400 font-medium">
+              <div className="text-[11px] text-slate-500 font-medium">
                 {currentNextBatch.batchCode}:{' '}
-                <span className="text-white font-bold">
+                <span className="text-[#0F172A] font-bold">
                   {currentNextBatch.dateRange.split('–')[0]}
                 </span>
               </div>
-              <div className="text-sm font-black text-purple-300">
+              <div className="text-sm font-black text-blue-600">
                 ₹{currentNextBatch.pricing.basePrice.toLocaleString('en-IN')}{' '}
-                <span className="text-[10px] text-slate-400 font-normal">+ 18% GST</span>
+                <span className="text-[10px] text-slate-500 font-normal">+ 18% GST</span>
               </div>
             </div>
             <button
               onClick={scrollToRegister}
-              className="inline-flex items-center gap-1.5 py-2.5 px-4 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-xs font-bold shadow-md cursor-pointer"
+              className="inline-flex items-center gap-1.5 py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-sm cursor-pointer"
             >
               <span>Register Now</span>
               <ArrowRight className="w-3.5 h-3.5" />

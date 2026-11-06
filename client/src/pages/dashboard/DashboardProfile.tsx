@@ -293,7 +293,7 @@ export const DashboardProfile: React.FC = () => {
             <button
               type="submit"
               disabled={isUpdatingPassword}
-              className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-[#0B0F19] hover:bg-slate-800 text-white text-xs font-bold transition-colors cursor-pointer disabled:opacity-60"
+              className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-colors cursor-pointer disabled:opacity-60"
             >
               {isUpdatingPassword ? (
                 <Loader2 className="w-4 h-4 animate-spin" />

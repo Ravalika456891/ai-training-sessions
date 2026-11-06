@@ -186,24 +186,24 @@ export const DashboardLayout: React.FC = () => {
       }}
     >
       <div className="min-h-screen bg-[#F8FAFC] text-[#0F172A] flex font-sans">
-        {/* Desktop Collapsible Dark Navy & Purple Sidebar */}
+        {/* Desktop Collapsible Light Sidebar */}
         <aside
-          className={`hidden lg:flex lg:flex-col bg-[#0B0F19] text-slate-200 border-r border-slate-800 shrink-0 select-none transition-all duration-200 ${
+          className={`hidden lg:flex lg:flex-col bg-white text-[#0F172A] border-r border-slate-200 shrink-0 select-none transition-all duration-200 ${
             isSidebarCollapsed ? 'lg:w-20' : 'lg:w-64'
           }`}
         >
           {/* Brand Logo & Collapse Toggle */}
-          <div className="p-4 border-b border-slate-800/80 flex items-center justify-between gap-2">
+          <div className="p-4 border-b border-slate-200 flex items-center justify-between gap-2">
             <Link to="/" className="flex items-center gap-2.5 group min-w-0">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center text-white shadow-md shrink-0">
+              <div className="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-sm shrink-0">
                 <Sparkles className="w-5 h-5 text-white" />
               </div>
               {!isSidebarCollapsed && (
                 <div className="min-w-0">
-                  <span className="font-extrabold text-sm tracking-tight text-white block truncate">
+                  <span className="font-extrabold text-sm tracking-tight text-[#0F172A] block truncate">
                     AI Launchpad
                   </span>
-                  <span className="text-[10px] text-purple-300 font-bold uppercase tracking-wider block mt-0.5">
+                  <span className="text-[10px] text-blue-600 font-bold uppercase tracking-wider block mt-0.5">
                     {hasConfirmedEnrollment ? 'Student Portal' : 'Learner Account'}
                   </span>
                 </div>
@@ -212,7 +212,7 @@ export const DashboardLayout: React.FC = () => {
             <button
               type="button"
               onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-              className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-colors cursor-pointer shrink-0"
+              className="p-1.5 rounded-lg text-slate-400 hover:text-[#0F172A] hover:bg-slate-100 transition-colors cursor-pointer shrink-0"
               title={isSidebarCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}
             >
               {isSidebarCollapsed ? (
@@ -225,19 +225,19 @@ export const DashboardLayout: React.FC = () => {
 
           {/* User Status Card */}
           {!isSidebarCollapsed && (
-            <div className="p-3.5 mx-3 my-3 rounded-2xl bg-slate-900/90 border border-slate-800 flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-600 to-purple-600 text-white font-black text-sm flex items-center justify-center shrink-0">
+            <div className="p-3.5 mx-3 my-3 rounded-2xl bg-slate-50 border border-slate-200 flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-blue-600 text-white font-black text-sm flex items-center justify-center shrink-0">
                 {user?.name ? user.name.charAt(0).toUpperCase() : 'S'}
               </div>
               <div className="min-w-0 flex-1">
-                <p className="text-xs font-bold text-white truncate">{user?.name || 'Learner'}</p>
+                <p className="text-xs font-bold text-[#0F172A] truncate">{user?.name || 'Learner'}</p>
                 <div className="flex items-center gap-1.5 mt-0.5">
                   <span
                     className={`inline-block w-1.5 h-1.5 rounded-full shrink-0 ${
-                      hasConfirmedEnrollment ? 'bg-emerald-400' : 'bg-purple-400'
+                      hasConfirmedEnrollment ? 'bg-emerald-500' : 'bg-blue-500'
                     }`}
                   />
-                  <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider truncate">
+                  <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider truncate">
                     {hasConfirmedEnrollment ? 'Enrolled Student' : 'Registered User'}
                   </span>
                 </div>
@@ -260,8 +260,8 @@ export const DashboardLayout: React.FC = () => {
                       isSidebarCollapsed ? 'justify-center px-2' : 'gap-3 px-3.5'
                     } py-2.5 rounded-xl text-xs font-semibold transition-all ${
                       isActive
-                        ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md shadow-indigo-950/50'
-                        : 'text-slate-400 hover:text-white hover:bg-white/5'
+                        ? 'bg-blue-600 text-white shadow-sm'
+                        : 'text-[#475569] hover:text-[#0F172A] hover:bg-slate-50'
                     }`
                   }
                 >
@@ -273,12 +273,12 @@ export const DashboardLayout: React.FC = () => {
 
             {/* Helpful note for Registered Users (not yet enrolled) */}
             {!hasConfirmedEnrollment && !isSidebarCollapsed && (
-              <div className="mt-4 p-3.5 rounded-2xl bg-slate-900/70 border border-slate-800/90 space-y-1.5">
-                <div className="flex items-center gap-1.5 text-[11px] font-bold text-purple-300">
-                  <Lock className="w-3.5 h-3.5 text-purple-400 shrink-0" />
+              <div className="mt-4 p-3.5 rounded-2xl bg-blue-50/70 border border-blue-200 space-y-1.5">
+                <div className="flex items-center gap-1.5 text-[11px] font-bold text-blue-700">
+                  <Lock className="w-3.5 h-3.5 text-blue-600 shrink-0" />
                   <span>Learning Modules</span>
                 </div>
-                <p className="text-[11px] text-slate-400 leading-relaxed">
+                <p className="text-[11px] text-slate-600 leading-relaxed">
                   Live Classes, Materials, Assignments, and Certificates unlock automatically once your workshop enrollment is confirmed.
                 </p>
               </div>
@@ -286,13 +286,13 @@ export const DashboardLayout: React.FC = () => {
           </nav>
 
           {/* Bottom Actions */}
-          <div className="p-3 border-t border-slate-800 space-y-1">
+          <div className="p-3 border-t border-slate-200 space-y-1">
             <Link
               to="/"
               title={isSidebarCollapsed ? 'Public Website' : undefined}
               className={`flex items-center ${
                 isSidebarCollapsed ? 'justify-center px-2' : 'justify-between px-3'
-              } py-2 rounded-xl text-xs font-medium text-slate-400 hover:text-white hover:bg-white/5 transition-colors`}
+              } py-2 rounded-xl text-xs font-medium text-[#475569] hover:text-[#0F172A] hover:bg-slate-50 transition-colors`}
             >
               <span className="flex items-center gap-2.5">
                 <ExternalLink className="w-4 h-4 text-slate-400 shrink-0" />
@@ -305,7 +305,7 @@ export const DashboardLayout: React.FC = () => {
               title={isSidebarCollapsed ? 'Sign Out' : undefined}
               className={`w-full flex items-center ${
                 isSidebarCollapsed ? 'justify-center px-2' : 'gap-2.5 px-3'
-              } py-2 rounded-xl text-xs font-semibold text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 transition-colors cursor-pointer`}
+              } py-2 rounded-xl text-xs font-semibold text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer`}
             >
               <LogOut className="w-4 h-4 shrink-0" />
               {!isSidebarCollapsed && <span>Sign Out</span>}
@@ -334,7 +334,7 @@ export const DashboardLayout: React.FC = () => {
                   className={`hidden sm:inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[10px] font-bold border ${
                     hasConfirmedEnrollment
                       ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                      : 'bg-purple-50 text-purple-700 border-purple-200'
+                      : 'bg-blue-50 text-blue-700 border-blue-200'
                   }`}
                 >
                   <ShieldCheck className="w-3 h-3" />
@@ -346,9 +346,9 @@ export const DashboardLayout: React.FC = () => {
             <div className="flex items-center gap-2 sm:gap-3">
               <Link
                 to="/dashboard"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 transition-colors"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 transition-colors"
               >
-                <LayoutDashboard className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+                <LayoutDashboard className="w-3.5 h-3.5 text-blue-600 shrink-0" />
                 <span>My Dashboard</span>
               </Link>
 
@@ -366,12 +366,12 @@ export const DashboardLayout: React.FC = () => {
 
           {/* Toast Feedback Banner */}
           {toastMessage && (
-            <div className="bg-indigo-950 text-white px-4 py-2.5 text-xs font-semibold flex items-center justify-between">
+            <div className="bg-blue-600 text-white px-4 py-2.5 text-xs font-semibold flex items-center justify-between">
               <div className="max-w-6xl mx-auto w-full flex items-center justify-between">
                 <span>{toastMessage}</span>
                 <button
                   onClick={() => setToastMessage(null)}
-                  className="text-slate-300 hover:text-white ml-4 cursor-pointer"
+                  className="text-blue-100 hover:text-white ml-4 cursor-pointer"
                 >
                   ✕
                 </button>
@@ -381,30 +381,30 @@ export const DashboardLayout: React.FC = () => {
 
           {/* Compact Mobile Drawer */}
           {isMobileMenuOpen && (
-            <div className="lg:hidden fixed inset-0 z-40 bg-slate-950/60 backdrop-blur-xs flex">
-              <div className="w-72 max-w-[85%] bg-[#0B0F19] text-white h-full flex flex-col p-4 shadow-2xl">
-                <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+            <div className="lg:hidden fixed inset-0 z-40 bg-slate-900/40 backdrop-blur-xs flex">
+              <div className="w-72 max-w-[85%] bg-white text-[#0F172A] border-r border-slate-200 h-full flex flex-col p-4 shadow-2xl">
+                <div className="flex items-center justify-between pb-3 border-b border-slate-200">
                   <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center text-white">
+                    <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white">
                       <Sparkles className="w-4 h-4" />
                     </div>
-                    <span className="font-extrabold text-sm text-white">AI Launchpad</span>
+                    <span className="font-extrabold text-sm text-[#0F172A]">AI Launchpad</span>
                   </div>
                   <button
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="p-1.5 rounded-lg text-slate-400 hover:text-white"
+                    className="p-1.5 rounded-lg text-slate-400 hover:text-[#0F172A]"
                   >
                     <X className="w-5 h-5" />
                   </button>
                 </div>
 
-                <div className="my-3 p-3 rounded-xl bg-slate-900 border border-slate-800 flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-600 to-purple-600 text-white font-bold text-xs flex items-center justify-center shrink-0">
+                <div className="my-3 p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-full bg-blue-600 text-white font-bold text-xs flex items-center justify-center shrink-0">
                     {user?.name ? user.name.charAt(0).toUpperCase() : 'S'}
                   </div>
                   <div className="min-w-0">
-                    <p className="text-xs font-bold text-white truncate">{user?.name || 'Learner'}</p>
-                    <p className="text-[10px] text-slate-400 truncate">{user?.email}</p>
+                    <p className="text-xs font-bold text-[#0F172A] truncate">{user?.name || 'Learner'}</p>
+                    <p className="text-[10px] text-slate-500 truncate">{user?.email}</p>
                   </div>
                 </div>
 
@@ -419,8 +419,8 @@ export const DashboardLayout: React.FC = () => {
                         className={({ isActive }) =>
                           `flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all ${
                             isActive
-                              ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white'
-                              : 'text-slate-300 hover:text-white hover:bg-white/5'
+                              ? 'bg-blue-600 text-white'
+                              : 'text-[#475569] hover:text-[#0F172A] hover:bg-slate-50'
                           }`
                         }
                       >
@@ -431,17 +431,17 @@ export const DashboardLayout: React.FC = () => {
                   })}
                 </nav>
 
-                <div className="pt-3 border-t border-slate-800 space-y-1">
+                <div className="pt-3 border-t border-slate-200 space-y-1">
                   <Link
                     to="/"
-                    className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium text-slate-300 hover:bg-white/5"
+                    className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium text-[#475569] hover:bg-slate-50"
                   >
                     <ExternalLink className="w-4 h-4 text-slate-400" />
                     <span>Public Website</span>
                   </Link>
                   <button
                     onClick={handleSignOut}
-                    className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold text-rose-400 hover:bg-rose-500/10"
+                    className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold text-rose-600 hover:bg-rose-50"
                   >
                     <LogOut className="w-4 h-4" />
                     <span>Sign Out</span>
@@ -460,7 +460,7 @@ export const DashboardLayout: React.FC = () => {
           </main>
 
           {/* Compact Mobile Bottom Navigation Bar */}
-          <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-30 bg-[#0B0F19] border-t border-slate-800 px-2 py-1.5 flex items-center justify-around">
+          <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-30 bg-white border-t border-slate-200 px-2 py-1.5 flex items-center justify-around shadow-md">
             {activeNavItems.slice(0, 5).map((item) => {
               const Icon = item.icon;
               return (
@@ -470,7 +470,7 @@ export const DashboardLayout: React.FC = () => {
                   end={item.end}
                   className={({ isActive }) =>
                     `flex flex-col items-center gap-0.5 px-2.5 py-1.5 rounded-xl text-[10px] font-semibold transition-colors ${
-                      isActive ? 'text-purple-400' : 'text-slate-400 hover:text-white'
+                      isActive ? 'text-blue-600' : 'text-slate-500 hover:text-[#0F172A]'
                     }`
                   }
                 >

@@ -162,29 +162,29 @@ export const RegistrationSection: React.FC<RegistrationSectionProps> = ({
         <div className="mt-10 max-w-4xl mx-auto space-y-6">
           {/* Smart Account Continuation Bar for Guests */}
           {!user && (
-            <div className="p-5 rounded-2xl bg-[#0B0F19] text-white border border-slate-800 shadow-lg flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="p-5 rounded-2xl bg-blue-50/80 text-[#0F172A] border border-blue-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="space-y-1">
-                <div className="flex items-center gap-2 text-xs font-bold text-purple-300 uppercase tracking-wider">
-                  <Sparkles className="w-3.5 h-3.5 text-purple-400" />
+                <div className="flex items-center gap-2 text-xs font-bold text-blue-700 uppercase tracking-wider">
+                  <Sparkles className="w-3.5 h-3.5 text-blue-600" />
                   <span>Smart Workshop Preservation</span>
                 </div>
-                <p className="text-xs sm:text-sm text-slate-300">
-                  Selected Cohort: <strong className="text-white">{selectedBatch.batchCode}</strong> ({selectedBatch.dateRange}). Sign in or create an account to continue enrollment from your dashboard, or complete the form below.
+                <p className="text-xs sm:text-sm text-slate-600">
+                  Selected Cohort: <strong className="text-[#0F172A]">{selectedBatch.batchCode}</strong> ({selectedBatch.dateRange}). Sign in or create an account to continue enrollment from your dashboard, or complete the form below.
                 </p>
               </div>
               <div className="flex items-center gap-2.5 shrink-0">
                 <Link
                   to={`/signin?redirect=${encodeURIComponent(`/dashboard?batch=${selectedBatch.id}`)}`}
                   onClick={() => sessionStorage.setItem('ailp_selected_batch', selectedBatch.id)}
-                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-semibold text-white transition-colors"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-xs font-semibold text-[#0F172A] shadow-2xs transition-colors"
                 >
-                  <LogIn className="w-3.5 h-3.5 text-purple-400" />
+                  <LogIn className="w-3.5 h-3.5 text-blue-600" />
                   <span>Sign In</span>
                 </Link>
                 <Link
                   to={`/signup?redirect=${encodeURIComponent(`/dashboard?batch=${selectedBatch.id}`)}`}
                   onClick={() => sessionStorage.setItem('ailp_selected_batch', selectedBatch.id)}
-                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-xs font-bold text-white shadow-sm transition-all"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-xs font-bold text-white shadow-xs transition-all"
                 >
                   <span>Create Account</span>
                   <ArrowRight className="w-3.5 h-3.5" />

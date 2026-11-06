@@ -57,18 +57,18 @@ export const DashboardLiveClasses: React.FC = () => {
         </div>
       ) : (
         <div className="space-y-6">
-          {/* 1. Next Class Hero Card */}
-          <div className="p-6 sm:p-8 rounded-3xl bg-[#0B0F19] text-white border border-slate-800 shadow-xl space-y-6">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
+          {/* 1. Next Class Hero Card (Light Theme) */}
+          <div className="p-6 sm:p-8 rounded-3xl bg-white text-[#0F172A] border border-slate-200 shadow-xs space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
               <div className="space-y-1.5">
-                <span className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-purple-300 bg-purple-500/15 px-2.5 py-0.5 rounded-md border border-purple-500/30">
-                  <Sparkles className="w-3.5 h-3.5 text-purple-400" />
+                <span className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-blue-700 bg-blue-50 px-2.5 py-0.5 rounded-md border border-blue-200">
+                  <Sparkles className="w-3.5 h-3.5 text-blue-600" />
                   <span>Next Live Session • {primary.workshop?.batchCode}</span>
                 </span>
-                <h3 className="text-lg sm:text-xl font-extrabold text-white">
+                <h3 className="text-lg sm:text-xl font-extrabold text-[#0F172A]">
                   {sessions[0]?.title || primary.workshop?.title}
                 </h3>
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-slate-500">
                   {primary.sessionAccess?.platform || 'Google Meet / Zoom HD Virtual Classroom'}
                 </p>
               </div>
@@ -77,31 +77,31 @@ export const DashboardLiveClasses: React.FC = () => {
                 <span
                   className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border ${
                     isAuthorized
-                      ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'
-                      : 'bg-amber-500/15 text-amber-300 border-amber-500/30'
+                      ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                      : 'bg-amber-50 text-amber-700 border-amber-200'
                   }`}
                 >
                   {isAuthorized ? (
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
                   ) : (
-                    <Lock className="w-3.5 h-3.5 text-amber-400" />
+                    <Lock className="w-3.5 h-3.5 text-amber-600" />
                   )}
                   <span>{isAuthorized ? 'Authorized to Join' : 'Payment Required'}</span>
                 </span>
               </div>
             </div>
 
-            {/*Join Session Action Box */}
+            {/* Join Session Action Box */}
             {isAuthorized ? (
-              <div className="p-5 rounded-2xl bg-slate-900/90 border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="p-5 rounded-2xl bg-blue-50/60 border border-blue-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="space-y-1">
-                  <h4 className="font-bold text-sm text-white">Virtual Classroom Pass Unlocked</h4>
-                  <p className="text-xs text-slate-300">
+                  <h4 className="font-bold text-sm text-[#0F172A]">Virtual Classroom Pass Unlocked</h4>
+                  <p className="text-xs text-slate-600">
                     The classroom opens 30 minutes before start time ({primary.workshop?.timings}).
                   </p>
-                  <div className="pt-1 text-xs font-mono text-slate-300">
+                  <div className="pt-1 text-xs font-mono text-slate-600">
                     Meeting Passcode:{' '}
-                    <span className="bg-slate-950 px-2.5 py-0.5 rounded border border-slate-700 font-bold text-purple-300">
+                    <span className="bg-white px-2.5 py-0.5 rounded border border-blue-200 font-bold text-blue-700">
                       {primary.sessionAccess?.meetingPasscode || 'AILP2026'}
                     </span>
                   </div>
@@ -111,7 +111,7 @@ export const DashboardLiveClasses: React.FC = () => {
                   href={primary.sessionAccess?.joinUrl || 'https://meet.google.com/ailp-live-cohort'}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold text-xs shadow-lg transition-all cursor-pointer shrink-0"
+                  className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-sm transition-all cursor-pointer shrink-0"
                 >
                   <Video className="w-4 h-4" />
                   <span>Join Session</span>
@@ -119,19 +119,19 @@ export const DashboardLiveClasses: React.FC = () => {
                 </a>
               </div>
             ) : (
-              <div className="p-5 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="p-5 rounded-2xl bg-amber-50 border border-amber-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="flex items-start gap-3">
-                  <AlertCircle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
+                  <AlertCircle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
                   <div>
-                    <h4 className="font-bold text-sm text-amber-200">Live Session Locked</h4>
-                    <p className="text-xs text-slate-300 mt-0.5">
+                    <h4 className="font-bold text-sm text-amber-900">Live Session Locked</h4>
+                    <p className="text-xs text-amber-800 mt-0.5">
                       Complete your verified enrollment payment to unlock the live classroom link and passcode.
                     </p>
                   </div>
                 </div>
                 <button
                   onClick={() => openCheckout(primary.enrollmentId)}
-                  className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-xs font-bold rounded-xl shadow-md shrink-0 cursor-pointer"
+                  className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl shadow-xs shrink-0 cursor-pointer"
                 >
                   <CreditCard className="w-4 h-4" />
                   <span>Complete Payment</span>

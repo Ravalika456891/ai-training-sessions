@@ -78,17 +78,17 @@ export const DashboardOverview: React.FC = () => {
 
     return (
       <div className="space-y-8">
-        {/* 1. Personalized Welcome Banner (Dark Navy & Purple) */}
-        <div className="p-6 sm:p-8 rounded-3xl bg-[#0B0F19] text-white border border-slate-800 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-6">
+        {/* 1. Personalized Welcome Banner (Light Theme) */}
+        <div className="p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-blue-50/80 via-white to-indigo-50/40 text-[#0F172A] border border-blue-200 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/15 border border-purple-500/30 text-purple-300 text-xs font-semibold">
-              <Sparkles className="w-3.5 h-3.5 text-purple-400" />
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100/80 border border-blue-200 text-blue-700 text-xs font-semibold">
+              <Sparkles className="w-3.5 h-3.5 text-blue-600" />
               <span>Welcome to AI Launchpad</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
+            <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-[#0F172A]">
               Hello, {user?.name || 'Learner'}!
             </h2>
-            <p className="text-xs sm:text-sm text-slate-300 max-w-xl leading-relaxed">
+            <p className="text-xs sm:text-sm text-slate-600 max-w-xl leading-relaxed">
               Your learner account is ready. Select an upcoming 2-Day Hands-On AI Bootcamp cohort below and complete enrollment to unlock your live classes, prompt libraries, assignments, and certificate.
             </p>
           </div>
@@ -96,16 +96,16 @@ export const DashboardOverview: React.FC = () => {
           <div className="flex flex-wrap items-center gap-3 shrink-0">
             <button
               onClick={scrollToBatches}
-              className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white text-xs font-bold shadow-lg transition-all cursor-pointer"
+              className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-sm transition-all cursor-pointer"
             >
               <span>Explore Workshops</span>
               <ArrowRight className="w-4 h-4" />
             </button>
             <Link
               to="/dashboard/profile"
-              className="inline-flex items-center gap-2 px-4 py-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-200 text-xs font-semibold transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-3 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-[#0F172A] text-xs font-semibold shadow-2xs transition-colors"
             >
-              <User className="w-4 h-4 text-purple-400" />
+              <User className="w-4 h-4 text-blue-600" />
               <span>Profile Settings</span>
             </Link>
           </div>
@@ -327,33 +327,33 @@ export const DashboardOverview: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* 1. Enrolled Student Welcome Banner & Continue Learning Button */}
-      <div className="p-6 sm:p-8 rounded-3xl bg-[#0B0F19] text-white border border-slate-800 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <div className="p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-blue-50/80 via-white to-indigo-50/40 text-[#0F172A] border border-blue-200 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="space-y-2">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs font-semibold">
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-semibold">
+            <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
             <span>Confirmed Student • {confirmedWorkshop.workshop?.batchCode}</span>
           </div>
-          <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
+          <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-[#0F172A]">
             Welcome back, {user?.name || 'Student'}!
           </h2>
-          <p className="text-xs sm:text-sm text-slate-300 max-w-xl leading-relaxed">
-            You are enrolled in <strong>{confirmedWorkshop.workshop?.title}</strong>. Pick up right where you left off with your live sessions, learning materials, and capstone assignment.
+          <p className="text-xs sm:text-sm text-slate-600 max-w-xl leading-relaxed">
+            You are enrolled in <strong className="text-[#0F172A]">{confirmedWorkshop.workshop?.title}</strong>. Pick up right where you left off with your live sessions, learning materials, and capstone assignment.
           </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-3 shrink-0">
           <Link
             to="/dashboard/materials"
-            className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white text-xs font-bold shadow-lg transition-all"
+            className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-sm transition-all"
           >
             <span>Continue Learning</span>
             <ArrowRight className="w-4 h-4" />
           </Link>
           <Link
             to="/dashboard/live-classes"
-            className="inline-flex items-center gap-2 px-4 py-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-200 text-xs font-semibold transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-3 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-[#0F172A] text-xs font-semibold shadow-2xs transition-colors"
           >
-            <Video className="w-4 h-4 text-purple-400" />
+            <Video className="w-4 h-4 text-blue-600" />
             <span>Live Classes</span>
           </Link>
         </div>

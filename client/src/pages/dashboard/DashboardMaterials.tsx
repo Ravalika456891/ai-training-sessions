@@ -98,7 +98,7 @@ export const DashboardMaterials: React.FC = () => {
             onClick={() => setActiveTab(tab.id)}
             className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
               activeTab === tab.id
-                ? 'bg-[#0B0F19] text-white shadow-xs'
+                ? 'bg-blue-600 text-white shadow-xs'
                 : 'bg-white text-slate-600 hover:text-[#0F172A] border border-slate-200'
             }`}
           >
@@ -226,7 +226,7 @@ export const DashboardMaterials: React.FC = () => {
             <p className="text-xs text-slate-600">{selectedResource.description}</p>
 
             {selectedResource.content && (
-              <pre className="p-4 rounded-2xl bg-[#0B0F19] text-slate-200 text-xs font-mono whitespace-pre-wrap overflow-x-auto max-h-64">
+              <pre className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-[#0F172A] text-xs font-mono whitespace-pre-wrap overflow-x-auto max-h-64">
                 {selectedResource.content}
               </pre>
             )}
