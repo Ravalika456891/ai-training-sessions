@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import {
   GraduationCap,
@@ -45,7 +45,6 @@ export const DashboardOverview: React.FC = () => {
   const pendingWorkshop = workshops.find((w: any) => !w.isAuthorized) || null;
   const preservedBatchId =
     searchParams.get('batch') || sessionStorage.getItem('ailp_selected_batch');
-  const [overviewSelectedBatchId, setOverviewSelectedBatchId] = useState<string | null>(null);
 
   // Scroll to available workshops when clicking Explore Workshops
   const scrollToBatches = () => {
@@ -217,129 +216,100 @@ export const DashboardOverview: React.FC = () => {
           </div>
         )}
 
-        {/* 5. Available Workshop Cohort (Based on selection, only 1 selected session is visible) */}
-        <div id="available-batches" className="space-y-4 scroll-mt-20">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div>
-              <h3 className="text-lg font-extrabold text-[#0F172A]">Upcoming Workshop Cohort</h3>
-              <p className="text-xs text-slate-500">
-                Reserve your seat in the upcoming live weekend cohort below and proceed to checkout.
-              </p>
+        {/* 5. Available Workshop Cohorts - Display all sessions initially; once selection for payment is made, this is hidden */}
+        {!hasConfirmedEnrollment && !pendingWorkshop && workshops.length === 0 && availableWorkshops.length > 0 && (
+          <div id="available-batches" className="space-y-4 scroll-mt-20">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-extrabold text-[#0F172A]">Available Training Sessions</h3>
+                <p className="text-xs text-slate-500">
+                  All upcoming workshop sessions are shown below. Select your preferred cohort to proceed to payment.
+                </p>
+              </div>
             </div>
 
-            {/* If multiple available workshops exist, provide clean tabs to switch */}
-            {availableWorkshops.length > 1 && (
-              <div className="flex flex-wrap items-center gap-1.5 p-1 bg-slate-100 rounded-xl">
-                {availableWorkshops.map((b: any) => {
-                  const isSelected =
-                    (overviewSelectedBatchId && overviewSelectedBatchId === b._id) ||
-                    (!overviewSelectedBatchId && (highlightedBatch?._id === b._id || availableWorkshops[0]?._id === b._id));
-                  return (
-                    <button
-                      key={b._id}
-                      type="button"
-                      onClick={() => setOverviewSelectedBatchId(b._id)}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                        isSelected
-                          ? 'bg-blue-600 text-white shadow-2xs'
-                          : 'text-slate-600 hover:text-[#0F172A]'
-                      }`}
-                    >
-                      {b.batchCode}
-                    </button>
-                  );
-                })}
-              </div>
-            )}
-          </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+              {availableWorkshops.map((batch: any) => {
+                const basePrice = batch.price?.basePrice ?? 1999;
+                const isFree = Boolean(batch.price?.isFree || basePrice === 0);
+                const dateRange = `${new Date(batch.startDate).toLocaleDateString('en-US', {
+                  month: 'short',
+                  day: 'numeric',
+                })} – ${new Date(batch.endDate).toLocaleDateString('en-US', {
+                  month: 'short',
+                  day: 'numeric',
+                  year: 'numeric',
+                })}`;
 
-          <div className="grid grid-cols-1 max-w-2xl gap-5">
-            {[
-              (overviewSelectedBatchId
-                ? availableWorkshops.find((b: any) => b._id === overviewSelectedBatchId)
-                : highlightedBatch) || availableWorkshops[0],
-            ]
-              .filter(Boolean)
-              .map((batch: any) => {
-              const basePrice = batch.price?.basePrice ?? 1999;
-              const isFree = Boolean(batch.price?.isFree || basePrice === 0);
-              const dateRange = `${new Date(batch.startDate).toLocaleDateString('en-US', {
-                month: 'short',
-                day: 'numeric',
-              })} – ${new Date(batch.endDate).toLocaleDateString('en-US', {
-                month: 'short',
-                day: 'numeric',
-                year: 'numeric',
-              })}`;
-
-              return (
-                <div
-                  key={batch._id}
-                  className="p-6 rounded-3xl bg-white border border-slate-200 hover:border-indigo-300 shadow-xs flex flex-col justify-between space-y-5 transition-all"
-                >
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="font-mono text-xs font-bold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-lg border border-indigo-200">
-                        {batch.batchCode}
-                      </span>
-                      <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
-                        {batch.availableSeats} of {batch.capacity} seats open
-                      </span>
-                    </div>
-
-                    <div>
-                      <h4 className="text-base font-extrabold text-[#0F172A]">{batch.title}</h4>
-                      <p className="text-xs text-slate-500 mt-1 line-clamp-2">
-                        {batch.description}
-                      </p>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-2.5 pt-1 text-xs">
-                      <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center gap-2">
-                        <Calendar className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
-                        <span className="font-semibold text-[#0F172A] truncate">{dateRange}</span>
+                return (
+                  <div
+                    key={batch._id}
+                    className="p-6 rounded-3xl bg-white border border-slate-200 hover:border-indigo-300 shadow-xs flex flex-col justify-between space-y-5 transition-all"
+                  >
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="font-mono text-xs font-bold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-lg border border-indigo-200">
+                          {batch.batchCode}
+                        </span>
+                        <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
+                          {batch.availableSeats} of {batch.capacity} seats open
+                        </span>
                       </div>
-                      <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center gap-2">
-                        <Clock className="w-3.5 h-3.5 text-purple-600 shrink-0" />
-                        <span className="font-semibold text-[#0F172A] truncate">{batch.timings}</span>
+
+                      <div>
+                        <h4 className="text-base font-extrabold text-[#0F172A]">{batch.title}</h4>
+                        <p className="text-xs text-slate-500 mt-1 line-clamp-2">
+                          {batch.description}
+                        </p>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-2.5 pt-1 text-xs">
+                        <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center gap-2">
+                          <Calendar className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+                          <span className="font-semibold text-[#0F172A] truncate">{dateRange}</span>
+                        </div>
+                        <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center gap-2">
+                          <Clock className="w-3.5 h-3.5 text-purple-600 shrink-0" />
+                          <span className="font-semibold text-[#0F172A] truncate">{batch.timings}</span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2 text-xs text-slate-600 pt-1">
+                        <Users className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+                        <span>
+                          Instructor: <strong className="text-[#0F172A]">{batch.instructor?.name || 'Vikram Malhotra'}</strong>
+                        </span>
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-2 text-xs text-slate-600 pt-1">
-                      <Users className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
-                      <span>
-                        Instructor: <strong className="text-[#0F172A]">{batch.instructor?.name || 'Vikram Malhotra'}</strong>
-                      </span>
+                    <div className="pt-4 border-t border-slate-100 flex items-center justify-between gap-3">
+                      <div>
+                        <span className="text-[10px] uppercase font-bold text-slate-400 block">
+                          Tuition Fee
+                        </span>
+                        <span className="text-lg font-black text-[#0F172A]">
+                          {isFree ? 'Free' : `₹${basePrice.toLocaleString('en-IN')}`}
+                        </span>
+                        {!isFree && (
+                          <span className="text-[10px] text-slate-500 ml-1">+ 18% GST</span>
+                        )}
+                      </div>
+
+                      <button
+                        disabled={isEnrolling}
+                        onClick={() => enrollInBatch(batch._id)}
+                        className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-sm transition-all cursor-pointer disabled:opacity-60"
+                      >
+                        <span>{isFree ? 'Enroll for Free' : 'Enroll & Pay'}</span>
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </button>
                     </div>
                   </div>
-
-                  <div className="pt-4 border-t border-slate-100 flex items-center justify-between gap-3">
-                    <div>
-                      <span className="text-[10px] uppercase font-bold text-slate-400 block">
-                        Tuition Fee
-                      </span>
-                      <span className="text-lg font-black text-[#0F172A]">
-                        {isFree ? 'Free' : `₹${basePrice.toLocaleString('en-IN')}`}
-                      </span>
-                      {!isFree && (
-                        <span className="text-[10px] text-slate-500 ml-1">+ 18% GST</span>
-                      )}
-                    </div>
-
-                    <button
-                      disabled={isEnrolling}
-                      onClick={() => enrollInBatch(batch._id)}
-                      className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-sm transition-all cursor-pointer disabled:opacity-60"
-                    >
-                      <span>{isFree ? 'Enroll for Free' : 'Enroll & Pay'}</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
-        </div>
+        )}
       </div>
     );
   }

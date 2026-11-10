@@ -27,6 +27,8 @@ export const PricingSection: React.FC<PricingSectionProps> = ({
   onSelectBatch,
   onProceedToRegister,
 }) => {
+  const [selectedForPayment, setSelectedForPayment] = React.useState<string | null>(null);
+
   const inclusions = [
     '10 Hours of Live, Interactive Guided Labs',
     'Full Lifetime Access to HD Session Recordings',
@@ -37,6 +39,17 @@ export const PricingSection: React.FC<PricingSectionProps> = ({
     'Dedicated Q&A Support & Community Access',
     '100% Money-Back Satisfaction Guarantee',
   ];
+
+  const handleSelectForPayment = (batchId: string) => {
+    setSelectedForPayment(batchId);
+    onSelectBatch(batchId);
+    onProceedToRegister();
+  };
+
+  const selectedBatch =
+    batches.find((b: BatchOption) => b.id === (selectedForPayment || selectedBatchId)) ||
+    batches[0] ||
+    BATCH_OPTIONS[0];
 
   return (
     <section id="pricing" className="py-20 bg-[#F8FAFC] relative scroll-mt-20">
@@ -88,127 +101,204 @@ export const PricingSection: React.FC<PricingSectionProps> = ({
             </div>
           </div>
 
-          {/* Right Column: Live Batch Selection Cards (Based on selection, only selected session is visible) */}
+          {/* Right Column: Live Batch Selection Cards */}
           <div className="lg:col-span-7 space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
-              <h3 className="text-lg font-bold text-[#0F172A]">
-                Selected Live Training Session
-              </h3>
-              {batches.length > 1 && (
-                <span className="text-xs text-slate-500 font-medium">
-                  {batches.length} sessions available • Click to select
-                </span>
-              )}
-            </div>
+            {/* If a selection for payment has been made, only show the selected session */}
+            {selectedForPayment ? (
+              <div className="space-y-3">
+                <div className="flex items-center justify-between pb-1">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+                    <h3 className="text-base font-bold text-[#0F172A]">
+                      Selected Session for Payment
+                    </h3>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedForPayment(null)}
+                    className="text-xs font-semibold text-blue-600 hover:underline cursor-pointer"
+                  >
+                    View All Sessions
+                  </button>
+                </div>
 
-            {/* If multiple sessions exist, show an interactive selector pill bar */}
-            {batches.length > 1 && (
-              <div className="flex flex-wrap items-center gap-2 pb-1">
+                {(() => {
+                  const taxAmount = Math.round(
+                    selectedBatch.pricing.basePrice * (selectedBatch.pricing.taxPercentage / 100)
+                  );
+                  const totalAmount = selectedBatch.pricing.basePrice + taxAmount;
+
+                  return (
+                    <Card
+                      key={selectedBatch.id}
+                      className="p-6 transition-all border-2 border-blue-600 bg-white shadow-lg ring-2 ring-blue-600/10"
+                    >
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2">
+                            <span className="font-mono text-xs text-blue-700 font-bold bg-blue-50 px-2.5 py-0.5 rounded-md border border-blue-200">
+                              {selectedBatch.batchCode}
+                            </span>
+                            <Badge variant="primary" size="sm">
+                              {selectedBatch.status}
+                            </Badge>
+                            <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
+                              Selected for Checkout
+                            </span>
+                          </div>
+
+                          <div className="text-lg font-bold text-[#0F172A] flex items-center gap-2">
+                            <Calendar className="w-4 h-4 text-blue-600 shrink-0" />
+                            <span>{selectedBatch.dateRange}</span>
+                            <span className="text-slate-300">•</span>
+                            <span className="text-sm font-normal text-slate-500">
+                              {selectedBatch.days}
+                            </span>
+                          </div>
+
+                          <div className="flex items-center gap-3 text-xs text-slate-500">
+                            <span className="flex items-center gap-1">
+                              <Clock className="w-3 h-3 text-slate-400" />
+                              {selectedBatch.timings}
+                            </span>
+                            <span>•</span>
+                            <span className="flex items-center gap-1 text-blue-700 font-medium">
+                              <Users className="w-3 h-3" />
+                              {selectedBatch.availableSeats} of {selectedBatch.totalSeats} seats open
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="text-left sm:text-right border-t sm:border-t-0 pt-3 sm:pt-0 border-slate-100">
+                          <div className="text-2xl font-black text-[#0F172A]">
+                            ₹{selectedBatch.pricing.basePrice.toLocaleString('en-IN')}
+                          </div>
+                          <div className="text-[11px] text-slate-500">
+                            + ₹{taxAmount} (18% GST) ={' '}
+                            <span className="text-[#0F172A] font-semibold">
+                              ₹{totalAmount.toLocaleString('en-IN')} Total
+                            </span>
+                          </div>
+                          <div className="mt-3">
+                            <Button
+                              variant="primary"
+                              size="sm"
+                              onClick={() => {
+                                onSelectBatch(selectedBatch.id);
+                                onProceedToRegister();
+                              }}
+                              rightIcon={<ArrowRight className="w-3.5 h-3.5" />}
+                            >
+                              Proceed to Payment
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    </Card>
+                  );
+                })()}
+              </div>
+            ) : (
+              /* All sessions displayed before payment selection */
+              <div className="space-y-4">
+                <div className="flex items-center justify-between mb-1">
+                  <h3 className="text-lg font-bold text-[#0F172A]">
+                    Available Training Sessions ({batches.length})
+                  </h3>
+                  <span className="text-xs text-slate-500 font-medium">
+                    Choose a session to proceed to payment
+                  </span>
+                </div>
+
                 {batches.map((batch: BatchOption) => {
                   const isSelected = selectedBatchId === batch.id;
+                  const taxAmount = Math.round(
+                    batch.pricing.basePrice * (batch.pricing.taxPercentage / 100)
+                  );
+                  const totalAmount = batch.pricing.basePrice + taxAmount;
+
                   return (
-                    <button
+                    <Card
                       key={batch.id}
-                      type="button"
                       onClick={() => onSelectBatch(batch.id)}
-                      className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2 ${
+                      className={`p-5 sm:p-6 cursor-pointer transition-all border-2 bg-white ${
                         isSelected
-                          ? 'bg-blue-600 text-white shadow-sm ring-2 ring-blue-600/20'
-                          : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50'
+                          ? 'border-blue-600 shadow-md ring-2 ring-blue-600/10'
+                          : 'border-slate-200 hover:border-slate-300 shadow-sm'
                       }`}
                     >
-                      <Calendar className="w-3.5 h-3.5" />
-                      <span>{batch.batchCode} ({batch.dateRange})</span>
-                      {isSelected && <span className="w-1.5 h-1.5 rounded-full bg-white ml-0.5" />}
-                    </button>
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div className="space-y-1.5">
+                          <div className="flex items-center gap-2">
+                            <span
+                              className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 ${
+                                isSelected
+                                  ? 'border-blue-600 bg-blue-600'
+                                  : 'border-slate-300'
+                              }`}
+                            >
+                              {isSelected && <span className="w-1.5 h-1.5 rounded-full bg-white" />}
+                            </span>
+                            <span className="font-mono text-xs text-blue-700 font-bold">
+                              {batch.batchCode}
+                            </span>
+                            <Badge variant="primary" size="sm">
+                              {batch.status}
+                            </Badge>
+                          </div>
+
+                          <div className="text-base sm:text-lg font-bold text-[#0F172A] flex items-center gap-2">
+                            <Calendar className="w-4 h-4 text-blue-600" />
+                            <span>{batch.dateRange}</span>
+                            <span className="text-slate-300">•</span>
+                            <span className="text-sm font-normal text-slate-500">
+                              {batch.days}
+                            </span>
+                          </div>
+
+                          <div className="flex items-center gap-3 text-xs text-slate-500">
+                            <span className="flex items-center gap-1">
+                              <Clock className="w-3 h-3 text-slate-400" />
+                              {batch.timings}
+                            </span>
+                            <span>•</span>
+                            <span className="flex items-center gap-1 text-blue-700 font-medium">
+                              <Users className="w-3 h-3" />
+                              {batch.availableSeats} of {batch.totalSeats} seats open
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="text-left sm:text-right border-t sm:border-t-0 pt-3 sm:pt-0 border-slate-100">
+                          <div className="text-2xl font-black text-[#0F172A]">
+                            ₹{batch.pricing.basePrice.toLocaleString('en-IN')}
+                          </div>
+                          <div className="text-[11px] text-slate-500">
+                            + ₹{taxAmount} (18% GST) ={' '}
+                            <span className="text-[#0F172A] font-semibold">
+                              ₹{totalAmount.toLocaleString('en-IN')} Total
+                            </span>
+                          </div>
+                          <div className="mt-2">
+                            <Button
+                              variant={isSelected ? 'primary' : 'outline'}
+                              size="sm"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleSelectForPayment(batch.id);
+                              }}
+                              rightIcon={<ArrowRight className="w-3.5 h-3.5" />}
+                            >
+                              {isSelected ? 'Enroll & Pay (Selected)' : 'Select & Pay'}
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    </Card>
                   );
                 })}
               </div>
             )}
-
-            {/* Based on selection, only the selected session card is visible */}
-            {(() => {
-              const selectedBatch =
-                batches.find((b: BatchOption) => b.id === selectedBatchId) ||
-                batches[0] ||
-                BATCH_OPTIONS[0];
-
-              if (!selectedBatch) return null;
-
-              const taxAmount = Math.round(
-                selectedBatch.pricing.basePrice * (selectedBatch.pricing.taxPercentage / 100)
-              );
-              const totalAmount = selectedBatch.pricing.basePrice + taxAmount;
-
-              return (
-                <Card
-                  key={selectedBatch.id}
-                  className="p-5 sm:p-6 transition-all border-2 border-blue-600 bg-white shadow-md ring-2 ring-blue-600/10"
-                >
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <div className="space-y-1.5">
-                      <div className="flex items-center gap-2">
-                        <span className="w-4 h-4 rounded-full border border-blue-600 bg-blue-600 flex items-center justify-center shrink-0">
-                          <span className="w-1.5 h-1.5 rounded-full bg-white" />
-                        </span>
-                        <span className="font-mono text-xs text-blue-700 font-bold">
-                          {selectedBatch.batchCode}
-                        </span>
-                        <Badge variant="primary" size="sm">
-                          {selectedBatch.status}
-                        </Badge>
-                      </div>
-
-                      <div className="text-base sm:text-lg font-bold text-[#0F172A] flex items-center gap-2">
-                        <Calendar className="w-4 h-4 text-blue-600" />
-                        <span>{selectedBatch.dateRange}</span>
-                        <span className="text-slate-300">•</span>
-                        <span className="text-sm font-normal text-slate-500">
-                          {selectedBatch.days}
-                        </span>
-                      </div>
-
-                      <div className="flex items-center gap-3 text-xs text-slate-500">
-                        <span className="flex items-center gap-1">
-                          <Clock className="w-3 h-3 text-slate-400" />
-                          {selectedBatch.timings}
-                        </span>
-                        <span>•</span>
-                        <span className="flex items-center gap-1 text-blue-700 font-medium">
-                          <Users className="w-3 h-3" />
-                          {selectedBatch.availableSeats} of {selectedBatch.totalSeats} seats open
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="text-left sm:text-right border-t sm:border-t-0 pt-3 sm:pt-0 border-slate-100">
-                      <div className="text-2xl font-black text-[#0F172A]">
-                        ₹{selectedBatch.pricing.basePrice.toLocaleString('en-IN')}
-                      </div>
-                      <div className="text-[11px] text-slate-500">
-                        + ₹{taxAmount} (18% GST) ={' '}
-                        <span className="text-[#0F172A] font-semibold">
-                          ₹{totalAmount.toLocaleString('en-IN')} Total
-                        </span>
-                      </div>
-                      <div className="mt-2">
-                        <Button
-                          variant="primary"
-                          size="sm"
-                          onClick={() => {
-                            onSelectBatch(selectedBatch.id);
-                            onProceedToRegister();
-                          }}
-                          rightIcon={<ArrowRight className="w-3.5 h-3.5" />}
-                        >
-                          Register with This Session
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                </Card>
-              );
-            })()}
           </div>
         </div>
       </div>
