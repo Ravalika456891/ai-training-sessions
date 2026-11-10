@@ -84,7 +84,18 @@ export const DashboardLiveClasses: React.FC = () => {
   const workshops = dashboardData?.workshops || [];
   const availableWorkshops = dashboardData?.availableWorkshops || [];
 
-  const primary = workshops.find((w: any) => w.isAuthorized) || workshops[0] || null;
+  const [selectedWorkshopId, setSelectedWorkshopId] = React.useState<string | null>(null);
+  const [selectedSessionId, setSelectedSessionId] = React.useState<string | null>(null);
+
+  const primary =
+    workshops.find(
+      (w: any) =>
+        (selectedWorkshopId && (w.enrollmentId === selectedWorkshopId || w.workshop?._id === selectedWorkshopId)) ||
+        (!selectedWorkshopId && w.isAuthorized)
+    ) ||
+    workshops[0] ||
+    null;
+
   const previewBatch = availableWorkshops[0] || null;
   const isAuthorized = Boolean(primary?.isAuthorized);
 
@@ -115,6 +126,19 @@ export const DashboardLiveClasses: React.FC = () => {
 
   const nextActiveSession =
     sessions.find((s: any) => s.status !== 'cancelled' && s.status !== 'completed') || sessions[0];
+
+  const currentSession =
+    (selectedSessionId && selectedSessionId !== 'all'
+      ? sessions.find((s: any) => (s._id || String(s.dayNumber)) === selectedSessionId)
+      : null) ||
+    nextActiveSession ||
+    sessions[0];
+
+  // Sessions to render based on selection (if specific session selected, show only that one)
+  const visibleSessions =
+    selectedSessionId && selectedSessionId !== 'all'
+      ? sessions.filter((s: any) => (s._id || String(s.dayNumber)) === selectedSessionId)
+      : sessions;
 
   const instructor = activeWorkshopInfo?.instructor || {
     name: 'Vikram Malhotra',
@@ -151,23 +175,54 @@ export const DashboardLiveClasses: React.FC = () => {
       </div>
 
       <div className="space-y-6">
-        {/* 1. Next Class Hero Card */}
+        {/* Cohort Selector (if multiple cohorts exist for this learner) */}
+        {workshops.length > 1 && (
+          <div className="flex flex-wrap items-center gap-2 p-3.5 rounded-2xl bg-white border border-slate-200 shadow-xs">
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-500 mr-1">
+              Select Cohort:
+            </span>
+            {workshops.map((w: any) => {
+              const isSelected =
+                (selectedWorkshopId && (w.enrollmentId === selectedWorkshopId || w.workshop?._id === selectedWorkshopId)) ||
+                (!selectedWorkshopId && w.enrollmentId === primary?.enrollmentId);
+              return (
+                <button
+                  key={w.enrollmentId}
+                  type="button"
+                  onClick={() => {
+                    setSelectedWorkshopId(w.enrollmentId);
+                    setSelectedSessionId(null);
+                  }}
+                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                    isSelected
+                      ? 'bg-blue-600 text-white shadow-xs'
+                      : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                  }`}
+                >
+                  {w.workshop?.batchCode || w.enrollmentId}
+                </button>
+              );
+            })}
+          </div>
+        )}
+
+        {/* 1. Next / Selected Class Hero Card */}
         <div className="p-6 sm:p-8 rounded-3xl bg-white text-[#0F172A] border border-slate-200 shadow-xs space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
             <div className="space-y-1.5">
               <span className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-blue-700 bg-blue-50 px-2.5 py-0.5 rounded-md border border-blue-200">
                 <Sparkles className="w-3.5 h-3.5 text-blue-600" />
                 <span>
-                  {isAuthorized ? 'Next Live Session' : 'Live Schedule Preview'} • {batchCode}
+                  {isAuthorized ? 'Interactive Live Session' : 'Live Schedule Preview'} • {batchCode}
                 </span>
               </span>
               <h3 className="text-lg sm:text-xl font-extrabold text-[#0F172A]">
-                {nextActiveSession?.title || activeWorkshopInfo?.title || 'AI Launchpad Live Bootcamp'}
+                {currentSession?.title || activeWorkshopInfo?.title || 'AI Launchpad Live Bootcamp'}
               </h3>
               <p className="text-xs text-slate-500">
                 {primary?.sessionAccess?.platform || 'Google Meet / Zoom HD Virtual Classroom'} •{' '}
-                {nextActiveSession?.startTime || '10:00 AM'} – {nextActiveSession?.endTime || '3:00 PM'} (
-                {nextActiveSession?.timezone || 'Asia/Kolkata'})
+                {currentSession?.startTime || '10:00 AM'} – {currentSession?.endTime || '3:00 PM'} (
+                {currentSession?.timezone || 'Asia/Kolkata'})
               </p>
             </div>
 
@@ -203,13 +258,13 @@ export const DashboardLiveClasses: React.FC = () => {
               <div className="space-y-1">
                 <h4 className="font-bold text-sm text-[#0F172A]">Virtual Classroom Pass Unlocked</h4>
                 <p className="text-xs text-slate-600">
-                  The classroom opens 30 minutes before start time ({nextActiveSession?.startTime} –{' '}
-                  {nextActiveSession?.endTime}).
+                  The classroom opens 30 minutes before start time ({currentSession?.startTime} –{' '}
+                  {currentSession?.endTime}).
                 </p>
                 <div className="pt-1 text-xs font-mono text-slate-600">
                   Meeting Passcode:{' '}
                   <span className="bg-white px-2.5 py-0.5 rounded border border-blue-200 font-bold text-blue-700">
-                    {nextActiveSession?.meetingPasscode ||
+                    {currentSession?.meetingPasscode ||
                       primary?.sessionAccess?.meetingPasscode ||
                       'AILP2026'}
                   </span>
@@ -217,10 +272,10 @@ export const DashboardLiveClasses: React.FC = () => {
               </div>
 
               <div className="flex flex-wrap items-center gap-2">
-                {nextActiveSession && (
+                {currentSession && (
                   <button
                     type="button"
-                    onClick={() => handleDownloadIcs(nextActiveSession)}
+                    onClick={() => handleDownloadIcs(currentSession)}
                     className="inline-flex items-center gap-1.5 px-4 py-3 rounded-xl bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 font-bold text-xs cursor-pointer"
                   >
                     <Download className="w-3.5 h-3.5 text-blue-600" />
@@ -229,7 +284,7 @@ export const DashboardLiveClasses: React.FC = () => {
                 )}
                 <a
                   href={
-                    nextActiveSession?.liveSessionUrl ||
+                    currentSession?.liveSessionUrl ||
                     primary?.sessionAccess?.joinUrl ||
                     'https://meet.google.com/ailp-live-cohort'
                   }
@@ -284,9 +339,59 @@ export const DashboardLiveClasses: React.FC = () => {
           )}
         </div>
 
-        {/* 2. All Scheduled Calendar Sessions */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {sessions.map((s: any, idx: number) => {
+        {/* 2. Scheduled Calendar Sessions (Based on selection, only selected session is visible) */}
+        <div className="space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <h3 className="text-base font-bold text-[#0F172A] flex items-center gap-2">
+              <Calendar className="w-4 h-4 text-blue-600" />
+              <span>
+                {selectedSessionId && selectedSessionId !== 'all'
+                  ? 'Selected Interactive Session'
+                  : 'All Scheduled Interactive Sessions'}
+              </span>
+            </h3>
+
+            {/* Session Tabs (if multiple sessions exist, user selects which session to view) */}
+            {sessions.length > 1 && (
+              <div className="flex flex-wrap items-center gap-1.5 p-1 bg-slate-100 rounded-xl">
+                {sessions.map((s: any, idx: number) => {
+                  const sid = s._id || String(s.dayNumber || idx + 1);
+                  const isSelected =
+                    (selectedSessionId && (selectedSessionId === s._id || selectedSessionId === String(s.dayNumber))) ||
+                    (!selectedSessionId && currentSession?._id === s._id);
+
+                  return (
+                    <button
+                      key={sid}
+                      type="button"
+                      onClick={() => setSelectedSessionId(sid)}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                        isSelected
+                          ? 'bg-blue-600 text-white shadow-2xs'
+                          : 'text-slate-600 hover:text-[#0F172A]'
+                      }`}
+                    >
+                      Session {s.dayNumber || idx + 1}
+                    </button>
+                  );
+                })}
+                <button
+                  type="button"
+                  onClick={() => setSelectedSessionId('all')}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                    selectedSessionId === 'all'
+                      ? 'bg-white text-blue-700 shadow-2xs font-extrabold'
+                      : 'text-slate-600 hover:text-[#0F172A]'
+                  }`}
+                >
+                  View All ({sessions.length})
+                </button>
+              </div>
+            )}
+          </div>
+
+          <div className={`grid gap-4 ${visibleSessions.length === 1 ? 'grid-cols-1 max-w-2xl' : 'grid-cols-1 md:grid-cols-2'}`}>
+            {visibleSessions.map((s: any, idx: number) => {
             const isCancelled = s.status === 'cancelled';
             const isLive = s.status === 'live';
             const isCompleted = s.status === 'completed';
@@ -417,6 +522,7 @@ export const DashboardLiveClasses: React.FC = () => {
               </div>
             );
           })}
+          </div>
         </div>
 
         {/* 3. Instructor Details Card */}

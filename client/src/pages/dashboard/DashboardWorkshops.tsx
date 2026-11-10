@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   GraduationCap,
@@ -24,6 +24,19 @@ export const DashboardWorkshops: React.FC = () => {
     (b: any) => !enrolledBatchCodes.has(b.batchCode)
   );
 
+  const [selectedEnrolledId, setSelectedEnrolledId] = useState<string | null>(null);
+  const [selectedOtherBatchId, setSelectedOtherBatchId] = useState<string | null>(null);
+
+  const displayedWorkshops =
+    selectedEnrolledId && selectedEnrolledId !== 'all'
+      ? workshops.filter((w: any) => w.enrollmentId === selectedEnrolledId || w.workshop?._id === selectedEnrolledId)
+      : workshops;
+
+  const displayedOtherBatch =
+    (selectedOtherBatchId
+      ? otherBatches.find((b: any) => b._id === selectedOtherBatchId)
+      : null) || otherBatches[0];
+
   return (
     <div className="space-y-8">
       <div>
@@ -48,7 +61,46 @@ export const DashboardWorkshops: React.FC = () => {
         </div>
       ) : (
         <div className="space-y-5">
-          {workshops.map((w: any) => {
+          {/* If enrolled in multiple workshops, provide session selector tabs */}
+          {workshops.length > 1 && (
+            <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 rounded-2xl bg-white border border-slate-200 shadow-xs">
+              <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                Filter Enrolled Session:
+              </span>
+              <div className="flex flex-wrap items-center gap-1.5 p-1 bg-slate-100 rounded-xl">
+                {workshops.map((w: any) => {
+                  const isSelected = selectedEnrolledId === w.enrollmentId;
+                  return (
+                    <button
+                      key={w.enrollmentId}
+                      type="button"
+                      onClick={() => setSelectedEnrolledId(w.enrollmentId)}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                        isSelected
+                          ? 'bg-blue-600 text-white shadow-2xs'
+                          : 'text-slate-600 hover:text-[#0F172A]'
+                      }`}
+                    >
+                      {w.workshop?.batchCode || w.enrollmentId}
+                    </button>
+                  );
+                })}
+                <button
+                  type="button"
+                  onClick={() => setSelectedEnrolledId('all')}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                    selectedEnrolledId === 'all' || !selectedEnrolledId
+                      ? 'bg-white text-blue-700 shadow-2xs font-extrabold'
+                      : 'text-slate-600 hover:text-[#0F172A]'
+                  }`}
+                >
+                  View All ({workshops.length})
+                </button>
+              </div>
+            </div>
+          )}
+
+          {displayedWorkshops.map((w: any) => {
             const isConfirmed = w.isAuthorized;
             const sessions = w.sessions || [];
 
@@ -207,20 +259,47 @@ export const DashboardWorkshops: React.FC = () => {
         </div>
       )}
 
-      {/* Available Workshop Cohort for Exploration & Curriculum Preview (Single Primary Card) */}
+      {/* Available Workshop Cohort for Exploration & Curriculum Preview (Based on selection, only 1 selected session is visible) */}
       {workshops.length === 0 && otherBatches.length > 0 && (
         <div className="space-y-4 pt-2">
-          <div>
-            <h3 className="text-base font-extrabold text-[#0F172A]">
-              Upcoming Workshop Cohort & Curriculum Preview
-            </h3>
-            <p className="text-xs text-slate-500">
-              Preview the full Day 1 & Day 2 curriculum and schedule below. Click "Enroll & Pay" to reserve your confirmed seat.
-            </p>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <h3 className="text-base font-extrabold text-[#0F172A]">
+                Upcoming Workshop Cohort & Curriculum Preview
+              </h3>
+              <p className="text-xs text-slate-500">
+                Preview the full Day 1 & Day 2 curriculum and schedule below. Click "Enroll & Pay" to reserve your confirmed seat.
+              </p>
+            </div>
+
+            {/* If multiple available batches exist, provide selection tabs */}
+            {otherBatches.length > 1 && (
+              <div className="flex flex-wrap items-center gap-1.5 p-1 bg-slate-100 rounded-xl">
+                {otherBatches.map((b: any) => {
+                  const isSelected =
+                    (selectedOtherBatchId && selectedOtherBatchId === b._id) ||
+                    (!selectedOtherBatchId && otherBatches[0]?._id === b._id);
+                  return (
+                    <button
+                      key={b._id}
+                      type="button"
+                      onClick={() => setSelectedOtherBatchId(b._id)}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                        isSelected
+                          ? 'bg-blue-600 text-white shadow-2xs'
+                          : 'text-slate-600 hover:text-[#0F172A]'
+                      }`}
+                    >
+                      {b.batchCode}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
           </div>
 
           <div className="grid grid-cols-1 max-w-2xl gap-5">
-            {otherBatches.slice(0, 1).map((batch: any) => {
+            {[displayedOtherBatch].filter(Boolean).map((batch: any) => {
               const basePrice = batch.price?.basePrice ?? 1999;
               const previewSessions = batch.sessionsPreview || [];
               return (

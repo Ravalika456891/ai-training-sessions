@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import {
   GraduationCap,
@@ -45,6 +45,7 @@ export const DashboardOverview: React.FC = () => {
   const pendingWorkshop = workshops.find((w: any) => !w.isAuthorized) || null;
   const preservedBatchId =
     searchParams.get('batch') || sessionStorage.getItem('ailp_selected_batch');
+  const [overviewSelectedBatchId, setOverviewSelectedBatchId] = useState<string | null>(null);
 
   // Scroll to available workshops when clicking Explore Workshops
   const scrollToBatches = () => {
@@ -216,19 +217,50 @@ export const DashboardOverview: React.FC = () => {
           </div>
         )}
 
-        {/* 5. Available Workshop Cohort (Single Primary Card) */}
+        {/* 5. Available Workshop Cohort (Based on selection, only 1 selected session is visible) */}
         <div id="available-batches" className="space-y-4 scroll-mt-20">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
               <h3 className="text-lg font-extrabold text-[#0F172A]">Upcoming Workshop Cohort</h3>
               <p className="text-xs text-slate-500">
                 Reserve your seat in the upcoming live weekend cohort below and proceed to checkout.
               </p>
             </div>
+
+            {/* If multiple available workshops exist, provide clean tabs to switch */}
+            {availableWorkshops.length > 1 && (
+              <div className="flex flex-wrap items-center gap-1.5 p-1 bg-slate-100 rounded-xl">
+                {availableWorkshops.map((b: any) => {
+                  const isSelected =
+                    (overviewSelectedBatchId && overviewSelectedBatchId === b._id) ||
+                    (!overviewSelectedBatchId && (highlightedBatch?._id === b._id || availableWorkshops[0]?._id === b._id));
+                  return (
+                    <button
+                      key={b._id}
+                      type="button"
+                      onClick={() => setOverviewSelectedBatchId(b._id)}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                        isSelected
+                          ? 'bg-blue-600 text-white shadow-2xs'
+                          : 'text-slate-600 hover:text-[#0F172A]'
+                      }`}
+                    >
+                      {b.batchCode}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
           </div>
 
           <div className="grid grid-cols-1 max-w-2xl gap-5">
-            {[highlightedBatch || availableWorkshops[0]].filter(Boolean).map((batch: any) => {
+            {[
+              (overviewSelectedBatchId
+                ? availableWorkshops.find((b: any) => b._id === overviewSelectedBatchId)
+                : highlightedBatch) || availableWorkshops[0],
+            ]
+              .filter(Boolean)
+              .map((batch: any) => {
               const basePrice = batch.price?.basePrice ?? 1999;
               const isFree = Boolean(batch.price?.isFree || basePrice === 0);
               const dateRange = `${new Date(batch.startDate).toLocaleDateString('en-US', {

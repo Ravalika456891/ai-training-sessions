@@ -88,95 +88,127 @@ export const PricingSection: React.FC<PricingSectionProps> = ({
             </div>
           </div>
 
-          {/* Right Column: Live Batch Selection Cards */}
+          {/* Right Column: Live Batch Selection Cards (Based on selection, only selected session is visible) */}
           <div className="lg:col-span-7 space-y-4">
-            <h3 className="text-lg font-bold text-[#0F172A] mb-2">
-              Select Your Preferred Live Cohort
-            </h3>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
+              <h3 className="text-lg font-bold text-[#0F172A]">
+                Selected Live Training Session
+              </h3>
+              {batches.length > 1 && (
+                <span className="text-xs text-slate-500 font-medium">
+                  {batches.length} sessions available • Click to select
+                </span>
+              )}
+            </div>
 
-            {batches.map((batch: BatchOption) => {
-              const isSelected = selectedBatchId === batch.id;
-              const taxAmount = Math.round(batch.pricing.basePrice * (batch.pricing.taxPercentage / 100));
-              const totalAmount = batch.pricing.basePrice + taxAmount;
+            {/* If multiple sessions exist, show an interactive selector pill bar */}
+            {batches.length > 1 && (
+              <div className="flex flex-wrap items-center gap-2 pb-1">
+                {batches.map((batch: BatchOption) => {
+                  const isSelected = selectedBatchId === batch.id;
+                  return (
+                    <button
+                      key={batch.id}
+                      type="button"
+                      onClick={() => onSelectBatch(batch.id)}
+                      className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2 ${
+                        isSelected
+                          ? 'bg-blue-600 text-white shadow-sm ring-2 ring-blue-600/20'
+                          : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50'
+                      }`}
+                    >
+                      <Calendar className="w-3.5 h-3.5" />
+                      <span>{batch.batchCode} ({batch.dateRange})</span>
+                      {isSelected && <span className="w-1.5 h-1.5 rounded-full bg-white ml-0.5" />}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* Based on selection, only the selected session card is visible */}
+            {(() => {
+              const selectedBatch =
+                batches.find((b: BatchOption) => b.id === selectedBatchId) ||
+                batches[0] ||
+                BATCH_OPTIONS[0];
+
+              if (!selectedBatch) return null;
+
+              const taxAmount = Math.round(
+                selectedBatch.pricing.basePrice * (selectedBatch.pricing.taxPercentage / 100)
+              );
+              const totalAmount = selectedBatch.pricing.basePrice + taxAmount;
 
               return (
                 <Card
-                  key={batch.id}
-                  onClick={() => onSelectBatch(batch.id)}
-                  className={`p-5 sm:p-6 cursor-pointer transition-all border-2 bg-white ${
-                    isSelected
-                      ? 'border-blue-600 shadow-md ring-2 ring-blue-600/10'
-                      : 'border-slate-200 hover:border-slate-300 shadow-sm'
-                  }`}
+                  key={selectedBatch.id}
+                  className="p-5 sm:p-6 transition-all border-2 border-blue-600 bg-white shadow-md ring-2 ring-blue-600/10"
                 >
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div className="space-y-1.5">
                       <div className="flex items-center gap-2">
-                        <span
-                          className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 ${
-                            isSelected
-                              ? 'border-blue-600 bg-blue-600'
-                              : 'border-slate-300'
-                          }`}
-                        >
-                          {isSelected && <span className="w-1.5 h-1.5 rounded-full bg-white" />}
+                        <span className="w-4 h-4 rounded-full border border-blue-600 bg-blue-600 flex items-center justify-center shrink-0">
+                          <span className="w-1.5 h-1.5 rounded-full bg-white" />
                         </span>
                         <span className="font-mono text-xs text-blue-700 font-bold">
-                          {batch.batchCode}
+                          {selectedBatch.batchCode}
                         </span>
                         <Badge variant="primary" size="sm">
-                          {batch.status}
+                          {selectedBatch.status}
                         </Badge>
                       </div>
 
                       <div className="text-base sm:text-lg font-bold text-[#0F172A] flex items-center gap-2">
                         <Calendar className="w-4 h-4 text-blue-600" />
-                        <span>{batch.dateRange}</span>
+                        <span>{selectedBatch.dateRange}</span>
                         <span className="text-slate-300">•</span>
                         <span className="text-sm font-normal text-slate-500">
-                          {batch.days}
+                          {selectedBatch.days}
                         </span>
                       </div>
 
                       <div className="flex items-center gap-3 text-xs text-slate-500">
                         <span className="flex items-center gap-1">
                           <Clock className="w-3 h-3 text-slate-400" />
-                          {batch.timings}
+                          {selectedBatch.timings}
                         </span>
                         <span>•</span>
                         <span className="flex items-center gap-1 text-blue-700 font-medium">
                           <Users className="w-3 h-3" />
-                          {batch.availableSeats} of {batch.totalSeats} seats open
+                          {selectedBatch.availableSeats} of {selectedBatch.totalSeats} seats open
                         </span>
                       </div>
                     </div>
 
                     <div className="text-left sm:text-right border-t sm:border-t-0 pt-3 sm:pt-0 border-slate-100">
                       <div className="text-2xl font-black text-[#0F172A]">
-                        ₹{batch.pricing.basePrice.toLocaleString('en-IN')}
+                        ₹{selectedBatch.pricing.basePrice.toLocaleString('en-IN')}
                       </div>
                       <div className="text-[11px] text-slate-500">
-                        + ₹{taxAmount} (18% GST) = <span className="text-[#0F172A] font-semibold">₹{totalAmount.toLocaleString('en-IN')} Total</span>
+                        + ₹{taxAmount} (18% GST) ={' '}
+                        <span className="text-[#0F172A] font-semibold">
+                          ₹{totalAmount.toLocaleString('en-IN')} Total
+                        </span>
                       </div>
                       <div className="mt-2">
                         <Button
-                          variant={isSelected ? 'primary' : 'outline'}
+                          variant="primary"
                           size="sm"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onSelectBatch(batch.id);
+                          onClick={() => {
+                            onSelectBatch(selectedBatch.id);
                             onProceedToRegister();
                           }}
                           rightIcon={<ArrowRight className="w-3.5 h-3.5" />}
                         >
-                          {isSelected ? 'Register with This Batch' : 'Select Batch'}
+                          Register with This Session
                         </Button>
                       </div>
                     </div>
                   </div>
                 </Card>
               );
-            })}
+            })()}
           </div>
         </div>
       </div>
