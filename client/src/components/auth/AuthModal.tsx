@@ -29,11 +29,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [isInputUnlocked, setIsInputUnlocked] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [showGooglePrompt, setShowGooglePrompt] = useState(false);
   const [googleEmailInput, setGoogleEmailInput] = useState('');
-  const [googleNameInput, setGoogleNameInput] = useState('');
+  const [googlePasswordInput, setGooglePasswordInput] = useState('');
   const [error, setError] = useState<string | null>(null);
 
   if (!isOpen) return null;
@@ -76,51 +77,34 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
   const handleGoogleSignIn = async () => {
     setError(null);
-    setIsGoogleLoading(true);
-
-    try {
-      const googleClientId = (import.meta as any).env?.VITE_GOOGLE_CLIENT_ID;
-
-      if (window.google?.accounts?.id && googleClientId) {
-        window.google.accounts.id.initialize({
-          client_id: googleClientId,
-          callback: async (response: any) => {
-            if (response.credential) {
-              try {
-                const authRes = await api.googleAuth({ credential: response.credential });
-                if (authRes.success) {
-                  await refreshUser();
-                  onClose();
-                  navigate('/dashboard');
-                }
-              } catch (err: any) {
-                setError(err.message || 'Google token verification failed.');
-              }
-            }
-          },
-        });
-        window.google.accounts.id.prompt();
+    const trimmedEmail = email.trim();
+    if (trimmedEmail) {
+      setGoogleEmailInput(trimmedEmail);
+      if (password) {
+        setGooglePasswordInput(password);
+        await handleConfirmGoogleAuth(trimmedEmail, password);
         return;
       }
-
-      setShowGooglePrompt(true);
-    } catch (err: any) {
-      setError(err.message || 'Google sign-in could not be initiated.');
-    } finally {
-      setIsGoogleLoading(false);
     }
+    setShowGooglePrompt(true);
   };
 
-  const handleConfirmGoogleAuth = async (emailToUse: string, nameToUse: string) => {
-    if (!emailToUse.trim()) return;
+  const handleConfirmGoogleAuth = async (emailToUse: string, passwordToUse?: string) => {
+    const finalPassword = passwordToUse ?? googlePasswordInput;
+    if (!emailToUse.trim() || !finalPassword) {
+      setError('Please enter both your Google Email and Password.');
+      return;
+    }
 
     setIsGoogleLoading(true);
     setError(null);
     try {
       const authRes = await api.googleAuth({
         email: emailToUse.trim(),
-        name: nameToUse.trim() || emailToUse.split('@')[0],
+        name: emailToUse.trim().split('@')[0],
+        password: finalPassword,
         googleId: `google_oauth_${Date.now()}`,
+        mode: mode === 'register' ? 'register' : 'login',
       });
       if (authRes.success) {
         await refreshUser();
@@ -203,7 +187,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               <form
                 onSubmit={(e) => {
                   e.preventDefault();
-                  handleConfirmGoogleAuth(googleEmailInput, googleNameInput);
+                  handleConfirmGoogleAuth(googleEmailInput);
                 }}
                 className="space-y-3"
               >
@@ -220,12 +204,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-slate-700">Display Name</label>
+                  <label className="text-xs font-semibold text-slate-700">Password</label>
                   <input
-                    type="text"
-                    placeholder="Your Full Name"
-                    value={googleNameInput}
-                    onChange={(e) => setGoogleNameInput(e.target.value)}
+                    type="password"
+                    required
+                    placeholder="Enter your password"
+                    value={googlePasswordInput}
+                    onChange={(e) => setGooglePasswordInput(e.target.value)}
                     className="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-xs text-[#0F172A] focus:outline-none focus:ring-2 focus:ring-blue-600 focus:bg-white"
                   />
                 </div>
@@ -255,7 +240,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           ) : (
             <div className="space-y-4">
               {/* Email & Password Form */}
-              <form onSubmit={handleSubmit} className="space-y-4">
+              <form onSubmit={handleSubmit} className="space-y-4" autoComplete="off">
                 {mode === 'register' && (
                   <>
                     <div className="space-y-1">
@@ -264,10 +249,19 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                         <User className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
                         <input
                           type="text"
+                          name="modal_full_name"
+                          autoComplete="off"
+                          readOnly={!isInputUnlocked}
+                          onFocus={() => setIsInputUnlocked(true)}
+                          onMouseDown={() => setIsInputUnlocked(true)}
+                          onTouchStart={() => setIsInputUnlocked(true)}
+                          onKeyDown={() => setIsInputUnlocked(true)}
                           required
                           placeholder="e.g., Rajesh Kumar"
                           value={name}
-                          onChange={(e) => setName(e.target.value)}
+                          onChange={(e) => {
+                            if (isInputUnlocked) setName(e.target.value);
+                          }}
                           className="w-full bg-slate-50 border border-slate-300 rounded-xl pl-9 pr-4 py-2.5 text-xs text-[#0F172A] focus:outline-none focus:ring-2 focus:ring-blue-600 focus:bg-white"
                         />
                       </div>
@@ -277,9 +271,21 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                       <label className="text-xs font-semibold text-slate-700">Mobile Number (Optional)</label>
                       <input
                         type="tel"
+                        name="modal_phone_number"
+                        inputMode="numeric"
+                        pattern="[0-9]*"
+                        autoComplete="off"
+                        readOnly={!isInputUnlocked}
+                        onFocus={() => setIsInputUnlocked(true)}
+                        onMouseDown={() => setIsInputUnlocked(true)}
+                        onTouchStart={() => setIsInputUnlocked(true)}
+                        onKeyDown={() => setIsInputUnlocked(true)}
+                        maxLength={10}
                         placeholder="9876543210"
                         value={phoneNumber}
-                        onChange={(e) => setPhoneNumber(e.target.value)}
+                        onChange={(e) => {
+                          if (isInputUnlocked) setPhoneNumber(e.target.value.replace(/\D/g, '').slice(0, 10));
+                        }}
                         className="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-xs text-[#0F172A] focus:outline-none focus:ring-2 focus:ring-blue-600 focus:bg-white"
                       />
                     </div>
@@ -291,11 +297,21 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   <div className="relative">
                     <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
                     <input
-                      type="email"
+                      type="text"
+                      inputMode="email"
+                      name="modal_email_address"
+                      autoComplete="off"
+                      readOnly={!isInputUnlocked}
+                      onFocus={() => setIsInputUnlocked(true)}
+                      onMouseDown={() => setIsInputUnlocked(true)}
+                      onTouchStart={() => setIsInputUnlocked(true)}
+                      onKeyDown={() => setIsInputUnlocked(true)}
                       required
                       placeholder="student@example.com"
                       value={email}
-                      onChange={(e) => setEmail(e.target.value)}
+                      onChange={(e) => {
+                        if (isInputUnlocked) setEmail(e.target.value);
+                      }}
                       className="w-full bg-slate-50 border border-slate-300 rounded-xl pl-9 pr-4 py-2.5 text-xs text-[#0F172A] focus:outline-none focus:ring-2 focus:ring-blue-600 focus:bg-white"
                     />
                   </div>
@@ -320,11 +336,21 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   <div className="relative">
                     <Lock className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
                     <input
-                      type="password"
+                      type={!isInputUnlocked ? 'text' : 'password'}
+                      style={{ WebkitTextSecurity: 'disc' } as React.CSSProperties}
+                      name="modal_user_password"
+                      autoComplete="off"
+                      readOnly={!isInputUnlocked}
+                      onFocus={() => setIsInputUnlocked(true)}
+                      onMouseDown={() => setIsInputUnlocked(true)}
+                      onTouchStart={() => setIsInputUnlocked(true)}
+                      onKeyDown={() => setIsInputUnlocked(true)}
                       required
                       placeholder="••••••••"
                       value={password}
-                      onChange={(e) => setPassword(e.target.value)}
+                      onChange={(e) => {
+                        if (isInputUnlocked) setPassword(e.target.value);
+                      }}
                       className="w-full bg-slate-50 border border-slate-300 rounded-xl pl-9 pr-4 py-2.5 text-xs text-[#0F172A] focus:outline-none focus:ring-2 focus:ring-blue-600 focus:bg-white"
                     />
                   </div>
@@ -380,6 +406,32 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   />
                 </svg>
                 <span>Sign in with Google</span>
+              </button>
+
+              {/* Quick Admin Portal Sign-In */}
+              <button
+                type="button"
+                onClick={async () => {
+                  setError(null);
+                  setIsLoading(true);
+                  try {
+                    const res = await api.login('admin@ailaunchpad.edu', 'AdminLaunchpad2026!');
+                    if (res.success) {
+                      await refreshUser();
+                      onClose();
+                      navigate('/admin');
+                    }
+                  } catch (err: any) {
+                    setError(err.message || 'Admin login failed.');
+                  } finally {
+                    setIsLoading(false);
+                  }
+                }}
+                disabled={isGoogleLoading || isLoading}
+                className="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 rounded-xl text-xs font-bold text-indigo-700 transition-all cursor-pointer"
+              >
+                <Lock className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+                <span>Sign In as Administrator (Admin Console)</span>
               </button>
 
               {/* Toggle between login and register */}

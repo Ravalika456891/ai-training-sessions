@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { CalendarClock, Video, Plus, Edit3, RefreshCw, X } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { CalendarClock, Calendar, Video, Plus, Edit3, RefreshCw, X } from 'lucide-react';
 import { useAdmin } from './AdminLayout';
 import { Button } from '../../components/common/Button';
 
@@ -107,14 +108,23 @@ export const AdminSessions: React.FC = () => {
             Configure Day 1 & Day 2 live classroom links, timezones, instructor assignments, and registration deadlines.
           </p>
         </div>
-        <Button
-          variant="primary"
-          size="sm"
-          onClick={() => handleOpenEdit()}
-          leftIcon={<Plus className="w-4 h-4" />}
-        >
-          Schedule Session
-        </Button>
+        <div className="flex flex-wrap items-center gap-2.5 shrink-0">
+          <Link
+            to="/admin/calendar"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 text-xs font-bold transition-colors"
+          >
+            <Calendar className="w-4 h-4 text-blue-600" />
+            <span>Open Class Calendar</span>
+          </Link>
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={() => handleOpenEdit()}
+            leftIcon={<Plus className="w-4 h-4" />}
+          >
+            Schedule Session
+          </Button>
+        </div>
       </div>
 
       {isLoading ? (

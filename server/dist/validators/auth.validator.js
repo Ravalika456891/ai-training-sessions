@@ -39,7 +39,8 @@ const registerSchema = import_zod.z.object({
 });
 const loginSchema = import_zod.z.object({
   email: import_zod.z.string().email("Invalid email address").toLowerCase(),
-  password: import_zod.z.string().min(1, "Password is required")
+  password: import_zod.z.string().min(1, "Password is required"),
+  registrationProof: import_zod.z.string().optional()
 });
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {

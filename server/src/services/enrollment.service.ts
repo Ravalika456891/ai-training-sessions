@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import jwt from 'jsonwebtoken';
 import { Enrollment, IEnrollment } from '../models/Enrollment.js';
 import { Workshop } from '../models/Workshop.js';
 import { User, IUser } from '../models/User.js';
@@ -6,6 +7,7 @@ import { Payment } from '../models/Payment.js';
 import { ApiError } from '../utils/apiError.js';
 import { CreateEnrollmentInput } from '../validators/enrollment.validator.js';
 import { signToken } from '../utils/jwt.js';
+import { env } from '../config/env.js';
 import { isDBConnected } from '../config/db.js';
 import { memoryStore } from './memoryStore.js';
 
@@ -14,6 +16,7 @@ export interface EnrollmentResult {
   user: any;
   workshop: any;
   token?: string; // Generated if user auto-created
+  registrationProof?: string;
   paymentRequired: boolean;
   orderSummary: {
     basePrice: number;
@@ -86,6 +89,10 @@ export class EnrollmentService {
               userId: user._id.toString(),
               email: user.email,
               role: user.role,
+              name: user.name,
+              phone: user.phone,
+              userCategory: user.userCategory,
+              experienceLevel: user.experienceLevel,
             });
           }
         }
@@ -120,6 +127,10 @@ export class EnrollmentService {
           userId: user._id,
           email: user.email,
           role: user.role,
+          name: user.name,
+          phone: user.phone,
+          userCategory: user.userCategory,
+          experienceLevel: user.experienceLevel,
         });
       }
     }
@@ -243,6 +254,19 @@ export class EnrollmentService {
         availableSeats: workshop.availableSeats || 24,
       },
       token: autoCreatedToken,
+      registrationProof: jwt.sign(
+        {
+          type: 'reg_proof',
+          _id: user._id.toString(),
+          email: user.email.toLowerCase().trim(),
+          name: user.name,
+          phone: user.phone,
+          userCategory: user.userCategory,
+          experienceLevel: user.experienceLevel,
+        },
+        env.JWT_SECRET,
+        { expiresIn: '365d' }
+      ),
       paymentRequired: !isFree,
       orderSummary: {
         basePrice,

@@ -150,7 +150,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
           contact: orderData.attendee.phone,
         },
         theme: {
-          color: '#6366F1', // Indigo
+          color: '#081e4a',
         },
         modal: {
           ondismiss: () => {

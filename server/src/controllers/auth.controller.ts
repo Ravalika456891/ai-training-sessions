@@ -5,13 +5,13 @@ import { setAuthCookie, clearAuthCookie } from '../utils/jwt.js';
 export class AuthController {
   static async register(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { user, token } = await AuthService.register(req.body);
+      const { user, token, registrationProof } = await AuthService.register(req.body);
       setAuthCookie(res, token);
 
       res.status(201).json({
         success: true,
         message: 'Account registered successfully.',
-        data: { user },
+        data: { user, registrationProof },
       });
     } catch (error) {
       next(error);
@@ -20,13 +20,13 @@ export class AuthController {
 
   static async login(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { user, token } = await AuthService.login(req.body);
+      const { user, token, registrationProof } = await AuthService.login(req.body);
       setAuthCookie(res, token);
 
       res.status(200).json({
         success: true,
         message: 'Signed in successfully.',
-        data: { user },
+        data: { user, registrationProof },
       });
     } catch (error) {
       next(error);
@@ -35,13 +35,13 @@ export class AuthController {
 
   static async googleAuth(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { user, token } = await AuthService.googleAuth(req.body);
+      const { user, token, registrationProof } = await AuthService.googleAuth(req.body);
       setAuthCookie(res, token);
 
       res.status(200).json({
         success: true,
         message: 'Signed in with Google successfully.',
-        data: { user },
+        data: { user, registrationProof },
       });
     } catch (error) {
       next(error);

@@ -43,7 +43,10 @@ class WorkshopService {
         let workshops = await import_Workshop.Workshop.find({
           status: "published"
         }).sort({ startDate: 1 });
-        if (workshops.length === 0) {
+        const hasLegacyDuplicates = workshops.some(
+          (w) => ["AILP-2026-NOV-28", "AILP-2026-DEC-12"].includes(w.batchCode)
+        );
+        if (workshops.length === 0 || hasLegacyDuplicates) {
           try {
             await (0, import_seed.seedDatabase)();
             workshops = await import_Workshop.Workshop.find({

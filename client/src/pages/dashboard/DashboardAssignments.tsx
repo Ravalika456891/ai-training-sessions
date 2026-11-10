@@ -110,11 +110,11 @@ export const DashboardAssignments: React.FC = () => {
           </div>
           {primary && !primary.isAuthorized ? (
             <button
-              onClick={() => openCheckout(primary)}
+              onClick={() => openCheckout(primary.enrollmentId)}
               className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold shadow-xs transition-all cursor-pointer shrink-0"
             >
               <CreditCard className="w-3.5 h-3.5" />
-              <span>Complete Payment (₹{(primary.workshop?.price || 2999).toLocaleString('en-IN')})</span>
+              <span>Complete Payment (₹{(primary.workshop?.price?.basePrice || 1999).toLocaleString('en-IN')})</span>
             </button>
           ) : (
             previewWorkshop && (

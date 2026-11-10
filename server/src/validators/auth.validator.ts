@@ -23,6 +23,7 @@ export const registerSchema = z.object({
 export const loginSchema = z.object({
   email: z.string().email('Invalid email address').toLowerCase(),
   password: z.string().min(1, 'Password is required'),
+  registrationProof: z.string().optional(),
 });
 
 export type RegisterInput = z.infer<typeof registerSchema>;

@@ -147,6 +147,32 @@ const customHeaders: HeadersInit = {
   'X-Requested-With': 'XMLHttpRequest', // CSRF mitigation header
 };
 
+const REG_PROOFS_KEY = 'ailp_reg_proofs';
+
+function saveRegistrationProof(email?: string, proof?: string) {
+  if (!email || !proof) return;
+  try {
+    const raw = localStorage.getItem(REG_PROOFS_KEY);
+    const map: Record<string, string> = raw ? JSON.parse(raw) : {};
+    map[email.toLowerCase().trim()] = proof;
+    localStorage.setItem(REG_PROOFS_KEY, JSON.stringify(map));
+  } catch {
+    // ignore storage errors
+  }
+}
+
+function getRegistrationProof(email?: string): string | undefined {
+  if (!email) return undefined;
+  try {
+    const raw = localStorage.getItem(REG_PROOFS_KEY);
+    if (!raw) return undefined;
+    const map: Record<string, string> = JSON.parse(raw);
+    return map[email.toLowerCase().trim()];
+  } catch {
+    return undefined;
+  }
+}
+
 export const api = {
   // Workshops
   async getWorkshops(): Promise<{ success: boolean; data: ApiWorkshop[] }> {
@@ -233,6 +259,9 @@ export const api = {
     const data = await res.json();
     if (!res.ok) {
       throw new Error(data.message || 'Registration failed.');
+    }
+    if (data.data?.registrationProof) {
+      saveRegistrationProof(formData.email, data.data.registrationProof);
     }
     return data;
   },
@@ -342,15 +371,23 @@ export const api = {
   },
 
   async login(email: string, password: string): Promise<{ success: boolean; data: { user: ApiUser } }> {
+    const registrationProof = getRegistrationProof(email);
     const res = await fetch(`${API_BASE}/auth/login`, {
       method: 'POST',
       headers: customHeaders,
       credentials: 'include',
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({
+        email,
+        password,
+        ...(registrationProof ? { registrationProof } : {}),
+      }),
     });
     const data = await res.json();
     if (!res.ok) {
       throw new Error(data.message || 'Invalid credentials');
+    }
+    if (data.data?.registrationProof) {
+      saveRegistrationProof(email, data.data.registrationProof);
     }
     return data;
   },
@@ -371,25 +408,38 @@ export const api = {
     if (!res.ok) {
       throw new Error(data.message || 'Registration failed');
     }
+    if (data.data?.registrationProof) {
+      saveRegistrationProof(userData.email, data.data.registrationProof);
+    }
     return data;
   },
 
   async googleAuth(payload: {
     credential?: string;
     email?: string;
+    password?: string;
     name?: string;
     googleId?: string;
     avatarUrl?: string;
+    requestedRole?: string;
+    mode?: 'login' | 'register';
   }): Promise<{ success: boolean; data: { user: ApiUser } }> {
+    const registrationProof = getRegistrationProof(payload.email);
     const res = await fetch(`${API_BASE}/auth/google`, {
       method: 'POST',
       headers: customHeaders,
       credentials: 'include',
-      body: JSON.stringify(payload),
+      body: JSON.stringify({
+        ...payload,
+        ...(registrationProof ? { registrationProof } : {}),
+      }),
     });
     const data = await res.json();
     if (!res.ok) {
       throw new Error(data.message || 'Google authentication failed');
+    }
+    if (payload.email && data.data?.registrationProof) {
+      saveRegistrationProof(payload.email, data.data.registrationProof);
     }
     return data;
   },

@@ -42,6 +42,7 @@ var import_Certificate = require("../models/Certificate.js");
 var import_Attendance = require("../models/Attendance.js");
 var import_enrollment_service = require("../services/enrollment.service.js");
 var import_payment_service = require("../services/payment.service.js");
+var import_workshop_service = require("../services/workshop.service.js");
 var import_apiError = require("../utils/apiError.js");
 var import_db = require("../config/db.js");
 var import_memoryStore = require("../services/memoryStore.js");
@@ -55,21 +56,29 @@ class LearnerController {
     const normalizedEmail = (userEmail || "").toLowerCase().trim();
     const rawEnrollments = [];
     const seenBatchCodes = /* @__PURE__ */ new Set();
-    let allSessions = [];
+    let dbSessions = [];
     let allResources = [];
     if ((0, import_db.isDBConnected)()) {
       try {
-        [allSessions, allResources] = await Promise.all([
-          import_WorkshopSession.WorkshopSession.find().sort({ dayNumber: 1 }),
+        [dbSessions, allResources] = await Promise.all([
+          import_WorkshopSession.WorkshopSession.find().sort({ startAt: 1, sessionDate: 1, dayNumber: 1 }),
           import_LearningResource.LearningResource.find({ isPublished: true }).sort({ createdAt: -1 })
         ]);
       } catch (err) {
         console.warn("[LearnerController Sessions/Resources Fallback]", err.message);
       }
     }
-    if (allSessions.length === 0) {
-      allSessions = await import_memoryStore.memoryStore.getAllSessions();
+    const memSessions = await import_memoryStore.memoryStore.getAllSessions();
+    const mergedSessionMap = /* @__PURE__ */ new Map();
+    for (const s of [...dbSessions, ...memSessions]) {
+      const sid = s._id?.toString();
+      if (sid && !mergedSessionMap.has(sid)) {
+        mergedSessionMap.set(sid, typeof s.toObject === "function" ? s.toObject() : s);
+      }
     }
+    const allSessions = Array.from(mergedSessionMap.values()).sort(
+      (a, b) => new Date(a.startAt || a.sessionDate || 0).getTime() - new Date(b.startAt || b.sessionDate || 0).getTime()
+    );
     if (allResources.length === 0) {
       allResources = (await import_memoryStore.memoryStore.getAllResources()).filter(
         (r) => r.isPublished && !["faq", "testimonial"].includes(r.category)
@@ -180,46 +189,75 @@ class LearnerController {
       const isPaidConfirmed = isConfirmedStatus && (isFreeWorkshop ? true : isCaptured);
       const isLiveOrUpcoming = now.getTime() >= start.getTime() - 30 * 60 * 1e3 && now.getTime() <= end.getTime();
       const batchSessions = allSessions.filter(
-        (s) => s.batchCode === batchCode || s.workshopId?.toString() === workshop._id?.toString()
+        (s) => s.status !== "draft" && (s.batchCode?.toUpperCase() === batchCode.toUpperCase() || s.workshopId?.toString() === workshop._id?.toString())
       );
-      const formattedSessions = batchSessions.length > 0 ? batchSessions.map((s) => ({
-        _id: s._id?.toString(),
-        dayNumber: s.dayNumber,
-        title: s.title,
-        sessionDate: s.sessionDate,
-        startTime: s.startTime || "10:00 AM",
-        endTime: s.endTime || "3:00 PM",
-        timezone: s.timezone || workshop.timezone || "Asia/Kolkata (IST)",
-        instructorName: s.instructorName || workshop.instructor?.name || "Vikram Malhotra",
-        liveSessionUrl: isPaidConfirmed ? s.liveSessionUrl : null,
-        meetingPasscode: isPaidConfirmed ? s.meetingPasscode : null,
-        status: s.status || "scheduled"
-      })) : [
+      const formattedSessions = batchSessions.length > 0 ? batchSessions.map((s, idx) => {
+        const wasRescheduled = Array.isArray(s.changeHistory) && s.changeHistory.some((h) => h.action === "rescheduled");
+        const isCancelled = s.status === "cancelled";
+        return {
+          _id: s._id?.toString(),
+          dayNumber: s.dayNumber || idx + 1,
+          title: s.title,
+          description: s.description || `Live interactive session for batch ${batchCode} with ${s.instructorName || "Instructor"}.`,
+          sessionDate: s.startAt || s.sessionDate,
+          startAt: s.startAt || s.sessionDate,
+          endAt: s.endAt || new Date(new Date(s.startAt || s.sessionDate || Date.now()).getTime() + (s.durationMinutes || 120) * 6e4),
+          startTime: s.startTime || "10:00 AM",
+          endTime: s.endTime || "3:00 PM",
+          durationMinutes: s.durationMinutes || 120,
+          timezone: s.timezone || workshop.timezone || "Asia/Kolkata (IST)",
+          instructorName: s.instructorName || workshop.instructor?.name || "Vikram Malhotra",
+          classType: s.classType || "live",
+          meetingProvider: s.meetingProvider || "google_meet",
+          liveSessionUrl: isPaidConfirmed && !isCancelled ? s.liveSessionUrl : null,
+          meetingPasscode: isPaidConfirmed && !isCancelled ? s.meetingPasscode : null,
+          status: s.status || "scheduled",
+          wasRescheduled,
+          cancellationReason: s.cancellationReason || null,
+          recurrenceSeriesId: s.recurrenceSeriesId || null
+        };
+      }) : [
         {
           _id: `${batchCode}-day1`,
           dayNumber: 1,
           title: "Day 1: LLM Foundations, Prompt Engineering & Custom AI Assistants",
+          description: "Core LLM reasoning patterns, prompt engineering, and custom assistant design.",
           sessionDate: workshop.startDate,
+          startAt: workshop.startDate,
+          endAt: new Date(new Date(workshop.startDate || Date.now()).getTime() + 300 * 6e4),
           startTime: "10:00 AM",
           endTime: "3:00 PM",
+          durationMinutes: 300,
           timezone: workshop.timezone || "Asia/Kolkata (IST)",
           instructorName: workshop.instructor?.name || "Vikram Malhotra",
+          classType: "live",
+          meetingProvider: "google_meet",
           liveSessionUrl: isPaidConfirmed ? workshop.liveSessionUrl || "https://meet.google.com/ailp-live-cohort" : null,
           meetingPasscode: isPaidConfirmed ? workshop.meetingPasscode || "AILP2026" : null,
-          status: "scheduled"
+          status: "scheduled",
+          wasRescheduled: false,
+          cancellationReason: null
         },
         {
           _id: `${batchCode}-day2`,
           dayNumber: 2,
           title: "Day 2: Multi-Step AI Workflows, Functional Prototyping & Capstone Lab",
+          description: "Agentic workflows, RAG pipelines, and full-stack AI prototyping.",
           sessionDate: workshop.endDate,
+          startAt: workshop.endDate,
+          endAt: new Date(new Date(workshop.endDate || Date.now()).getTime() + 300 * 6e4),
           startTime: "10:00 AM",
           endTime: "3:00 PM",
+          durationMinutes: 300,
           timezone: workshop.timezone || "Asia/Kolkata (IST)",
           instructorName: workshop.instructor?.name || "Vikram Malhotra",
+          classType: "live",
+          meetingProvider: "google_meet",
           liveSessionUrl: isPaidConfirmed ? workshop.liveSessionUrl || "https://meet.google.com/ailp-live-cohort" : null,
           meetingPasscode: isPaidConfirmed ? workshop.meetingPasscode || "AILP2026" : null,
-          status: "scheduled"
+          status: "scheduled",
+          wasRescheduled: false,
+          cancellationReason: null
         }
       ];
       const batchResources = allResources.filter(
@@ -303,14 +341,20 @@ class LearnerController {
   static async getAvailableWorkshops() {
     let workshops = [];
     let allResources = [];
+    let dbSessions = [];
+    try {
+      workshops = await import_workshop_service.WorkshopService.getPublishedWorkshops();
+    } catch (err) {
+      console.warn("[LearnerController AvailableWorkshops Fallback]", err.message);
+    }
     if ((0, import_db.isDBConnected)()) {
       try {
-        [workshops, allResources] = await Promise.all([
-          import_Workshop.Workshop.find({ status: "published" }).sort({ startDate: 1 }),
-          import_LearningResource.LearningResource.find({ isPublished: true })
+        [allResources, dbSessions] = await Promise.all([
+          import_LearningResource.LearningResource.find({ isPublished: true }),
+          import_WorkshopSession.WorkshopSession.find().sort({ startAt: 1, sessionDate: 1 })
         ]);
       } catch (err) {
-        console.warn("[LearnerController AvailableWorkshops Fallback]", err.message);
+        console.warn("[LearnerController Resources/Sessions Fallback]", err.message);
       }
     }
     if (workshops.length === 0) {
@@ -320,21 +364,63 @@ class LearnerController {
       const memRes = await import_memoryStore.memoryStore.getAllResources();
       allResources = memRes.filter((r) => r.isPublished !== false);
     }
+    const memSessions = await import_memoryStore.memoryStore.getAllSessions();
+    const mergedSessionMap = /* @__PURE__ */ new Map();
+    for (const s of [...dbSessions, ...memSessions]) {
+      const sid = s._id?.toString();
+      if (sid && !mergedSessionMap.has(sid)) {
+        mergedSessionMap.set(sid, typeof s.toObject === "function" ? s.toObject() : s);
+      }
+    }
+    const allSessions = Array.from(mergedSessionMap.values()).sort(
+      (a, b) => new Date(a.startAt || a.sessionDate || 0).getTime() - new Date(b.startAt || b.sessionDate || 0).getTime()
+    );
     return workshops.map((w) => {
       const batchCode = w.batchCode || "AILP-2026-NOV-14";
       const batchResources = allResources.filter(
         (r) => !["faq", "testimonial"].includes(r.category) && (r.workshopBatchCode === "ALL" || !r.workshopBatchCode || r.workshopBatchCode === batchCode)
       );
-      const sessionsPreview = [
+      const batchSessions = allSessions.filter(
+        (s) => s.status !== "draft" && (s.batchCode?.toUpperCase() === batchCode.toUpperCase() || s.workshopId?.toString() === w._id?.toString())
+      );
+      const sessionsPreview = batchSessions.length > 0 ? batchSessions.map((s, idx) => ({
+        _id: s._id?.toString(),
+        dayNumber: s.dayNumber || idx + 1,
+        title: s.title,
+        description: s.description || `Live training session for ${batchCode} with ${s.instructorName || "Instructor"}.`,
+        sessionDate: s.startAt || s.sessionDate,
+        startAt: s.startAt || s.sessionDate,
+        endAt: s.endAt || new Date(
+          new Date(s.startAt || s.sessionDate || Date.now()).getTime() + (s.durationMinutes || 120) * 6e4
+        ),
+        startTime: s.startTime || "10:00 AM",
+        endTime: s.endTime || "3:00 PM",
+        durationMinutes: s.durationMinutes || 120,
+        timezone: s.timezone || w.timezone || "Asia/Kolkata (IST)",
+        instructorName: s.instructorName || w.instructor?.name || "Vikram Malhotra",
+        classType: s.classType || "live",
+        meetingProvider: s.meetingProvider || "google_meet",
+        joinUrl: null,
+        liveSessionUrl: null,
+        meetingPasscode: null,
+        status: s.status || "scheduled",
+        wasRescheduled: Array.isArray(s.changeHistory) && s.changeHistory.some((h) => h.action === "rescheduled"),
+        cancellationReason: s.cancellationReason || null
+      })) : [
         {
           _id: `${batchCode}-day1`,
           dayNumber: 1,
           title: "Day 1: LLM Foundations, Prompt Engineering & Custom AI Assistants",
           sessionDate: w.startDate,
+          startAt: w.startDate,
           startTime: "10:00 AM",
           endTime: "3:00 PM",
+          durationMinutes: 300,
           timezone: w.timezone || "Asia/Kolkata (IST)",
           instructorName: w.instructor?.name || "Vikram Malhotra",
+          classType: "live",
+          meetingProvider: "google_meet",
+          joinUrl: null,
           liveSessionUrl: null,
           meetingPasscode: null,
           status: "scheduled"
@@ -344,10 +430,15 @@ class LearnerController {
           dayNumber: 2,
           title: "Day 2: Multi-Step AI Workflows, Functional Prototyping & Capstone Lab",
           sessionDate: w.endDate,
+          startAt: w.endDate,
           startTime: "10:00 AM",
           endTime: "3:00 PM",
+          durationMinutes: 300,
           timezone: w.timezone || "Asia/Kolkata (IST)",
           instructorName: w.instructor?.name || "Vikram Malhotra",
+          classType: "live",
+          meetingProvider: "google_meet",
+          joinUrl: null,
           liveSessionUrl: null,
           meetingPasscode: null,
           status: "scheduled"

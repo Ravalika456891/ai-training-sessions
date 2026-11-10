@@ -36,7 +36,7 @@ module.exports = __toCommonJS(rateLimit_middleware_exports);
 var import_express_rate_limit = __toESM(require("express-rate-limit"));
 const apiRateLimiter = (0, import_express_rate_limit.default)({
   windowMs: 15 * 60 * 1e3,
-  max: 200,
+  max: 2e3,
   message: {
     success: false,
     message: "Too many requests from this IP, please try again after 15 minutes."
@@ -46,7 +46,7 @@ const apiRateLimiter = (0, import_express_rate_limit.default)({
 });
 const authRateLimiter = (0, import_express_rate_limit.default)({
   windowMs: 15 * 60 * 1e3,
-  max: 30,
+  max: 500,
   message: {
     success: false,
     message: "Too many login or registration attempts. Please try again after 15 minutes."

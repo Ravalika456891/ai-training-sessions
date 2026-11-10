@@ -11,6 +11,18 @@ export default {
         xs: '420px',
       },
       colors: {
+        blue: {
+          50: '#EFF6FF',
+          100: '#DBEAFE',
+          200: '#BFDBFE',
+          300: '#93C5FD',
+          400: '#60A5FA',
+          500: '#0c2d6e',
+          600: '#081e4a',
+          700: '#051330',
+          800: '#040e24',
+          900: '#020817',
+        },
         navy: {
           950: '#050814',
           900: '#0B132B',
@@ -21,8 +33,8 @@ export default {
         brand: {
           purple: '#7928CA',
           violet: '#8B5CF6',
-          indigo: '#6366F1',
-          blue: '#3B82F6',
+          indigo: '#081e4a',
+          blue: '#081e4a',
           cyan: '#06B6D4',
           accent: '#00F2FE',
         }

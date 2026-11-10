@@ -216,19 +216,19 @@ export const DashboardOverview: React.FC = () => {
           </div>
         )}
 
-        {/* 5. Available Workshop Batches */}
+        {/* 5. Available Workshop Cohort (Single Primary Card) */}
         <div id="available-batches" className="space-y-4 scroll-mt-20">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-lg font-extrabold text-[#0F172A]">Available Workshop Batches</h3>
+              <h3 className="text-lg font-extrabold text-[#0F172A]">Upcoming Workshop Cohort</h3>
               <p className="text-xs text-slate-500">
-                Select any live weekend cohort below to reserve your seat and proceed to checkout.
+                Reserve your seat in the upcoming live weekend cohort below and proceed to checkout.
               </p>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            {availableWorkshops.map((batch: any) => {
+          <div className="grid grid-cols-1 max-w-2xl gap-5">
+            {[highlightedBatch || availableWorkshops[0]].filter(Boolean).map((batch: any) => {
               const basePrice = batch.price?.basePrice ?? 1999;
               const isFree = Boolean(batch.price?.isFree || basePrice === 0);
               const dateRange = `${new Date(batch.startDate).toLocaleDateString('en-US', {

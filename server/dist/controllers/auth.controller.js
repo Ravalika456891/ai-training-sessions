@@ -25,12 +25,12 @@ var import_jwt = require("../utils/jwt.js");
 class AuthController {
   static async register(req, res, next) {
     try {
-      const { user, token } = await import_auth_service.AuthService.register(req.body);
+      const { user, token, registrationProof } = await import_auth_service.AuthService.register(req.body);
       (0, import_jwt.setAuthCookie)(res, token);
       res.status(201).json({
         success: true,
         message: "Account registered successfully.",
-        data: { user }
+        data: { user, registrationProof }
       });
     } catch (error) {
       next(error);
@@ -38,12 +38,12 @@ class AuthController {
   }
   static async login(req, res, next) {
     try {
-      const { user, token } = await import_auth_service.AuthService.login(req.body);
+      const { user, token, registrationProof } = await import_auth_service.AuthService.login(req.body);
       (0, import_jwt.setAuthCookie)(res, token);
       res.status(200).json({
         success: true,
         message: "Signed in successfully.",
-        data: { user }
+        data: { user, registrationProof }
       });
     } catch (error) {
       next(error);
@@ -51,12 +51,12 @@ class AuthController {
   }
   static async googleAuth(req, res, next) {
     try {
-      const { user, token } = await import_auth_service.AuthService.googleAuth(req.body);
+      const { user, token, registrationProof } = await import_auth_service.AuthService.googleAuth(req.body);
       (0, import_jwt.setAuthCookie)(res, token);
       res.status(200).json({
         success: true,
         message: "Signed in with Google successfully.",
-        data: { user }
+        data: { user, registrationProof }
       });
     } catch (error) {
       next(error);

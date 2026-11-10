@@ -33,6 +33,7 @@ import { AdminLayout } from './pages/admin/AdminLayout';
 import { AdminOverview } from './pages/admin/AdminOverview';
 import { AdminStudents } from './pages/admin/AdminStudents';
 import { AdminWorkshops } from './pages/admin/AdminWorkshops';
+import { AdminCalendar } from './pages/admin/AdminCalendar';
 import { AdminSessions } from './pages/admin/AdminSessions';
 import { AdminInstructors } from './pages/admin/AdminInstructors';
 import { AdminEnrollments } from './pages/admin/AdminEnrollments';
@@ -56,6 +57,8 @@ export const App: React.FC = () => {
 
           {/* Authentication Routes */}
           <Route path="/signin" element={<SignInPage />} />
+          <Route path="/admin/login" element={<SignInPage />} />
+          <Route path="/admin/signin" element={<SignInPage />} />
           <Route path="/signup" element={<SignUpPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/reset-password" element={<ResetPasswordPage />} />
@@ -92,6 +95,7 @@ export const App: React.FC = () => {
             <Route index element={<AdminOverview />} />
             <Route path="students" element={<AdminStudents />} />
             <Route path="workshops" element={<AdminWorkshops />} />
+            <Route path="calendar" element={<AdminCalendar />} />
             <Route path="sessions" element={<AdminSessions />} />
             <Route path="instructors" element={<AdminInstructors />} />
             <Route path="enrollments" element={<AdminEnrollments />} />

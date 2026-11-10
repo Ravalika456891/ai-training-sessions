@@ -40,7 +40,7 @@ const LearningResourceSchema = new import_mongoose.Schema(
     },
     category: {
       type: String,
-      enum: ["pdf", "prompt_template", "code_repo", "assignment", "faq", "testimonial", "workshop_description"],
+      enum: ["pdf", "prompt_template", "code_repo", "assignment", "faq", "testimonial", "workshop_description", "announcement"],
       required: true,
       index: true
     },

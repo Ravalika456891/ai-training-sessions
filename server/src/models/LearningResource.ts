@@ -3,7 +3,7 @@ import mongoose, { Schema, Document } from 'mongoose';
 export interface ILearningResource extends Document {
   _id: mongoose.Types.ObjectId;
   title: string;
-  category: 'pdf' | 'prompt_template' | 'code_repo' | 'assignment' | 'faq' | 'testimonial' | 'workshop_description';
+  category: 'pdf' | 'prompt_template' | 'code_repo' | 'assignment' | 'faq' | 'testimonial' | 'workshop_description' | 'announcement';
   description: string;
   url?: string;
   content?: string;
@@ -28,7 +28,7 @@ const LearningResourceSchema = new Schema<ILearningResource>(
     },
     category: {
       type: String,
-      enum: ['pdf', 'prompt_template', 'code_repo', 'assignment', 'faq', 'testimonial', 'workshop_description'],
+      enum: ['pdf', 'prompt_template', 'code_repo', 'assignment', 'faq', 'testimonial', 'workshop_description', 'announcement'],
       required: true,
       index: true,
     },

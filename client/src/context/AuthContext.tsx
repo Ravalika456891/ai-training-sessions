@@ -11,8 +11,14 @@ interface AuthContextType {
     email: string;
     password?: string;
     phone?: { countryCode: string; number: string };
-  }) => Promise<void>;
-  googleLogin: (payload: { email: string; name: string }) => Promise<void>;
+  }) => Promise<ApiUser | null>;
+  googleLogin: (payload: {
+    email: string;
+    name: string;
+    password?: string;
+    requestedRole?: string;
+    mode?: 'login' | 'register';
+  }) => Promise<ApiUser | null>;
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
 }
@@ -61,25 +67,35 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     email: string;
     password?: string;
     phone?: { countryCode: string; number: string };
-  }) => {
+  }): Promise<ApiUser | null> => {
     setIsLoading(true);
     try {
       const res = await api.register(data);
       if (res.success && res.data?.user) {
         setUser(res.data.user);
+        return res.data.user;
       }
+      return null;
     } finally {
       setIsLoading(false);
     }
   };
 
-  const googleLogin = async (payload: { email: string; name: string }) => {
+  const googleLogin = async (payload: {
+    email: string;
+    name: string;
+    password?: string;
+    requestedRole?: string;
+    mode?: 'login' | 'register';
+  }): Promise<ApiUser | null> => {
     setIsLoading(true);
     try {
       const res = await api.googleAuth(payload);
       if (res.success && res.data?.user) {
         setUser(res.data.user);
+        return res.data.user;
       }
+      return null;
     } finally {
       setIsLoading(false);
     }

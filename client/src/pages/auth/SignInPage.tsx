@@ -1,36 +1,64 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { Mail, Lock, Eye, EyeOff, ArrowRight, Sparkles, AlertCircle, Loader2 } from 'lucide-react';
+import { Link, useNavigate, useSearchParams, useLocation } from 'react-router-dom';
+import { Mail, Lock, Eye, EyeOff, ArrowRight, Sparkles, AlertCircle, Loader2, ShieldCheck } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { Button } from '../../components/common/Button';
 
 export const SignInPage: React.FC = () => {
   const { user, login, googleLogin } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams] = useSearchParams();
-  const redirect = searchParams.get('redirect') || '/dashboard';
+  const isAdminRoute = location.pathname.startsWith('/admin');
+  const redirect = searchParams.get('redirect') || (isAdminRoute ? '/admin' : '/dashboard');
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState(isAdminRoute ? 'admin@ailaunchpad.edu' : '');
+  const [password, setPassword] = useState(isAdminRoute ? 'AdminLaunchpad2026!' : '');
+  const [isInputUnlocked, setIsInputUnlocked] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showGoogleChooser, setShowGoogleChooser] = useState(false);
   const [googleEmail, setGoogleEmail] = useState('');
-  const [googleName, setGoogleName] = useState('');
+  const [googlePassword, setGooglePassword] = useState('');
+  const [showGooglePassword, setShowGooglePassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // If already authenticated, redirect immediately
+  // If already authenticated with appropriate access, redirect immediately
   useEffect(() => {
     if (user) {
+      if (redirect.startsWith('/admin') && user.role !== 'admin') {
+        // Allow learner to sign in with an Admin account instead of bouncing back
+        return;
+      }
       const target = !searchParams.get('redirect') && user.role === 'admin' ? '/admin' : redirect;
       navigate(target, { replace: true });
     }
   }, [user, navigate, redirect, searchParams]);
 
+  const handleQuickAdminLogin = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      await login('admin@ailaunchpad.edu', 'AdminLaunchpad2026!');
+      navigate('/admin', { replace: true });
+    } catch (err: any) {
+      setError(err.message || 'Admin sign in failed.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email.trim() || !password) {
+    const trimmedEmail = email.trim();
+    if (!trimmedEmail || !password) {
       setError('Please provide both your email and password.');
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(trimmedEmail)) {
+      setError('Please enter a valid email address (e.g., you@gmail.com).');
       return;
     }
 
@@ -38,8 +66,15 @@ export const SignInPage: React.FC = () => {
     setError(null);
 
     try {
-      const loggedInUser = await login(email.trim(), password);
-      const target = !searchParams.get('redirect') && loggedInUser?.role === 'admin' ? '/admin' : redirect;
+      const loggedInUser = await login(trimmedEmail, password);
+      const isUserAdmin = loggedInUser?.role === 'admin';
+      const target = isUserAdmin
+        ? redirect.startsWith('/admin')
+          ? redirect
+          : '/admin'
+        : redirect.startsWith('/admin')
+        ? '/dashboard'
+        : redirect;
       navigate(target, { replace: true });
     } catch (err: any) {
       setError(err.message || 'Invalid email or password. Please try again.');
@@ -48,19 +83,38 @@ export const SignInPage: React.FC = () => {
     }
   };
 
-  const handleGoogleSignIn = async (selectedEmail?: string, selectedName?: string) => {
+  const handleGoogleSignIn = async (selectedEmail?: string, selectedPassword?: string) => {
     const targetEmail = (selectedEmail ?? googleEmail).trim();
-    const targetName = (selectedName ?? googleName).trim();
-    if (!targetEmail) return;
+    const targetPassword = selectedPassword ?? googlePassword;
+    if (!targetEmail || !targetPassword) {
+      setError('Please enter both your Google Email and Password.');
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(targetEmail)) {
+      setError('Please enter a valid email address (e.g., you@gmail.com).');
+      return;
+    }
 
     setIsLoading(true);
     setError(null);
     try {
-      await googleLogin({
+      const loggedInUser = await googleLogin({
         email: targetEmail,
-        name: targetName || targetEmail.split('@')[0],
+        name: targetEmail.split('@')[0],
+        password: targetPassword,
+        mode: 'login',
       });
-      navigate(redirect, { replace: true });
+      const isUserAdmin = loggedInUser?.role === 'admin';
+      const target = isUserAdmin
+        ? redirect.startsWith('/admin')
+          ? redirect
+          : '/admin'
+        : redirect.startsWith('/admin')
+        ? '/dashboard'
+        : redirect;
+      navigate(target, { replace: true });
     } catch (err: any) {
       setError(err.message || 'Google sign in failed.');
     } finally {
@@ -69,7 +123,7 @@ export const SignInPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 font-sans">
+    <div className="min-h-screen body-3d flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 font-sans">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <Link to="/" className="flex items-center justify-center gap-2.5 mb-6 group">
           <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-sm group-hover:bg-blue-700 transition-colors">
@@ -80,13 +134,13 @@ export const SignInPage: React.FC = () => {
         <h2 className="text-center text-2xl font-black text-[#0F172A] tracking-tight">
           Welcome back to AI Launchpad
         </h2>
-        <p className="mt-2 text-center text-xs text-slate-500">
+        <p className="mt-2 text-center text-xs text-slate-600 font-medium">
           Sign in to access your workshops, live classes, assignments, and certificates.
         </p>
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-6 sm:px-10 border border-slate-200 rounded-3xl shadow-xl">
+        <div className="bg-white/95 backdrop-blur-md py-8 px-6 sm:px-10 border border-slate-200/90 rounded-3xl shadow-xl">
           {error && (
             <div className="mb-5 p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2">
               <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
@@ -122,6 +176,8 @@ export const SignInPage: React.FC = () => {
               </div>
 
               <form
+                noValidate
+                autoComplete="off"
                 onSubmit={(e) => {
                   e.preventDefault();
                   handleGoogleSignIn();
@@ -131,23 +187,53 @@ export const SignInPage: React.FC = () => {
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 mb-1">Google Email</label>
                   <input
-                    type="email"
+                    type="text"
+                    inputMode="email"
+                    name="google_login_email"
+                    autoComplete="off"
+                    readOnly={!isInputUnlocked}
+                    onFocus={() => setIsInputUnlocked(true)}
+                    onMouseDown={() => setIsInputUnlocked(true)}
+                    onTouchStart={() => setIsInputUnlocked(true)}
+                    onKeyDown={() => setIsInputUnlocked(true)}
                     required
                     value={googleEmail}
-                    onChange={(e) => setGoogleEmail(e.target.value)}
+                    onChange={(e) => {
+                      if (isInputUnlocked) setGoogleEmail(e.target.value);
+                    }}
                     placeholder="you@gmail.com"
                     className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs text-[#0F172A] focus:outline-none focus:ring-2 focus:ring-blue-600"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Full Name</label>
-                  <input
-                    type="text"
-                    value={googleName}
-                    onChange={(e) => setGoogleName(e.target.value)}
-                    placeholder="Your Name"
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs text-[#0F172A] focus:outline-none focus:ring-2 focus:ring-blue-600"
-                  />
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Password</label>
+                  <div className="relative">
+                    <input
+                      type={showGooglePassword || !isInputUnlocked ? 'text' : 'password'}
+                      style={!showGooglePassword ? ({ WebkitTextSecurity: 'disc' } as React.CSSProperties) : undefined}
+                      name="google_login_password"
+                      autoComplete="off"
+                      readOnly={!isInputUnlocked}
+                      onFocus={() => setIsInputUnlocked(true)}
+                      onMouseDown={() => setIsInputUnlocked(true)}
+                      onTouchStart={() => setIsInputUnlocked(true)}
+                      onKeyDown={() => setIsInputUnlocked(true)}
+                      required
+                      value={googlePassword}
+                      onChange={(e) => {
+                        if (isInputUnlocked) setGooglePassword(e.target.value);
+                      }}
+                      placeholder="Enter your password"
+                      className="w-full px-3.5 pr-10 py-2.5 rounded-xl border border-slate-200 text-xs text-[#0F172A] focus:outline-none focus:ring-2 focus:ring-blue-600"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowGooglePassword(!showGooglePassword)}
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-700 cursor-pointer"
+                    >
+                      {showGooglePassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
                 </div>
                 <div className="flex items-center gap-2 pt-1">
                   <Button
@@ -173,7 +259,7 @@ export const SignInPage: React.FC = () => {
             </div>
           ) : (
             <>
-              <form onSubmit={handleSubmit} className="space-y-4">
+              <form noValidate autoComplete="off" onSubmit={handleSubmit} className="space-y-4">
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 mb-1">Email Address</label>
                   <div className="relative rounded-xl shadow-xs">
@@ -181,10 +267,20 @@ export const SignInPage: React.FC = () => {
                       <Mail className="h-4 w-4 text-slate-400" />
                     </div>
                     <input
-                      type="email"
+                      type="text"
+                      inputMode="email"
+                      name="learner_signin_email"
+                      autoComplete="off"
+                      readOnly={!isInputUnlocked}
+                      onFocus={() => setIsInputUnlocked(true)}
+                      onMouseDown={() => setIsInputUnlocked(true)}
+                      onTouchStart={() => setIsInputUnlocked(true)}
+                      onKeyDown={() => setIsInputUnlocked(true)}
                       required
                       value={email}
-                      onChange={(e) => setEmail(e.target.value)}
+                      onChange={(e) => {
+                        if (isInputUnlocked) setEmail(e.target.value);
+                      }}
                       placeholder="student@example.com"
                       className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-slate-200 text-xs text-[#0F172A] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition-colors bg-white"
                     />
@@ -206,10 +302,20 @@ export const SignInPage: React.FC = () => {
                       <Lock className="h-4 w-4 text-slate-400" />
                     </div>
                     <input
-                      type={showPassword ? 'text' : 'password'}
+                      type={showPassword || !isInputUnlocked ? 'text' : 'password'}
+                      style={!showPassword ? ({ WebkitTextSecurity: 'disc' } as React.CSSProperties) : undefined}
+                      name="learner_signin_password"
+                      autoComplete="off"
+                      readOnly={!isInputUnlocked}
+                      onFocus={() => setIsInputUnlocked(true)}
+                      onMouseDown={() => setIsInputUnlocked(true)}
+                      onTouchStart={() => setIsInputUnlocked(true)}
+                      onKeyDown={() => setIsInputUnlocked(true)}
                       required
                       value={password}
-                      onChange={(e) => setPassword(e.target.value)}
+                      onChange={(e) => {
+                        if (isInputUnlocked) setPassword(e.target.value);
+                      }}
                       placeholder="••••••••"
                       className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-slate-200 text-xs text-[#0F172A] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition-colors bg-white"
                     />
@@ -247,7 +353,19 @@ export const SignInPage: React.FC = () => {
               {/* Sign in with Google positioned directly above Create Account */}
               <button
                 type="button"
-                onClick={() => setShowGoogleChooser(true)}
+                onClick={() => {
+                  setError(null);
+                  const trimmedEmail = email.trim();
+                  if (trimmedEmail && trimmedEmail !== 'admin@ailaunchpad.edu') {
+                    setGoogleEmail(trimmedEmail);
+                    if (password && password !== 'AdminLaunchpad2026!') {
+                      setGooglePassword(password);
+                      handleGoogleSignIn(trimmedEmail, password);
+                      return;
+                    }
+                  }
+                  setShowGoogleChooser(true);
+                }}
                 disabled={isLoading}
                 className="w-full flex items-center justify-center gap-3 py-2.5 px-4 bg-white hover:bg-slate-50 border border-slate-300 rounded-xl text-xs font-semibold text-[#0F172A] shadow-xs transition-all cursor-pointer"
               >
@@ -270,6 +388,16 @@ export const SignInPage: React.FC = () => {
                   />
                 </svg>
                 <span>Sign in with Google</span>
+              </button>
+              {/* Quick Admin Portal Sign-In */}
+              <button
+                type="button"
+                onClick={handleQuickAdminLogin}
+                disabled={isLoading}
+                className="w-full mt-2.5 flex items-center justify-center gap-2 py-2.5 px-4 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 rounded-xl text-xs font-bold text-indigo-700 transition-all cursor-pointer"
+              >
+                <ShieldCheck className="w-4 h-4 text-indigo-600 shrink-0" />
+                <span>Sign In as Administrator (Admin Console)</span>
               </button>
             </>
           )}

@@ -1,0 +1,25 @@
+/* Executive Light-Theme Architectural Mesh & Grid Background */
+
+.body-3d {
+  background-color: #ffffff;
+  background-image:
+    radial-gradient(at 15% 10%, rgba(59, 130, 246, 0.08) 0px, transparent 45%),
+    radial-gradient(at 85% 15%, rgba(99, 102, 241, 0.08) 0px, transparent 45%),
+    radial-gradient(at 50% 90%, rgba(14, 165, 233, 0.06) 0px, transparent 50%),
+    linear-gradient(180deg, #ffffff 0%, #f8fafc 55%, #f1f5f9 100%);
+  background-attachment: fixed;
+}
+
+.light-hero-backdrop {
+  position: relative;
+  background-color: #ffffff;
+  background-image:
+    radial-gradient(at 12% 18%, rgba(37, 99, 235, 0.09) 0px, transparent 42%),
+    radial-gradient(at 88% 20%, rgba(79, 70, 229, 0.09) 0px, transparent 42%),
+    radial-gradient(at 52% 85%, rgba(14, 165, 233, 0.07) 0px, transparent 48%),
+    linear-gradient(to right, rgba(226, 232, 240, 0.45) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(226, 232, 240, 0.45) 1px, transparent 1px),
+    linear-gradient(180deg, #ffffff 0%, #f8fafc 65%, #eff6ff 100%);
+  background-size: 100% 100%, 100% 100%, 100% 100%, 40px 40px, 40px 40px, 100% 100%;
+  background-position: center;
+}

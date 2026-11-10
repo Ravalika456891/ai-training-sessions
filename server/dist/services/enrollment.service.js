@@ -31,12 +31,14 @@ __export(enrollment_service_exports, {
 });
 module.exports = __toCommonJS(enrollment_service_exports);
 var import_mongoose = __toESM(require("mongoose"));
+var import_jsonwebtoken = __toESM(require("jsonwebtoken"));
 var import_Enrollment = require("../models/Enrollment.js");
 var import_Workshop = require("../models/Workshop.js");
 var import_User = require("../models/User.js");
 var import_Payment = require("../models/Payment.js");
 var import_apiError = require("../utils/apiError.js");
 var import_jwt = require("../utils/jwt.js");
+var import_env = require("../config/env.js");
 var import_db = require("../config/db.js");
 var import_memoryStore = require("./memoryStore.js");
 class EnrollmentService {
@@ -88,7 +90,11 @@ class EnrollmentService {
             autoCreatedToken = (0, import_jwt.signToken)({
               userId: user._id.toString(),
               email: user.email,
-              role: user.role
+              role: user.role,
+              name: user.name,
+              phone: user.phone,
+              userCategory: user.userCategory,
+              experienceLevel: user.experienceLevel
             });
           }
         }
@@ -119,7 +125,11 @@ class EnrollmentService {
         autoCreatedToken = (0, import_jwt.signToken)({
           userId: user._id,
           email: user.email,
-          role: user.role
+          role: user.role,
+          name: user.name,
+          phone: user.phone,
+          userCategory: user.userCategory,
+          experienceLevel: user.experienceLevel
         });
       }
     }
@@ -225,6 +235,19 @@ class EnrollmentService {
         availableSeats: workshop.availableSeats || 24
       },
       token: autoCreatedToken,
+      registrationProof: import_jsonwebtoken.default.sign(
+        {
+          type: "reg_proof",
+          _id: user._id.toString(),
+          email: user.email.toLowerCase().trim(),
+          name: user.name,
+          phone: user.phone,
+          userCategory: user.userCategory,
+          experienceLevel: user.experienceLevel
+        },
+        import_env.env.JWT_SECRET,
+        { expiresIn: "365d" }
+      ),
       paymentRequired: !isFree,
       orderSummary: {
         basePrice,

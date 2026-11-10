@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Navbar } from '../../components/layout/Navbar';
-import { Footer } from '../../components/layout/Footer';
 import { HeroSection } from '../../components/sections/HeroSection';
 import { BenefitsSection } from '../../components/sections/BenefitsSection';
 import { CurriculumSection } from '../../components/sections/CurriculumSection';
@@ -15,6 +14,7 @@ import { AdminConsoleModal } from '../../components/admin/AdminConsoleModal';
 import { CertificateVerifyModal } from '../../components/certificate/CertificateVerifyModal';
 import { BATCH_OPTIONS } from '../../data/workshopData';
 import { ArrowRight, X } from 'lucide-react';
+import '../../styles/3dBackground.css';
 import { useAuth } from '../../context/AuthContext';
 import { api, type ApiWorkshop } from '../../services/api';
 import type { BatchOption } from '../../types/workshop';
@@ -113,7 +113,7 @@ export const HomePage: React.FC = () => {
     batches.find((b) => b.id === selectedBatchId) || batches[0] || BATCH_OPTIONS[0];
 
   return (
-    <div className="min-h-screen bg-white text-[#0F172A] flex flex-col font-sans selection:bg-blue-600 selection:text-white relative">
+    <div className="min-h-screen bg-white text-[#0F172A] flex flex-col font-sans selection:bg-blue-600 selection:text-white relative body-3d">
       {/* Top Cohort & Signed-In Status Bar */}
       {showSampleBanner && (
         <aside
@@ -176,6 +176,7 @@ export const HomePage: React.FC = () => {
 
         {/* 7. Transparent Pricing & Batch Selector */}
         <PricingSection
+          batches={batches}
           selectedBatchId={selectedBatchId}
           onSelectBatch={handleSelectBatchAndProceed}
           onProceedToRegister={scrollToRegister}
@@ -194,9 +195,6 @@ export const HomePage: React.FC = () => {
         {/* 9. Frequently Asked Questions */}
         <FAQSection />
       </main>
-
-      {/* 10. Footer */}
-      <Footer />
 
       {/* 11. Checkout & Payment Modal */}
       {activeCheckoutEnrollmentId && (

@@ -9,6 +9,7 @@ import { WorkshopSession } from '../models/WorkshopSession.js';
 import { Payment } from '../models/Payment.js';
 import { Attendance } from '../models/Attendance.js';
 import { Certificate } from '../models/Certificate.js';
+import { Assignment } from '../models/Assignment.js';
 import { ProjectSubmission } from '../models/ProjectSubmission.js';
 import { LearningResource } from '../models/LearningResource.js';
 import { AuditLog } from '../models/AuditLog.js';
@@ -16,6 +17,7 @@ import { PlatformSettings } from '../models/PlatformSettings.js';
 import { ApiError } from '../utils/apiError.js';
 import { env } from '../config/env.js';
 import { isDBConnected } from '../config/db.js';
+import { seedDatabase } from '../utils/seed.js';
 import { memoryStore } from '../services/memoryStore.js';
 import { razorpayInstance } from '../config/razorpay.js';
 
@@ -98,9 +100,16 @@ export class AdminController {
 
       if (isDBConnected()) {
         try {
+          workshops = await Workshop.find().sort({ startDate: 1 });
+          if (
+            workshops.length === 0 ||
+            workshops.some((w: any) => ['AILP-2026-NOV-28', 'AILP-2026-DEC-12'].includes(w.batchCode))
+          ) {
+            await seedDatabase();
+            workshops = await Workshop.find().sort({ startDate: 1 });
+          }
           [
             users,
-            workshops,
             enrollments,
             registrations,
             payments,
@@ -109,7 +118,6 @@ export class AdminController {
             submissions,
           ] = await Promise.all([
             User.find().select('-passwordHash -resetPasswordToken -resetPasswordExpires').sort({ createdAt: -1 }),
-            Workshop.find().sort({ startDate: 1 }),
             Enrollment.find().populate('workshopId', 'title batchCode startDate price').populate('userId', 'name email').sort({ createdAt: -1 }),
             Registration.find().sort({ createdAt: -1 }),
             Payment.find().populate('workshopId', 'title batchCode').populate('userId', 'name email').sort({ createdAt: -1 }),
@@ -155,7 +163,7 @@ export class AdminController {
         registrations.filter((r) => r.registrationStatus === 'confirmed').length;
 
       const pendingEnrollmentsCount =
-        enrollments.filter((e) => e.status === 'pending' || e.status === 'reserved').length +
+        enrollments.filter((e) => e.status === 'pending' || e.status === 'reserved' || e.status === 'pending_payment').length +
         registrations.filter((r) => r.registrationStatus === 'pending').length;
 
       const totalEnrollments = enrollments.length + registrations.length;
@@ -443,7 +451,7 @@ export class AdminController {
 
   static async getStudentById(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params['id'] as string;
       let student: any = null;
 
       if (isDBConnected() && mongoose.Types.ObjectId.isValid(id)) {
@@ -506,7 +514,7 @@ export class AdminController {
 
   static async updateStudentStatus(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params['id'] as string;
       const { accountStatus, role, userCategory, experienceLevel } = req.body;
 
       if (accountStatus && !['active', 'suspended', 'deactivated'].includes(accountStatus)) {
@@ -576,6 +584,13 @@ export class AdminController {
       if (isDBConnected()) {
         try {
           workshops = await Workshop.find().sort({ startDate: 1 });
+          if (
+            workshops.length === 0 ||
+            workshops.some((w: any) => ['AILP-2026-NOV-28', 'AILP-2026-DEC-12'].includes(w.batchCode))
+          ) {
+            await seedDatabase();
+            workshops = await Workshop.find().sort({ startDate: 1 });
+          }
         } catch (err: any) {
           console.warn('[Admin getWorkshops DB Fallback]', err.message);
         }
@@ -701,7 +716,7 @@ export class AdminController {
 
   static async updateWorkshop(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params['id'] as string;
       const updates = { ...req.body };
 
       if (updates.capacity !== undefined && Number(updates.capacity) < 1) {
@@ -770,7 +785,7 @@ export class AdminController {
 
   static async deleteWorkshop(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params['id'] as string;
 
       // TASK 4 REQUIREMENT: Prevent deleting workshops with existing payment and enrollment records.
       let hasEnrollments = false;
@@ -829,18 +844,7 @@ export class AdminController {
    */
   static async getSessions(_req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      let sessions: any[] = [];
-      if (isDBConnected()) {
-        try {
-          sessions = await WorkshopSession.find().sort({ sessionDate: 1, dayNumber: 1 });
-        } catch (err: any) {
-          console.warn('[Admin getSessions DB Fallback]', err.message);
-        }
-      }
-
-      if (sessions.length === 0) {
-        sessions = await memoryStore.getAllSessions();
-      }
+      const sessions = await AdminController.getAllCalendarSessionsUnified();
 
       res.status(200).json({
         success: true,
@@ -1085,7 +1089,7 @@ export class AdminController {
 
   static async updateInstructor(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params['id'] as string;
       const { name, bio, expertise, availabilityStatus, assignBatchCode } = req.body;
 
       const parsedExpertise =
@@ -1179,6 +1183,7 @@ export class AdminController {
 
       let dbEnrollments: any[] = [];
       let dbRegistrations: any[] = [];
+      let dbAttendance: any[] = [];
 
       if (isDBConnected()) {
         try {
@@ -1187,6 +1192,7 @@ export class AdminController {
             .populate('userId', 'name email phone')
             .sort({ createdAt: -1 });
           dbRegistrations = await Registration.find().sort({ createdAt: -1 });
+          dbAttendance = await Attendance.find({ status: 'present' });
         } catch (err: any) {
           console.warn('[Admin getEnrollments DB Fallback]', err.message);
         }
@@ -1200,19 +1206,30 @@ export class AdminController {
       }
 
       const unified = [
-        ...dbEnrollments.map((e: any) => ({
-          _id: e._id?.toString(),
-          enrollmentId: e.enrollmentId || `ENR-${e._id?.toString().slice(-6).toUpperCase()}`,
-          studentName: e.attendeeDetails?.fullName || e.userId?.name || 'Student',
-          email: e.attendeeDetails?.email || e.userId?.email || '',
-          phone: e.attendeeDetails?.phone || e.userId?.phone?.number || '',
-          workshopTitle: e.workshopId?.title || 'AI Launchpad — 2-Day Hands-On AI Bootcamp',
-          batchCode: e.workshopId?.batchCode || e.workshop || 'AILP-2026-NOV-14',
-          enrolledAt: e.enrolledAt || e.createdAt,
-          status: e.status,
-          paymentStatus: e.paymentStatus,
-          sourceType: 'enrollment',
-        })),
+        ...dbEnrollments.map((e: any) => {
+          const eid = e._id?.toString();
+          const day1 =
+            Boolean(e.day1Attended) ||
+            dbAttendance.some((a) => a.enrollmentId?.toString() === eid && a.dayNumber === 1);
+          const day2 =
+            Boolean(e.day2Attended) ||
+            dbAttendance.some((a) => a.enrollmentId?.toString() === eid && a.dayNumber === 2);
+          return {
+            _id: eid,
+            enrollmentId: e.enrollmentId || `ENR-${eid?.slice(-6).toUpperCase()}`,
+            studentName: e.attendeeDetails?.fullName || e.userId?.name || 'Student',
+            email: e.attendeeDetails?.email || e.userId?.email || '',
+            phone: e.attendeeDetails?.phone || e.userId?.phone?.number || '',
+            workshopTitle: e.workshopId?.title || 'AI Launchpad — 2-Day Hands-On AI Bootcamp',
+            batchCode: e.workshopId?.batchCode || e.workshop || 'AILP-2026-NOV-14',
+            enrolledAt: e.enrolledAt || e.createdAt,
+            status: e.status,
+            paymentStatus: e.paymentStatus,
+            day1Attended: day1,
+            day2Attended: day2,
+            sourceType: 'enrollment',
+          };
+        }),
         ...dbRegistrations.map((r: any) => ({
           _id: r._id?.toString(),
           enrollmentId: `REG-${r._id?.toString().slice(-6).toUpperCase()}`,
@@ -1224,6 +1241,8 @@ export class AdminController {
           enrolledAt: r.createdAt,
           status: r.registrationStatus,
           paymentStatus: r.paymentStatus,
+          day1Attended: Boolean(r.day1Attended ?? (r.registrationStatus === 'confirmed')),
+          day2Attended: Boolean(r.day2Attended ?? (r.registrationStatus === 'confirmed')),
           sourceType: 'registration',
         })),
       ];
@@ -1263,7 +1282,7 @@ export class AdminController {
 
   static async cancelEnrollment(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params['id'] as string;
       const { reason } = req.body;
 
       let cancelledRecord: any = null;
@@ -1422,7 +1441,7 @@ export class AdminController {
 
   static async reconcilePayment(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params['id'] as string;
       const { action, providerPaymentId, providerSignature } = req.body;
 
       // CRITICAL REQUIREMENT (Task 8): Never allow administrators to manually mark an unverified payment as paid.
@@ -1633,7 +1652,7 @@ export class AdminController {
 
   static async updateContent(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params['id'] as string;
       let updated: any = null;
 
       if (isDBConnected() && mongoose.Types.ObjectId.isValid(id)) {
@@ -1666,7 +1685,7 @@ export class AdminController {
 
   static async deleteContent(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params['id'] as string;
       if (isDBConnected() && mongoose.Types.ObjectId.isValid(id)) {
         await LearningResource.findByIdAndDelete(id);
       }
@@ -1910,7 +1929,7 @@ export class AdminController {
 
   static async revokeCertificate(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params['id'] as string;
       const { reason } = req.body;
 
       if (!reason || !reason.trim()) {
@@ -2159,7 +2178,7 @@ export class AdminController {
    */
   static async getRoster(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { workshopId } = req.params;
+      const workshopId = req.params['workshopId'] as string;
       let attendees: any[] = [];
 
       if (isDBConnected()) {
@@ -2257,6 +2276,14 @@ export class AdminController {
         };
       }
 
+      // Sync attendance in memoryStore for instant consistency
+      const memEnr = await memoryStore.findEnrollmentById(enrollmentId);
+      if (memEnr) {
+        const isPresent = (status || 'present') === 'present';
+        if (Number(dayNumber) === 1) memEnr.day1Attended = isPresent;
+        if (Number(dayNumber) === 2) memEnr.day2Attended = isPresent;
+      }
+
       await AdminController.logAudit(
         req,
         'MARK_ATTENDANCE',
@@ -2269,6 +2296,1610 @@ export class AdminController {
         success: true,
         message: `Attendance marked for Day ${dayNumber}.`,
         data: attendance,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * TASK 13 — ASSIGNMENTS & SUBMISSIONS MANAGEMENT (`GET /api/admin/assignments`, `POST /api/admin/assignments`, `PATCH /api/admin/submissions/:id/review`)
+   */
+  static async getAssignments(_req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      let assignments: any[] = [];
+      let submissions: any[] = [];
+
+      if (isDBConnected()) {
+        try {
+          [assignments, submissions] = await Promise.all([
+            Assignment.find().sort({ createdAt: -1 }),
+            ProjectSubmission.find()
+              .populate('userId', 'name email')
+              .populate('workshopId', 'title batchCode')
+              .sort({ createdAt: -1 }),
+          ]);
+        } catch (err: any) {
+          console.warn('[Admin getAssignments DB Fallback]', err.message);
+        }
+      }
+
+      if (assignments.length === 0) {
+        const memResources = (await memoryStore.getAllResources()).filter(
+          (r) => r.category === 'assignment'
+        );
+        const memAssignments = await memoryStore.getAllAssignments();
+        assignments = [...memAssignments, ...memResources];
+      }
+
+      const memSubmissions = await memoryStore.getAllSubmissions();
+      if (submissions.length === 0) {
+        submissions = memSubmissions;
+      }
+
+      res.status(200).json({
+        success: true,
+        data: {
+          assignments,
+          submissions,
+        },
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async createAssignment(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const {
+        title,
+        description,
+        workshopBatchCode,
+        dayNumber,
+        deliverableType,
+        maxScore,
+        isPublished,
+      } = req.body;
+
+      if (!title || !description) {
+        throw ApiError.badRequest('Assignment title and description are required.');
+      }
+
+      let created: any = null;
+      if (isDBConnected()) {
+        try {
+          created = await Assignment.create({
+            title: title.trim(),
+            description: description.trim(),
+            workshopBatchCode: (workshopBatchCode || 'ALL').toUpperCase(),
+            dayNumber: dayNumber === 1 ? 1 : 2,
+            deliverableType: deliverableType || 'GitHub Repository + Live Demo URL',
+            maxScore: Number(maxScore) || 100,
+            isPublished: isPublished ?? true,
+          });
+        } catch (err: any) {
+          console.warn('[Admin createAssignment DB Fallback]', err.message);
+        }
+      }
+
+      // Also sync to LearningResource with category 'assignment' so Student Dashboard displays it
+      const resourceEntry = await memoryStore.createResource({
+        title: title.trim(),
+        category: 'assignment',
+        description: description.trim(),
+        workshopBatchCode: (workshopBatchCode || 'ALL').toUpperCase(),
+        accessLevel: 'enrolled_only',
+        isPublished: isPublished ?? true,
+      });
+
+      if (!created) {
+        created = resourceEntry;
+      }
+
+      await AdminController.logAudit(
+        req,
+        'CREATE_ASSIGNMENT',
+        'content',
+        `Published assignment: ${title}`,
+        created._id?.toString()
+      );
+
+      res.status(201).json({
+        success: true,
+        message: 'Assignment created and published.',
+        data: created,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async reviewSubmission(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const id = req.params['id'] as string;
+      const { status, feedback } = req.body;
+
+      if (!status || !['submitted', 'under_review', 'approved'].includes(status)) {
+        throw ApiError.badRequest('Valid status (submitted, under_review, approved) is required.');
+      }
+
+      let updated: any = null;
+      if (isDBConnected() && mongoose.Types.ObjectId.isValid(id)) {
+        updated = await ProjectSubmission.findByIdAndUpdate(
+          id,
+          {
+            status,
+            feedback: feedback || '',
+            reviewedBy: req.user?._id,
+          },
+          { new: true }
+        );
+      }
+
+      const memSubmissions = await memoryStore.getAllSubmissions();
+      const targetSub = memSubmissions.find((s) => s._id?.toString() === id);
+      if (targetSub) {
+        targetSub.status = status;
+        targetSub.feedback = feedback || '';
+        updated = await memoryStore.saveSubmission(targetSub);
+      }
+
+      if (!updated) {
+        throw ApiError.notFound('Project submission not found.');
+      }
+
+      await AdminController.logAudit(
+        req,
+        'REVIEW_SUBMISSION',
+        'content',
+        `Reviewed project submission ${id} (${status})`,
+        id,
+        { status, feedback }
+      );
+
+      res.status(200).json({
+        success: true,
+        message: `Submission marked as ${status}.`,
+        data: updated,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * TASK 14 — NOTIFICATIONS & ANNOUNCEMENTS (`GET /api/admin/notifications`, `POST /api/admin/notifications`)
+   */
+  static async getNotifications(_req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      let notifications: any[] = [];
+      if (isDBConnected()) {
+        try {
+          notifications = await LearningResource.find({ category: 'announcement' }).sort({
+            createdAt: -1,
+          });
+        } catch (err: any) {
+          console.warn('[Admin getNotifications DB Fallback]', err.message);
+        }
+      }
+
+      if (notifications.length === 0) {
+        notifications = (await memoryStore.getAllResources()).filter(
+          (r) => r.category === 'announcement'
+        );
+      }
+
+      res.status(200).json({
+        success: true,
+        count: notifications.length,
+        data: notifications,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async createNotification(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { title, message, audience, workshopBatchCode, scheduleAt } = req.body;
+      if (!title || !message) {
+        throw ApiError.badRequest('Notification title and message are required.');
+      }
+
+      const accessLevel = audience === 'public' ? 'public' : 'enrolled_only';
+      let created: any = null;
+
+      if (isDBConnected()) {
+        try {
+          created = await LearningResource.create({
+            title: title.trim(),
+            category: 'announcement',
+            description: message.trim(),
+            workshopBatchCode: (workshopBatchCode || 'ALL').toUpperCase(),
+            accessLevel,
+            isPublished: true,
+            releaseAt: scheduleAt ? new Date(scheduleAt) : new Date(),
+            authorName: req.user?.name || 'System Administrator',
+            authorRole: audience || 'all_students',
+            createdBy: req.user?._id?.toString(),
+          });
+        } catch (err: any) {
+          console.warn('[Admin createNotification DB Fallback]', err.message);
+        }
+      }
+
+      if (!created) {
+        created = await memoryStore.createResource({
+          title: title.trim(),
+          category: 'announcement',
+          description: message.trim(),
+          workshopBatchCode: (workshopBatchCode || 'ALL').toUpperCase(),
+          accessLevel,
+          isPublished: true,
+          releaseAt: scheduleAt ? new Date(scheduleAt) : new Date(),
+          authorName: req.user?.name || 'System Administrator',
+          authorRole: audience || 'all_students',
+        });
+      }
+
+      await AdminController.logAudit(
+        req,
+        'SEND_NOTIFICATION',
+        'content',
+        `Sent announcement "${title.trim()}" to audience: ${audience || 'all_students'}`,
+        created._id?.toString(),
+        { audience, workshopBatchCode }
+      );
+
+      res.status(201).json({
+        success: true,
+        message: 'Announcement broadcast and delivery status recorded.',
+        data: created,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * ============================================================================
+   * TASK 15 — CLASS SCHEDULING & CALENDAR MANAGEMENT (`/api/admin/calendar/*`)
+   * ============================================================================
+   */
+
+  private static parseTimeStringToMinutes(timeStr: string): number | null {
+    if (!timeStr || typeof timeStr !== 'string') return null;
+    const clean = timeStr.trim();
+
+    // Match 12-hour format e.g. "10:30 AM", "2:15 PM", "12:00 am"
+    const ampmMatch = clean.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+    if (ampmMatch) {
+      let hours = parseInt(ampmMatch[1]!, 10);
+      const minutes = parseInt(ampmMatch[2]!, 10);
+      const period = ampmMatch[3]!.toUpperCase();
+      if (hours < 1 || hours > 12 || minutes < 0 || minutes > 59) return null;
+      if (period === 'AM' && hours === 12) hours = 0;
+      if (period === 'PM' && hours !== 12) hours += 12;
+      return hours * 60 + minutes;
+    }
+
+    // Match 24-hour format e.g. "14:30", "09:00"
+    const h24Match = clean.match(/^(\d{1,2}):(\d{2})(?::\d{2})?$/);
+    if (h24Match) {
+      const hours = parseInt(h24Match[1]!, 10);
+      const minutes = parseInt(h24Match[2]!, 10);
+      if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59) return null;
+      return hours * 60 + minutes;
+    }
+
+    return null;
+  }
+
+  private static formatMinutesTo12Hour(totalMinutes: number): string {
+    const normalized = ((totalMinutes % 1440) + 1440) % 1440;
+    const hours24 = Math.floor(normalized / 60);
+    const minutes = normalized % 60;
+    const period = hours24 >= 12 ? 'PM' : 'AM';
+    const hours12 = hours24 % 12 === 0 ? 12 : hours24 % 12;
+    return `${hours12}:${String(minutes).padStart(2, '0')} ${period}`;
+  }
+
+  private static getTimezoneOffsetMinutes(tzRaw: string, referenceDate?: Date): number {
+    const tz = (tzRaw || 'Asia/Kolkata').trim();
+    const cleanedIana = tz.replace(/\s*\(.*?\)\s*$/, '').trim();
+
+    // Try Intl.DateTimeFormat with IANA timezone first (handles DST automatically)
+    try {
+      const ref = referenceDate && !isNaN(referenceDate.getTime()) ? referenceDate : new Date();
+      const utcDate = new Date(ref.toLocaleString('en-US', { timeZone: 'UTC' }));
+      const tzDate = new Date(ref.toLocaleString('en-US', { timeZone: cleanedIana }));
+      const diffMinutes = Math.round((tzDate.getTime() - utcDate.getTime()) / 60000);
+      if (!isNaN(diffMinutes)) {
+        return diffMinutes;
+      }
+    } catch {
+      // Fallback to known map below
+    }
+
+    const fallbackOffsets: Record<string, number> = {
+      'Asia/Kolkata': 330,
+      'Asia/Calcutta': 330,
+      IST: 330,
+      UTC: 0,
+      GMT: 0,
+      'Europe/London': 0,
+      'Europe/Berlin': 60,
+      'America/New_York': -300,
+      'America/Chicago': -360,
+      'America/Denver': -420,
+      'America/Los_Angeles': -480,
+      'Asia/Dubai': 240,
+      'Asia/Singapore': 480,
+      'Asia/Tokyo': 540,
+      'Australia/Sydney': 600,
+    };
+
+    return fallbackOffsets[cleanedIana] ?? 330;
+  }
+
+  private static parseSessionStartEnd(body: any, existingSession?: any): {
+    startAt: Date;
+    endAt: Date;
+    sessionDate: Date;
+    startTime: string;
+    endTime: string;
+    durationMinutes: number;
+    timezone: string;
+  } {
+    const timezone = (body.timezone || existingSession?.timezone || 'Asia/Kolkata').trim();
+
+    // Case 1: Explicit date + startTime (preferred when admin picks date + time in modal)
+    const dateInput = body.sessionDate || body.classDate;
+    const startTimeInput = body.startTime;
+    const endTimeInput = body.endTime;
+    const durationInput = body.durationMinutes !== undefined ? Number(body.durationMinutes) : undefined;
+
+    if (dateInput && startTimeInput) {
+      const startMins = AdminController.parseTimeStringToMinutes(String(startTimeInput));
+      if (startMins === null) {
+        throw ApiError.badRequest(`Invalid startTime format "${startTimeInput}". Use HH:mm or h:mm AM/PM.`);
+      }
+
+      let endMins: number | null = null;
+      let durationMinutes = durationInput && durationInput > 0 ? durationInput : 0;
+
+      if (endTimeInput) {
+        endMins = AdminController.parseTimeStringToMinutes(String(endTimeInput));
+        if (endMins === null) {
+          throw ApiError.badRequest(`Invalid endTime format "${endTimeInput}". Use HH:mm or h:mm AM/PM.`);
+        }
+        if (endMins <= startMins && !durationInput) {
+          throw ApiError.badRequest('End time must be after start time.');
+        }
+        if (!durationMinutes) {
+          durationMinutes = endMins - startMins;
+        }
+      } else if (durationMinutes > 0) {
+        endMins = startMins + durationMinutes;
+      } else {
+        durationMinutes = existingSession?.durationMinutes || 120;
+        endMins = startMins + durationMinutes;
+      }
+
+      if (durationMinutes < 5 || durationMinutes > 1440) {
+        throw ApiError.badRequest('Class duration must be between 5 minutes and 24 hours.');
+      }
+
+      // Extract YYYY-MM-DD from dateInput
+      const dateStr = String(dateInput).trim();
+      const ymdMatch = dateStr.match(/^(\d{4})-(\d{2})-(\d{2})/);
+      let year: number;
+      let monthIndex: number;
+      let day: number;
+
+      if (ymdMatch) {
+        year = parseInt(ymdMatch[1]!, 10);
+        monthIndex = parseInt(ymdMatch[2]!, 10) - 1;
+        day = parseInt(ymdMatch[3]!, 10);
+      } else {
+        const parsedD = new Date(dateStr);
+        if (isNaN(parsedD.getTime())) {
+          throw ApiError.badRequest(`Invalid class date "${dateInput}".`);
+        }
+        year = parsedD.getUTCFullYear();
+        monthIndex = parsedD.getUTCMonth();
+        day = parsedD.getUTCDate();
+      }
+
+      const approxUtc = new Date(Date.UTC(year, monthIndex, day, Math.floor(startMins / 60), startMins % 60, 0));
+      const tzOffsetMinutes = AdminController.getTimezoneOffsetMinutes(timezone, approxUtc);
+
+      const startUtcMs =
+        Date.UTC(year, monthIndex, day, 0, 0, 0) + (startMins - tzOffsetMinutes) * 60 * 1000;
+      const startAt = new Date(startUtcMs);
+      const endAt = new Date(startUtcMs + durationMinutes * 60 * 1000);
+
+      if (isNaN(startAt.getTime()) || isNaN(endAt.getTime()) || startAt >= endAt) {
+        throw ApiError.badRequest('Computed startAt must be strictly before endAt.');
+      }
+
+      return {
+        startAt,
+        endAt,
+        sessionDate: startAt,
+        startTime: AdminController.formatMinutesTo12Hour(startMins),
+        endTime: AdminController.formatMinutesTo12Hour(startMins + durationMinutes),
+        durationMinutes,
+        timezone,
+      };
+    }
+
+    // Case 2: ISO startAt / endAt provided directly
+    if (body.startAt) {
+      const startAt = new Date(body.startAt);
+      if (isNaN(startAt.getTime())) {
+        throw ApiError.badRequest('Invalid startAt timestamp.');
+      }
+      let durationMinutes =
+        durationInput && durationInput > 0
+          ? durationInput
+          : existingSession?.durationMinutes || 120;
+      let endAt: Date;
+      if (body.endAt) {
+        endAt = new Date(body.endAt);
+        if (isNaN(endAt.getTime())) {
+          throw ApiError.badRequest('Invalid endAt timestamp.');
+        }
+        durationMinutes = Math.round((endAt.getTime() - startAt.getTime()) / 60000);
+      } else {
+        endAt = new Date(startAt.getTime() + durationMinutes * 60000);
+      }
+
+      if (startAt >= endAt || durationMinutes < 5) {
+        throw ApiError.badRequest('End time must be at least 5 minutes after start time.');
+      }
+
+      const tzOffsetMinutes = AdminController.getTimezoneOffsetMinutes(timezone, startAt);
+      const localStart = new Date(startAt.getTime() + tzOffsetMinutes * 60000);
+      const startMins = localStart.getUTCHours() * 60 + localStart.getUTCMinutes();
+
+      return {
+        startAt,
+        endAt,
+        sessionDate: startAt,
+        startTime: AdminController.formatMinutesTo12Hour(startMins),
+        endTime: AdminController.formatMinutesTo12Hour(startMins + durationMinutes),
+        durationMinutes,
+        timezone,
+      };
+    }
+
+    // Case 3: Fallback to existing session times when only metadata is edited
+    if (existingSession) {
+      const startAt = existingSession.startAt
+        ? new Date(existingSession.startAt)
+        : new Date(existingSession.sessionDate || Date.now());
+      const durationMinutes = Number(existingSession.durationMinutes) || 120;
+      const endAt = existingSession.endAt
+        ? new Date(existingSession.endAt)
+        : new Date(startAt.getTime() + durationMinutes * 60000);
+
+      return {
+        startAt,
+        endAt,
+        sessionDate: startAt,
+        startTime: existingSession.startTime || '10:00 AM',
+        endTime: existingSession.endTime || '12:00 PM',
+        durationMinutes,
+        timezone,
+      };
+    }
+
+    throw ApiError.badRequest('Class date and start time (or startAt/endAt) are required.');
+  }
+
+  private static normalizeSessionRecord(raw: any, workshopsMap?: Map<string, any>): any {
+    const obj = typeof raw?.toObject === 'function' ? raw.toObject() : { ...raw };
+    const id = obj._id?.toString() || obj.id;
+    const startAt = obj.startAt
+      ? new Date(obj.startAt)
+      : obj.sessionDate
+      ? new Date(obj.sessionDate)
+      : new Date();
+    const durationMinutes =
+      Number(obj.durationMinutes) ||
+      (obj.endAt && obj.startAt
+        ? Math.max(15, Math.round((new Date(obj.endAt).getTime() - new Date(obj.startAt).getTime()) / 60000))
+        : 120);
+    const endAt = obj.endAt
+      ? new Date(obj.endAt)
+      : new Date(startAt.getTime() + durationMinutes * 60000);
+
+    const batchCode = (obj.batchCode || obj.batchId || 'AILP-2026-NOV-14').toUpperCase();
+    const ws =
+      workshopsMap?.get(obj.workshopId?.toString()) ||
+      workshopsMap?.get(batchCode);
+
+    return {
+      ...obj,
+      _id: id,
+      workshopId: obj.workshopId?.toString() || ws?._id?.toString() || batchCode,
+      workshopTitle:
+        obj.workshopTitle ||
+        ws?.title ||
+        'AI Launchpad — 2-Day Hands-On AI Bootcamp',
+      batchId: obj.batchId || batchCode,
+      batchCode,
+      dayNumber: Number(obj.dayNumber) || 1,
+      title: obj.title || 'Live Training Class',
+      description:
+        obj.description ||
+        `Live interactive session for batch ${batchCode} led by ${obj.instructorName || 'Instructor'}.`,
+      sessionDate: startAt,
+      startAt,
+      endAt,
+      startTime: obj.startTime || '10:00 AM',
+      endTime: obj.endTime || '12:00 PM',
+      durationMinutes,
+      timezone: obj.timezone || 'Asia/Kolkata',
+      instructorId: obj.instructorId || 'inst_1',
+      instructorName: obj.instructorName || ws?.instructor?.name || 'Vikram Malhotra',
+      classType: obj.classType || 'live',
+      meetingProvider: obj.meetingProvider || 'google_meet',
+      liveSessionUrl: obj.liveSessionUrl || '',
+      encryptedMeetingUrl:
+        obj.encryptedMeetingUrl ||
+        (obj.liveSessionUrl ? `enc:${Buffer.from(String(obj.liveSessionUrl)).toString('base64')}` : ''),
+      meetingPasscode: obj.meetingPasscode || '',
+      visibility: obj.visibility || 'enrolled_only',
+      capacity: Number(obj.capacity || obj.maxAttendees) || 60,
+      maxAttendees: Number(obj.maxAttendees || obj.capacity) || 60,
+      sessionResources: Array.isArray(obj.sessionResources) ? obj.sessionResources : [],
+      reminderMinutesBefore: Number(obj.reminderMinutesBefore) || 30,
+      recurrenceSeriesId: obj.recurrenceSeriesId || null,
+      recurrenceRule: obj.recurrenceRule || { frequency: 'none', interval: 1, daysOfWeek: [] },
+      status: obj.status || 'scheduled',
+      cancellationReason: obj.cancellationReason || null,
+      changeHistory: Array.isArray(obj.changeHistory) ? obj.changeHistory : [],
+      createdAt: obj.createdAt || startAt,
+      updatedAt: obj.updatedAt || startAt,
+    };
+  }
+
+  private static async getAllCalendarSessionsUnified(): Promise<any[]> {
+    const workshopsMap = new Map<string, any>();
+    let workshops: any[] = [];
+    if (isDBConnected()) {
+      try {
+        workshops = await Workshop.find();
+      } catch {
+        // ignore
+      }
+    }
+    const memWorkshops = await memoryStore.getAllWorkshops();
+    for (const w of [...workshops, ...memWorkshops]) {
+      if (w._id) workshopsMap.set(w._id.toString(), w);
+      if (w.batchCode) workshopsMap.set(String(w.batchCode).toUpperCase(), w);
+    }
+
+    const sessionMap = new Map<string, any>();
+    if (isDBConnected()) {
+      try {
+        const dbSessions = await WorkshopSession.find().sort({ startAt: 1, sessionDate: 1 });
+        for (const s of dbSessions) {
+          const norm = AdminController.normalizeSessionRecord(s, workshopsMap);
+          sessionMap.set(norm._id, norm);
+        }
+      } catch (err: any) {
+        console.warn('[Calendar Unified Sessions DB Warning]', err.message);
+      }
+    }
+
+    const memSessions = await memoryStore.getAllSessions();
+    for (const ms of memSessions) {
+      const norm = AdminController.normalizeSessionRecord(ms, workshopsMap);
+      if (!sessionMap.has(norm._id)) {
+        sessionMap.set(norm._id, norm);
+      }
+    }
+
+    return Array.from(sessionMap.values()).sort(
+      (a, b) => new Date(a.startAt).getTime() - new Date(b.startAt).getTime()
+    );
+  }
+
+  /**
+   * Overlap Formula: existingStart < newEnd AND existingEnd > newStart
+   */
+  private static async checkSessionConflicts(
+    candidate: {
+      startAt: Date;
+      endAt: Date;
+      instructorName?: string;
+      instructorId?: string;
+      batchCode?: string;
+      batchId?: string;
+      liveSessionUrl?: string;
+      classType?: string;
+    },
+    excludeIds: string[] = []
+  ): Promise<{
+    hasConflict: boolean;
+    conflicts: Array<{
+      type: 'instructor' | 'batch' | 'meeting_resource';
+      sessionId: string;
+      title: string;
+      batchCode: string;
+      instructorName: string;
+      startAt: Date;
+      endAt: Date;
+      startTime: string;
+      endTime: string;
+      message: string;
+    }>;
+  }> {
+    const excludeSet = new Set(excludeIds.filter(Boolean).map((id) => String(id)));
+    const allSessions = await AdminController.getAllCalendarSessionsUnified();
+    const conflicts: Array<{
+      type: 'instructor' | 'batch' | 'meeting_resource';
+      sessionId: string;
+      title: string;
+      batchCode: string;
+      instructorName: string;
+      startAt: Date;
+      endAt: Date;
+      startTime: string;
+      endTime: string;
+      message: string;
+    }> = [];
+
+    const newStart = new Date(candidate.startAt).getTime();
+    const newEnd = new Date(candidate.endAt).getTime();
+    const candInstructor = (candidate.instructorName || '').trim().toLowerCase();
+    const candInstructorId = (candidate.instructorId || '').trim();
+    const candBatch = (candidate.batchCode || candidate.batchId || '').trim().toUpperCase();
+    const candUrl = (candidate.liveSessionUrl || '').trim().toLowerCase();
+
+    for (const existing of allSessions) {
+      const exId = String(existing._id);
+      if (excludeSet.has(exId)) continue;
+      if (existing.status === 'cancelled') continue;
+
+      const existingStart = new Date(existing.startAt).getTime();
+      const existingEnd = new Date(existing.endAt).getTime();
+
+      // Strict overlap condition: existingStart < newEnd AND existingEnd > newStart
+      if (existingStart < newEnd && existingEnd > newStart) {
+        const exInstructor = (existing.instructorName || '').trim().toLowerCase();
+        const exInstructorId = (existing.instructorId || '').trim();
+        const exBatch = (existing.batchCode || existing.batchId || '').trim().toUpperCase();
+        const exUrl = (existing.liveSessionUrl || '').trim().toLowerCase();
+        const dateLabel = new Date(existing.startAt).toISOString().slice(0, 10);
+
+        // 1. Instructor conflict
+        if (
+          (candInstructor && exInstructor && candInstructor === exInstructor) ||
+          (candInstructorId && exInstructorId && candInstructorId === exInstructorId && candInstructorId !== 'inst_1')
+        ) {
+          conflicts.push({
+            type: 'instructor',
+            sessionId: exId,
+            title: existing.title,
+            batchCode: exBatch,
+            instructorName: existing.instructorName,
+            startAt: existing.startAt,
+            endAt: existing.endAt,
+            startTime: existing.startTime,
+            endTime: existing.endTime,
+            message: `Instructor conflict: ${existing.instructorName} is already scheduled for "${existing.title}" (${exBatch}) on ${dateLabel} from ${existing.startTime} to ${existing.endTime}.`,
+          });
+        }
+
+        // 2. Batch conflict
+        if (candBatch && exBatch && candBatch === exBatch) {
+          conflicts.push({
+            type: 'batch',
+            sessionId: exId,
+            title: existing.title,
+            batchCode: exBatch,
+            instructorName: existing.instructorName,
+            startAt: existing.startAt,
+            endAt: existing.endAt,
+            startTime: existing.startTime,
+            endTime: existing.endTime,
+            message: `Batch conflict: Batch ${exBatch} already has "${existing.title}" scheduled on ${dateLabel} from ${existing.startTime} to ${existing.endTime}.`,
+          });
+        }
+
+        // 3. Meeting link / room resource conflict (when a specific meeting room is shared across different batches)
+        if (
+          candUrl &&
+          exUrl &&
+          candUrl === exUrl &&
+          candBatch !== exBatch &&
+          candidate.classType !== 'recorded'
+        ) {
+          conflicts.push({
+            type: 'meeting_resource',
+            sessionId: exId,
+            title: existing.title,
+            batchCode: exBatch,
+            instructorName: existing.instructorName,
+            startAt: existing.startAt,
+            endAt: existing.endAt,
+            startTime: existing.startTime,
+            endTime: existing.endTime,
+            message: `Meeting room conflict: The meeting link (${candidate.liveSessionUrl}) is already reserved by "${existing.title}" (${exBatch}) from ${existing.startTime} to ${existing.endTime}.`,
+          });
+        }
+      }
+    }
+
+    return {
+      hasConflict: conflicts.length > 0,
+      conflicts,
+    };
+  }
+
+  private static recentNotificationKeys = new Map<string, number>();
+
+  private static async dispatchCalendarNotification(params: {
+    title: string;
+    message: string;
+    batchCode: string;
+    eventKey: string;
+    authorName?: string;
+  }): Promise<void> {
+    try {
+      const now = Date.now();
+      const prev = AdminController.recentNotificationKeys.get(params.eventKey);
+      if (prev && now - prev < 60_000) {
+        return; // Deduplicate rapid repeated updates / retries
+      }
+      AdminController.recentNotificationKeys.set(params.eventKey, now);
+
+      const payload = {
+        title: params.title,
+        category: 'announcement' as const,
+        description: params.message,
+        workshopBatchCode: (params.batchCode || 'ALL').toUpperCase(),
+        accessLevel: 'enrolled_only' as const,
+        isPublished: true,
+        releaseAt: new Date(),
+        authorName: params.authorName || 'Class Calendar Automated Notifier',
+        authorRole: 'enrolled_students',
+      };
+
+      if (isDBConnected()) {
+        try {
+          await LearningResource.create(payload);
+          return;
+        } catch {
+          // fallback to memoryStore
+        }
+      }
+      await memoryStore.createResource(payload);
+    } catch (err: any) {
+      console.warn('[Calendar Notification Dispatch Warning]', err.message);
+    }
+  }
+
+  /**
+   * GET /api/admin/calendar/sessions
+   */
+  static async getCalendarSessions(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const fromStr = req.query.from as string | undefined;
+      const toStr = req.query.to as string | undefined;
+      const workshopFilter = ((req.query.workshopId as string) || 'all').trim();
+      const batchFilter = ((req.query.batchCode as string) || (req.query.batch as string) || 'all')
+        .trim()
+        .toUpperCase();
+      const instructorFilter = ((req.query.instructor as string) || 'all').trim().toLowerCase();
+      const statusFilter = ((req.query.status as string) || 'all').trim().toLowerCase();
+      const classTypeFilter = ((req.query.classType as string) || 'all').trim().toLowerCase();
+      const search = ((req.query.search as string) || '').trim().toLowerCase();
+
+      const allSessions = await AdminController.getAllCalendarSessionsUnified();
+
+      const fromDate = fromStr ? new Date(fromStr) : null;
+      const toDate = toStr ? new Date(toStr) : null;
+
+      const filtered = allSessions.filter((s) => {
+        const startMs = new Date(s.startAt).getTime();
+        const endMs = new Date(s.endAt).getTime();
+
+        if (fromDate && !isNaN(fromDate.getTime()) && endMs < fromDate.getTime()) {
+          return false;
+        }
+        if (toDate && !isNaN(toDate.getTime()) && startMs > toDate.getTime()) {
+          return false;
+        }
+        if (
+          workshopFilter !== 'all' &&
+          s.workshopId !== workshopFilter &&
+          s.batchCode.toUpperCase() !== workshopFilter.toUpperCase()
+        ) {
+          return false;
+        }
+        if (batchFilter !== 'ALL' && s.batchCode.toUpperCase() !== batchFilter) {
+          return false;
+        }
+        if (
+          instructorFilter !== 'all' &&
+          !s.instructorName.toLowerCase().includes(instructorFilter) &&
+          s.instructorId?.toLowerCase() !== instructorFilter
+        ) {
+          return false;
+        }
+        if (statusFilter !== 'all' && s.status.toLowerCase() !== statusFilter) {
+          return false;
+        }
+        if (classTypeFilter !== 'all' && (s.classType || 'live').toLowerCase() !== classTypeFilter) {
+          return false;
+        }
+        if (search) {
+          const hay = `${s.title} ${s.description || ''} ${s.batchCode} ${s.instructorName} ${s.workshopTitle || ''}`.toLowerCase();
+          if (!hay.includes(search)) return false;
+        }
+        return true;
+      });
+
+      const summary = {
+        total: filtered.length,
+        scheduled: filtered.filter((s) => s.status === 'scheduled').length,
+        live: filtered.filter((s) => s.status === 'live').length,
+        completed: filtered.filter((s) => s.status === 'completed').length,
+        cancelled: filtered.filter((s) => s.status === 'cancelled').length,
+        draft: filtered.filter((s) => s.status === 'draft').length,
+      };
+
+      res.status(200).json({
+        success: true,
+        count: filtered.length,
+        summary,
+        data: filtered,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * GET /api/admin/calendar/sessions/:id
+   */
+  static async getCalendarSessionById(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const id = req.params['id'] as string;
+      const allSessions = await AdminController.getAllCalendarSessionsUnified();
+      const found = allSessions.find((s) => String(s._id) === id);
+
+      if (!found) {
+        throw ApiError.notFound('Calendar session not found.');
+      }
+
+      res.status(200).json({
+        success: true,
+        data: found,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * POST /api/admin/calendar/sessions
+   */
+  static async createCalendarSession(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const {
+        title,
+        description,
+        workshopId,
+        batchCode,
+        batchId,
+        instructorId,
+        instructorName,
+        dayNumber,
+        classType,
+        meetingProvider,
+        liveSessionUrl,
+        meetingPasscode,
+        visibility,
+        status,
+        capacity,
+        maxAttendees,
+        sessionResources,
+        reminderMinutesBefore,
+        allowPastCorrection,
+      } = req.body;
+
+      const resolvedBatchCode = (batchCode || batchId || '').trim().toUpperCase();
+      if (!title || !title.trim()) {
+        throw ApiError.badRequest('Class Title is required.');
+      }
+      if (!resolvedBatchCode) {
+        throw ApiError.badRequest('Batch / Workshop selection is required.');
+      }
+      if (!instructorName || !instructorName.trim()) {
+        throw ApiError.badRequest('Instructor is required.');
+      }
+      if (!liveSessionUrl || !liveSessionUrl.trim()) {
+        throw ApiError.badRequest('Meeting URL is required.');
+      }
+
+      const parsedTime = AdminController.parseSessionStartEnd(req.body);
+
+      // Past-date protection: scheduling a new class in the past requires explicit authorized correction
+      const nowMs = Date.now();
+      if (parsedTime.startAt.getTime() < nowMs - 5 * 60 * 1000 && !allowPastCorrection) {
+        throw ApiError.badRequest(
+          'Cannot schedule a new class in the past without enabling the Authorized Past-Date Correction option.'
+        );
+      }
+
+      const resolvedStatus = ['draft', 'scheduled', 'live', 'completed', 'cancelled'].includes(status)
+        ? status
+        : 'scheduled';
+
+      // Conflict Detection (Instructor, Batch, Meeting Resource)
+      if (resolvedStatus !== 'cancelled') {
+        const conflictCheck = await AdminController.checkSessionConflicts({
+          startAt: parsedTime.startAt,
+          endAt: parsedTime.endAt,
+          instructorName: instructorName.trim(),
+          instructorId,
+          batchCode: resolvedBatchCode,
+          batchId: batchId || resolvedBatchCode,
+          liveSessionUrl: liveSessionUrl.trim(),
+          classType: classType || 'live',
+        });
+
+        if (conflictCheck.hasConflict) {
+          throw ApiError.conflict(conflictCheck.conflicts[0]!.message);
+        }
+      }
+
+      const adminActor = req.user?.email || req.user?.name || 'admin@ailaunchpad.edu';
+      const initialHistory = [
+        {
+          updatedAt: new Date(),
+          updatedBy: adminActor,
+          action: 'created',
+          summary: `Created ${classType || 'live'} session "${title.trim()}" for ${resolvedBatchCode} (${parsedTime.startTime} - ${parsedTime.endTime} ${parsedTime.timezone}).`,
+        },
+      ];
+
+      const sessionPayload: any = {
+        workshopId:
+          workshopId && mongoose.Types.ObjectId.isValid(workshopId)
+            ? new mongoose.Types.ObjectId(workshopId)
+            : workshopId || resolvedBatchCode,
+        batchId: batchId || resolvedBatchCode,
+        batchCode: resolvedBatchCode,
+        instructorId: instructorId || 'inst_1',
+        instructorName: instructorName.trim(),
+        dayNumber: Number(dayNumber) || 1,
+        title: title.trim(),
+        description:
+          (description || '').trim() ||
+          `Live training session for ${resolvedBatchCode} with ${instructorName.trim()}.`,
+        sessionDate: parsedTime.sessionDate,
+        startAt: parsedTime.startAt,
+        endAt: parsedTime.endAt,
+        startTime: parsedTime.startTime,
+        endTime: parsedTime.endTime,
+        durationMinutes: parsedTime.durationMinutes,
+        timezone: parsedTime.timezone,
+        classType: ['live', 'recorded', 'hybrid'].includes(classType) ? classType : 'live',
+        meetingProvider: ['google_meet', 'zoom', 'teams', 'custom'].includes(meetingProvider)
+          ? meetingProvider
+          : 'google_meet',
+        liveSessionUrl: liveSessionUrl.trim(),
+        encryptedMeetingUrl: `enc:${Buffer.from(liveSessionUrl.trim()).toString('base64')}`,
+        meetingPasscode: (meetingPasscode || '').trim(),
+        visibility: visibility === 'public_preview' ? 'public_preview' : 'enrolled_only',
+        capacity: Number(maxAttendees || capacity) || 60,
+        maxAttendees: Number(maxAttendees || capacity) || 60,
+        sessionResources: Array.isArray(sessionResources)
+          ? sessionResources
+          : typeof sessionResources === 'string' && sessionResources.trim()
+          ? sessionResources.split(',').map((s: string) => s.trim()).filter(Boolean)
+          : [],
+        reminderMinutesBefore: Number(reminderMinutesBefore) || 30,
+        status: resolvedStatus,
+        createdBy: adminActor,
+        updatedBy: adminActor,
+        changeHistory: initialHistory,
+      };
+
+      let created: any = null;
+      if (isDBConnected() && mongoose.Types.ObjectId.isValid(String(sessionPayload.workshopId))) {
+        try {
+          created = await WorkshopSession.create(sessionPayload);
+        } catch (err: any) {
+          console.warn('[Admin createCalendarSession DB Fallback]', err.message);
+        }
+      }
+
+      const memCreated = await memoryStore.upsertSession({
+        ...sessionPayload,
+        _id: created?._id?.toString(),
+      });
+
+      const finalRecord = AdminController.normalizeSessionRecord(created || memCreated);
+
+      await AdminController.logAudit(
+        req,
+        'CREATE_CALENDAR_SESSION',
+        'session',
+        `Scheduled class "${finalRecord.title}" for ${resolvedBatchCode} on ${finalRecord.startAt.toISOString()}`,
+        finalRecord._id,
+        {
+          batchCode: resolvedBatchCode,
+          instructorName: finalRecord.instructorName,
+          startAt: finalRecord.startAt,
+          endAt: finalRecord.endAt,
+          status: finalRecord.status,
+        }
+      );
+
+      if (finalRecord.status === 'scheduled') {
+        await AdminController.dispatchCalendarNotification({
+          title: `New Class Scheduled: ${finalRecord.title}`,
+          message: `${finalRecord.title} (${resolvedBatchCode}) has been scheduled with ${finalRecord.instructorName} on ${new Date(finalRecord.startAt).toDateString()} from ${finalRecord.startTime} to ${finalRecord.endTime} (${finalRecord.timezone}).`,
+          batchCode: resolvedBatchCode,
+          eventKey: `create_${finalRecord._id}`,
+          authorName: req.user?.name || 'Admin Calendar',
+        });
+      }
+
+      res.status(201).json({
+        success: true,
+        message: 'Class scheduled and saved to calendar.',
+        data: finalRecord,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * PATCH /api/admin/calendar/sessions/:id
+   * Supports editing metadata, rescheduling date/time, changing instructor or meeting link,
+   * and applying edits to a single occurrence or future occurrences in a recurring series.
+   */
+  static async updateCalendarSession(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const id = req.params['id'] as string;
+      const scope = (req.body.scope as 'single' | 'future' | 'series') || 'single';
+      const allSessions = await AdminController.getAllCalendarSessionsUnified();
+      const existing = allSessions.find((s) => String(s._id) === id);
+
+      if (!existing) {
+        throw ApiError.notFound('Calendar session not found.');
+      }
+
+      const parsedTime = AdminController.parseSessionStartEnd(req.body, existing);
+      const updatedBatchCode = (req.body.batchCode || req.body.batchId || existing.batchCode)
+        .trim()
+        .toUpperCase();
+      const updatedInstructor = (req.body.instructorName || existing.instructorName).trim();
+      const updatedUrl = (req.body.liveSessionUrl ?? existing.liveSessionUrl).trim();
+      const updatedStatus = req.body.status || existing.status;
+      const updatedClassType = req.body.classType || existing.classType || 'live';
+
+      // Determine target sessions (single vs future series occurrences)
+      let targetSessions = [existing];
+      if (
+        (scope === 'future' || scope === 'series') &&
+        existing.recurrenceSeriesId
+      ) {
+        targetSessions = allSessions.filter(
+          (s) =>
+            s.recurrenceSeriesId === existing.recurrenceSeriesId &&
+            s.status !== 'cancelled' &&
+            (scope === 'series' ||
+              new Date(s.startAt).getTime() >= new Date(existing.startAt).getTime())
+        );
+      }
+
+      const excludeIds = targetSessions.map((t) => String(t._id));
+      const timeShiftMs = parsedTime.startAt.getTime() - new Date(existing.startAt).getTime();
+
+      // Re-run conflict detection for every affected occurrence
+      if (updatedStatus !== 'cancelled') {
+        for (const target of targetSessions) {
+          const occStart =
+            target._id === existing._id
+              ? parsedTime.startAt
+              : new Date(new Date(target.startAt).getTime() + timeShiftMs);
+          const occEnd = new Date(occStart.getTime() + parsedTime.durationMinutes * 60000);
+
+          const conflictCheck = await AdminController.checkSessionConflicts(
+            {
+              startAt: occStart,
+              endAt: occEnd,
+              instructorName: updatedInstructor,
+              instructorId: req.body.instructorId || target.instructorId,
+              batchCode: updatedBatchCode,
+              batchId: updatedBatchCode,
+              liveSessionUrl: updatedUrl,
+              classType: updatedClassType,
+            },
+            excludeIds
+          );
+
+          if (conflictCheck.hasConflict) {
+            throw ApiError.conflict(conflictCheck.conflicts[0]!.message);
+          }
+        }
+      }
+
+      const adminActor = req.user?.email || req.user?.name || 'admin@ailaunchpad.edu';
+      const wasRescheduled =
+        Math.abs(parsedTime.startAt.getTime() - new Date(existing.startAt).getTime()) >= 60000 ||
+        Math.abs(parsedTime.endAt.getTime() - new Date(existing.endAt).getTime()) >= 60000;
+      const wasMeetingUpdated = updatedUrl !== existing.liveSessionUrl;
+
+      const updatedRecords: any[] = [];
+
+      for (const target of targetSessions) {
+        const occStart =
+          target._id === existing._id
+            ? parsedTime.startAt
+            : new Date(new Date(target.startAt).getTime() + timeShiftMs);
+        const occEnd = new Date(occStart.getTime() + parsedTime.durationMinutes * 60000);
+
+        const historyEntry = {
+          updatedAt: new Date(),
+          updatedBy: adminActor,
+          action: wasRescheduled ? 'rescheduled' : 'updated',
+          summary: wasRescheduled
+            ? `Rescheduled from ${target.startTime} (${new Date(target.startAt).toISOString().slice(0, 10)}) to ${parsedTime.startTime} (${occStart.toISOString().slice(0, 10)}).`
+            : `Updated session details (${req.body.title || target.title}).`,
+          previousStartAt: new Date(target.startAt),
+          previousEndAt: new Date(target.endAt),
+        };
+
+        const updatePayload: any = {
+          title: req.body.title !== undefined ? String(req.body.title).trim() : target.title,
+          description:
+            req.body.description !== undefined ? String(req.body.description).trim() : target.description,
+          batchCode: updatedBatchCode,
+          batchId: updatedBatchCode,
+          instructorName: updatedInstructor,
+          instructorId: req.body.instructorId || target.instructorId,
+          sessionDate: occStart,
+          startAt: occStart,
+          endAt: occEnd,
+          startTime: parsedTime.startTime,
+          endTime: parsedTime.endTime,
+          durationMinutes: parsedTime.durationMinutes,
+          timezone: parsedTime.timezone,
+          classType: updatedClassType,
+          meetingProvider: req.body.meetingProvider || target.meetingProvider || 'google_meet',
+          liveSessionUrl: updatedUrl,
+          encryptedMeetingUrl: `enc:${Buffer.from(updatedUrl).toString('base64')}`,
+          meetingPasscode:
+            req.body.meetingPasscode !== undefined ? req.body.meetingPasscode : target.meetingPasscode,
+          visibility: req.body.visibility || target.visibility || 'enrolled_only',
+          capacity: Number(req.body.maxAttendees || req.body.capacity || target.capacity) || 60,
+          maxAttendees: Number(req.body.maxAttendees || req.body.capacity || target.maxAttendees) || 60,
+          status: updatedStatus,
+          updatedBy: adminActor,
+          changeHistory: [...(target.changeHistory || []), historyEntry],
+        };
+
+        if (isDBConnected() && mongoose.Types.ObjectId.isValid(String(target._id))) {
+          try {
+            await WorkshopSession.findByIdAndUpdate(target._id, updatePayload, { new: true });
+          } catch (err: any) {
+            console.warn('[Admin updateCalendarSession DB Fallback]', err.message);
+          }
+        }
+
+        const savedMem = await memoryStore.upsertSession({
+          ...target,
+          ...updatePayload,
+          _id: String(target._id),
+        });
+        updatedRecords.push(AdminController.normalizeSessionRecord(savedMem));
+      }
+
+      const primaryUpdated = updatedRecords[0]!;
+
+      await AdminController.logAudit(
+        req,
+        wasRescheduled ? 'RESCHEDULE_CALENDAR_SESSION' : 'UPDATE_CALENDAR_SESSION',
+        'session',
+        `${wasRescheduled ? 'Rescheduled' : 'Updated'} class "${primaryUpdated.title}" (${updatedBatchCode}) [scope=${scope}, count=${updatedRecords.length}]`,
+        id,
+        {
+          scope,
+          wasRescheduled,
+          wasMeetingUpdated,
+          startAt: primaryUpdated.startAt,
+          endAt: primaryUpdated.endAt,
+        }
+      );
+
+      if (wasRescheduled || wasMeetingUpdated) {
+        await AdminController.dispatchCalendarNotification({
+          title: wasRescheduled
+            ? `Class Rescheduled: ${primaryUpdated.title}`
+            : `Meeting Link Updated: ${primaryUpdated.title}`,
+          message: wasRescheduled
+            ? `${primaryUpdated.title} (${updatedBatchCode}) has been rescheduled to ${new Date(primaryUpdated.startAt).toDateString()} at ${primaryUpdated.startTime} - ${primaryUpdated.endTime} (${primaryUpdated.timezone}).`
+            : `Meeting details for ${primaryUpdated.title} (${updatedBatchCode}) have been updated. Please check your Live Classes dashboard.`,
+          batchCode: updatedBatchCode,
+          eventKey: `update_${id}_${primaryUpdated.startAt.getTime()}`,
+          authorName: req.user?.name || 'Admin Calendar',
+        });
+      }
+
+      res.status(200).json({
+        success: true,
+        message:
+          updatedRecords.length > 1
+            ? `Updated ${updatedRecords.length} sessions in recurring series.`
+            : wasRescheduled
+            ? 'Class rescheduled successfully.'
+            : 'Class updated successfully.',
+        data: primaryUpdated,
+        updatedCount: updatedRecords.length,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * POST /api/admin/calendar/sessions/:id/cancel
+   * Retains the session record and marks status as 'cancelled' instead of deleting history.
+   */
+  static async cancelCalendarSession(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const id = req.params['id'] as string;
+      const reason = ((req.body.reason || req.body.cancellationReason || 'Cancelled by administrator') as string).trim();
+      const scope = (req.body.scope as 'single' | 'series' | 'future') || 'single';
+
+      const allSessions = await AdminController.getAllCalendarSessionsUnified();
+      const existing = allSessions.find((s) => String(s._id) === id);
+
+      if (!existing) {
+        throw ApiError.notFound('Calendar session not found.');
+      }
+
+      let targetSessions = [existing];
+      if ((scope === 'series' || scope === 'future') && existing.recurrenceSeriesId) {
+        targetSessions = allSessions.filter(
+          (s) =>
+            s.recurrenceSeriesId === existing.recurrenceSeriesId &&
+            s.status !== 'cancelled' &&
+            (scope === 'series' ||
+              new Date(s.startAt).getTime() >= new Date(existing.startAt).getTime())
+        );
+      }
+
+      const adminActor = req.user?.email || req.user?.name || 'admin@ailaunchpad.edu';
+      const cancelledRecords: any[] = [];
+
+      for (const target of targetSessions) {
+        const historyEntry = {
+          updatedAt: new Date(),
+          updatedBy: adminActor,
+          action: 'cancelled',
+          summary: `Cancelled session. Reason: ${reason}`,
+          previousStartAt: new Date(target.startAt),
+          previousEndAt: new Date(target.endAt),
+        };
+
+        const cancelUpdate = {
+          status: 'cancelled' as const,
+          cancellationReason: reason,
+          updatedBy: adminActor,
+          changeHistory: [...(target.changeHistory || []), historyEntry],
+        };
+
+        if (isDBConnected() && mongoose.Types.ObjectId.isValid(String(target._id))) {
+          try {
+            await WorkshopSession.findByIdAndUpdate(target._id, cancelUpdate, { new: true });
+          } catch (err: any) {
+            console.warn('[Admin cancelCalendarSession DB Fallback]', err.message);
+          }
+        }
+
+        const savedMem = await memoryStore.upsertSession({
+          ...target,
+          ...cancelUpdate,
+          _id: String(target._id),
+        });
+        cancelledRecords.push(AdminController.normalizeSessionRecord(savedMem));
+      }
+
+      const primaryCancelled = cancelledRecords[0]!;
+
+      await AdminController.logAudit(
+        req,
+        'CANCEL_CALENDAR_SESSION',
+        'session',
+        `Cancelled class "${primaryCancelled.title}" (${primaryCancelled.batchCode}). Reason: ${reason} [scope=${scope}, count=${cancelledRecords.length}]`,
+        id,
+        { reason, scope, cancelledCount: cancelledRecords.length }
+      );
+
+      await AdminController.dispatchCalendarNotification({
+        title: `Class Cancelled: ${primaryCancelled.title}`,
+        message: `${primaryCancelled.title} (${primaryCancelled.batchCode}) scheduled on ${new Date(primaryCancelled.startAt).toDateString()} (${primaryCancelled.startTime}) has been cancelled. Reason: ${reason}`,
+        batchCode: primaryCancelled.batchCode,
+        eventKey: `cancel_${id}`,
+        authorName: req.user?.name || 'Admin Calendar',
+      });
+
+      res.status(200).json({
+        success: true,
+        message:
+          cancelledRecords.length > 1
+            ? `Cancelled ${cancelledRecords.length} sessions in recurring series.`
+            : 'Class cancelled and retained in calendar history.',
+        data: primaryCancelled,
+        cancelledCount: cancelledRecords.length,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * POST /api/admin/calendar/recurring
+   * Generates daily, weekly, or selected-weekday recurring classes with live preview & conflict detection.
+   */
+  static async createRecurringSessions(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const {
+        title,
+        description,
+        workshopId,
+        batchCode,
+        batchId,
+        instructorId,
+        instructorName,
+        classType,
+        meetingProvider,
+        liveSessionUrl,
+        meetingPasscode,
+        visibility,
+        status,
+        maxAttendees,
+        capacity,
+        recurrenceRule,
+        previewOnly,
+      } = req.body;
+
+      const resolvedBatchCode = (batchCode || batchId || '').trim().toUpperCase();
+      if (!title || !resolvedBatchCode || !instructorName || !liveSessionUrl) {
+        throw ApiError.badRequest(
+          'title, batchCode, instructorName, and liveSessionUrl are required for recurring classes.'
+        );
+      }
+
+      const rule = recurrenceRule || {};
+      const frequency: 'daily' | 'weekly' | 'weekdays' | 'custom' =
+        ['daily', 'weekly', 'weekdays', 'custom'].includes(rule.frequency)
+          ? rule.frequency
+          : 'weekly';
+      const interval = Math.max(1, Number(rule.interval) || 1);
+      const daysOfWeek: number[] = Array.isArray(rule.daysOfWeek)
+        ? rule.daysOfWeek.map((d: any) => Number(d)).filter((d: number) => d >= 0 && d <= 6)
+        : [1, 3, 5]; // Default Mon/Wed/Fri if weekdays chosen
+
+      const firstTime = AdminController.parseSessionStartEnd(req.body);
+      const untilDate = rule.untilDate
+        ? new Date(`${String(rule.untilDate).slice(0, 10)}T23:59:59.999Z`)
+        : new Date(firstTime.startAt.getTime() + 28 * 86400000);
+
+      if (isNaN(untilDate.getTime()) || untilDate < firstTime.startAt) {
+        throw ApiError.badRequest('Recurrence end date (untilDate) must be on or after the first class date.');
+      }
+
+      // Generate candidate occurrence dates (max 60 occurrences)
+      const occurrenceStarts: Date[] = [];
+      const maxOccurrences = Math.min(60, Number(rule.occurrencesCount) || 60);
+      let cursorMs = firstTime.startAt.getTime();
+      const firstDayOfWeek = firstTime.startAt.getUTCDay();
+
+      let safetyCounter = 0;
+      while (
+        cursorMs <= untilDate.getTime() &&
+        occurrenceStarts.length < maxOccurrences &&
+        safetyCounter < 366
+      ) {
+        safetyCounter++;
+        const candidateDate = new Date(cursorMs);
+        const dow = candidateDate.getUTCDay();
+
+        let include = false;
+        if (frequency === 'daily') {
+          const daysDiff = Math.round((cursorMs - firstTime.startAt.getTime()) / 86400000);
+          include = daysDiff % interval === 0;
+        } else if (frequency === 'weekly') {
+          const daysDiff = Math.round((cursorMs - firstTime.startAt.getTime()) / 86400000);
+          const weeksDiff = Math.floor(daysDiff / 7);
+          if (daysOfWeek.length > 0) {
+            include = weeksDiff % interval === 0 && daysOfWeek.includes(dow);
+          } else {
+            include = weeksDiff % interval === 0 && dow === firstDayOfWeek;
+          }
+        } else if (frequency === 'weekdays' || frequency === 'custom') {
+          const activeDays = daysOfWeek.length > 0 ? daysOfWeek : [1, 2, 3, 4, 5];
+          include = activeDays.includes(dow);
+        }
+
+        if (include) {
+          occurrenceStarts.push(candidateDate);
+        }
+
+        cursorMs += 86400000;
+      }
+
+      if (occurrenceStarts.length === 0) {
+        throw ApiError.badRequest(
+          'No recurring class occurrences matched the selected weekdays and recurrence end date.'
+        );
+      }
+
+      const seriesId = `series_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+      const previewItems: any[] = [];
+      const allConflicts: any[] = [];
+
+      for (let i = 0; i < occurrenceStarts.length; i++) {
+        const occStart = occurrenceStarts[i]!;
+        const occEnd = new Date(occStart.getTime() + firstTime.durationMinutes * 60000);
+
+        const conflictCheck = await AdminController.checkSessionConflicts({
+          startAt: occStart,
+          endAt: occEnd,
+          instructorName: instructorName.trim(),
+          instructorId,
+          batchCode: resolvedBatchCode,
+          batchId: resolvedBatchCode,
+          liveSessionUrl: liveSessionUrl.trim(),
+          classType: classType || 'live',
+        });
+
+        if (conflictCheck.hasConflict) {
+          allConflicts.push(...conflictCheck.conflicts);
+        }
+
+        previewItems.push({
+          occurrenceNumber: i + 1,
+          title: `${title.trim()} (Session ${i + 1})`,
+          batchCode: resolvedBatchCode,
+          instructorName: instructorName.trim(),
+          startAt: occStart,
+          endAt: occEnd,
+          startTime: firstTime.startTime,
+          endTime: firstTime.endTime,
+          durationMinutes: firstTime.durationMinutes,
+          timezone: firstTime.timezone,
+          hasConflict: conflictCheck.hasConflict,
+          conflicts: conflictCheck.conflicts,
+        });
+      }
+
+      if (previewOnly) {
+        res.status(200).json({
+          success: true,
+          preview: true,
+          count: previewItems.length,
+          conflictCount: allConflicts.length,
+          conflicts: allConflicts,
+          data: previewItems,
+        });
+        return;
+      }
+
+      if (allConflicts.length > 0) {
+        throw ApiError.conflict(
+          `Cannot save recurring series: ${allConflicts.length} conflict(s) detected. First conflict: ${allConflicts[0]!.message}`
+        );
+      }
+
+      const adminActor = req.user?.email || req.user?.name || 'admin@ailaunchpad.edu';
+      const savedOccurrences: any[] = [];
+
+      for (let i = 0; i < previewItems.length; i++) {
+        const item = previewItems[i]!;
+        const payload: any = {
+          workshopId:
+            workshopId && mongoose.Types.ObjectId.isValid(workshopId)
+              ? new mongoose.Types.ObjectId(workshopId)
+              : workshopId || resolvedBatchCode,
+          batchId: resolvedBatchCode,
+          batchCode: resolvedBatchCode,
+          instructorId: instructorId || 'inst_1',
+          instructorName: instructorName.trim(),
+          dayNumber: i + 1,
+          title: item.title,
+          description:
+            (description || '').trim() ||
+            `Recurring session #${i + 1} for ${resolvedBatchCode} with ${instructorName.trim()}.`,
+          sessionDate: item.startAt,
+          startAt: item.startAt,
+          endAt: item.endAt,
+          startTime: item.startTime,
+          endTime: item.endTime,
+          durationMinutes: item.durationMinutes,
+          timezone: item.timezone,
+          classType: ['live', 'recorded', 'hybrid'].includes(classType) ? classType : 'live',
+          meetingProvider: ['google_meet', 'zoom', 'teams', 'custom'].includes(meetingProvider)
+            ? meetingProvider
+            : 'google_meet',
+          liveSessionUrl: liveSessionUrl.trim(),
+          encryptedMeetingUrl: `enc:${Buffer.from(liveSessionUrl.trim()).toString('base64')}`,
+          meetingPasscode: (meetingPasscode || '').trim(),
+          visibility: visibility === 'public_preview' ? 'public_preview' : 'enrolled_only',
+          capacity: Number(maxAttendees || capacity) || 60,
+          maxAttendees: Number(maxAttendees || capacity) || 60,
+          recurrenceSeriesId: seriesId,
+          recurrenceRule: {
+            frequency,
+            interval,
+            daysOfWeek,
+            untilDate,
+          },
+          status: status === 'draft' ? 'draft' : 'scheduled',
+          createdBy: adminActor,
+          updatedBy: adminActor,
+          changeHistory: [
+            {
+              updatedAt: new Date(),
+              updatedBy: adminActor,
+              action: 'created_recurring',
+              summary: `Created as occurrence #${i + 1} of recurring series ${seriesId}.`,
+            },
+          ],
+        };
+
+        let dbDoc: any = null;
+        if (isDBConnected() && mongoose.Types.ObjectId.isValid(String(payload.workshopId))) {
+          try {
+            dbDoc = await WorkshopSession.create(payload);
+          } catch {
+            // fallback to memoryStore
+          }
+        }
+        const memDoc = await memoryStore.upsertSession({
+          ...payload,
+          _id: dbDoc?._id?.toString(),
+        });
+        savedOccurrences.push(AdminController.normalizeSessionRecord(dbDoc || memDoc));
+      }
+
+      await AdminController.logAudit(
+        req,
+        'CREATE_RECURRING_SESSIONS',
+        'session',
+        `Created recurring series "${title.trim()}" (${savedOccurrences.length} occurrences) for ${resolvedBatchCode}`,
+        seriesId,
+        { seriesId, frequency, count: savedOccurrences.length, batchCode: resolvedBatchCode }
+      );
+
+      await AdminController.dispatchCalendarNotification({
+        title: `New Recurring Class Series: ${title.trim()}`,
+        message: `${savedOccurrences.length} sessions of "${title.trim()}" (${resolvedBatchCode}) have been scheduled with ${instructorName.trim()} starting ${new Date(firstTime.startAt).toDateString()}.`,
+        batchCode: resolvedBatchCode,
+        eventKey: `series_${seriesId}`,
+        authorName: req.user?.name || 'Admin Calendar',
+      });
+
+      res.status(201).json({
+        success: true,
+        message: `Scheduled ${savedOccurrences.length} recurring classes successfully.`,
+        seriesId,
+        count: savedOccurrences.length,
+        data: savedOccurrences,
       });
     } catch (error) {
       next(error);

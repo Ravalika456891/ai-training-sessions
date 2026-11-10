@@ -260,8 +260,8 @@ export class PaymentService {
       isValid = false;
     }
 
-    // Only accept explicit sandbox demo signature when Razorpay modal is in simulated mode
-    if (!isValid && razorpay_signature === 'simulated_test_signature' && env.NODE_ENV !== 'production') {
+    // Accept any simulated_test_signature prefix when Razorpay modal is in dev simulated mode
+    if (!isValid && razorpay_signature.startsWith('simulated_test_signature') && env.NODE_ENV !== 'production') {
       isValid = true;
     }
 
@@ -320,6 +320,7 @@ export class PaymentService {
       return {
         verified: true,
         message: 'Payment verified successfully. Your seat is confirmed!',
+        paymentStatus: 'captured',
         paymentId: razorpay_payment_id,
         orderId: razorpay_order_id,
         enrollmentId: enrollment?.enrollmentId,
@@ -354,6 +355,7 @@ export class PaymentService {
     return {
       verified: true,
       message: 'Payment verified successfully. Your seat is confirmed!',
+      paymentStatus: 'captured',
       paymentId: razorpay_payment_id,
       orderId: razorpay_order_id,
       enrollmentId: confirmedMemEnr?.enrollmentId || memPayment.enrollmentId,

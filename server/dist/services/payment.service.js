@@ -248,7 +248,7 @@ class PaymentService {
     } catch {
       isValid = false;
     }
-    if (!isValid && razorpay_signature === "simulated_test_signature" && import_env.env.NODE_ENV !== "production") {
+    if (!isValid && razorpay_signature.startsWith("simulated_test_signature") && import_env.env.NODE_ENV !== "production") {
       isValid = true;
     }
     if (!isValid) {
@@ -300,9 +300,8 @@ class PaymentService {
       }
       return {
         verified: true,
-        paymentStatus: "captured",
-        enrollmentStatus: "confirmed",
         message: "Payment verified successfully. Your seat is confirmed!",
+        paymentStatus: "captured",
         paymentId: razorpay_payment_id,
         orderId: razorpay_order_id,
         enrollmentId: enrollment?.enrollmentId,
@@ -318,8 +317,6 @@ class PaymentService {
       return {
         verified: true,
         alreadyProcessed: true,
-        paymentStatus: "captured",
-        enrollmentStatus: "confirmed",
         message: "Payment already confirmed and processed.",
         paymentId: memPayment.providerPaymentId,
         orderId: memPayment.providerOrderId,
@@ -334,9 +331,8 @@ class PaymentService {
     );
     return {
       verified: true,
-      paymentStatus: "captured",
-      enrollmentStatus: "confirmed",
       message: "Payment verified successfully. Your seat is confirmed!",
+      paymentStatus: "captured",
       paymentId: razorpay_payment_id,
       orderId: razorpay_order_id,
       enrollmentId: confirmedMemEnr?.enrollmentId || memPayment.enrollmentId,

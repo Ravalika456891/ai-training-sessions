@@ -207,20 +207,20 @@ export const DashboardWorkshops: React.FC = () => {
         </div>
       )}
 
-      {/* Available Workshop Batches for Exploration & Curriculum Preview */}
-      {otherBatches.length > 0 && (
+      {/* Available Workshop Cohort for Exploration & Curriculum Preview (Single Primary Card) */}
+      {workshops.length === 0 && otherBatches.length > 0 && (
         <div className="space-y-4 pt-2">
           <div>
             <h3 className="text-base font-extrabold text-[#0F172A]">
-              Available Workshop Batches & Curriculum Previews
+              Upcoming Workshop Cohort & Curriculum Preview
             </h3>
             <p className="text-xs text-slate-500">
               Preview the full Day 1 & Day 2 curriculum and schedule below. Click "Enroll & Pay" to reserve your confirmed seat.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            {otherBatches.map((batch: any) => {
+          <div className="grid grid-cols-1 max-w-2xl gap-5">
+            {otherBatches.slice(0, 1).map((batch: any) => {
               const basePrice = batch.price?.basePrice ?? 1999;
               const previewSessions = batch.sessionsPreview || [];
               return (

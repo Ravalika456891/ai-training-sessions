@@ -37,12 +37,20 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, allowe
           <p className="text-sm text-slate-600 mb-6">
             Your account role (<span className="font-semibold">{user.role}</span>) does not have access to this resource.
           </p>
-          <a
-            href="/dashboard"
-            className="inline-flex items-center justify-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs rounded-xl transition-colors"
-          >
-            Return to Dashboard
-          </a>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-2.5">
+            <a
+              href="/admin/login"
+              className="inline-flex items-center justify-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-xl transition-colors"
+            >
+              Sign In as Administrator
+            </a>
+            <a
+              href="/dashboard"
+              className="inline-flex items-center justify-center px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-xl transition-colors"
+            >
+              Return to Student Dashboard
+            </a>
+          </div>
         </div>
       </div>
     );

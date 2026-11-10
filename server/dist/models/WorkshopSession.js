@@ -39,6 +39,11 @@ const WorkshopSessionSchema = new import_mongoose.Schema(
       required: true,
       index: true
     },
+    batchId: {
+      type: String,
+      trim: true,
+      index: true
+    },
     batchCode: {
       type: String,
       required: true,
@@ -46,10 +51,14 @@ const WorkshopSessionSchema = new import_mongoose.Schema(
       uppercase: true,
       index: true
     },
+    instructorId: {
+      type: String,
+      trim: true,
+      index: true
+    },
     dayNumber: {
       type: Number,
-      enum: [1, 2],
-      required: true
+      default: 1
     },
     title: {
       type: String,
@@ -65,17 +74,32 @@ const WorkshopSessionSchema = new import_mongoose.Schema(
       required: true,
       index: true
     },
+    startAt: {
+      type: Date,
+      required: true,
+      index: true
+    },
+    endAt: {
+      type: Date,
+      required: true,
+      index: true
+    },
+    durationMinutes: {
+      type: Number,
+      default: 120,
+      min: 15
+    },
     startTime: {
       type: String,
       default: "10:00 AM"
     },
     endTime: {
       type: String,
-      default: "3:00 PM"
+      default: "12:00 PM"
     },
     timezone: {
       type: String,
-      default: "Asia/Kolkata (IST)"
+      default: "Asia/Kolkata"
     },
     instructorName: {
       type: String,
@@ -87,16 +111,41 @@ const WorkshopSessionSchema = new import_mongoose.Schema(
       trim: true,
       lowercase: true
     },
+    classType: {
+      type: String,
+      enum: ["live", "recorded", "hybrid"],
+      default: "live",
+      index: true
+    },
+    meetingProvider: {
+      type: String,
+      enum: ["google_meet", "zoom", "teams", "custom"],
+      default: "google_meet"
+    },
     liveSessionUrl: {
       type: String,
       required: true,
+      trim: true
+    },
+    encryptedMeetingUrl: {
+      type: String,
       trim: true
     },
     meetingPasscode: {
       type: String,
       trim: true
     },
+    visibility: {
+      type: String,
+      enum: ["enrolled_only", "public_preview"],
+      default: "enrolled_only"
+    },
     capacity: {
+      type: Number,
+      default: 60,
+      min: 1
+    },
+    maxAttendees: {
       type: Number,
       default: 60,
       min: 1
@@ -106,16 +155,52 @@ const WorkshopSessionSchema = new import_mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["scheduled", "live", "completed", "cancelled"],
+      enum: ["draft", "scheduled", "live", "completed", "cancelled"],
       default: "scheduled",
       index: true
-    }
+    },
+    recurrenceSeriesId: {
+      type: String,
+      trim: true,
+      index: true
+    },
+    recurrenceRule: {
+      frequency: {
+        type: String,
+        enum: ["none", "daily", "weekly", "weekdays"],
+        default: "none"
+      },
+      daysOfWeek: [Number],
+      untilDate: String
+    },
+    cancellationReason: {
+      type: String,
+      trim: true
+    },
+    createdBy: {
+      type: String,
+      trim: true
+    },
+    updatedBy: {
+      type: String,
+      trim: true
+    },
+    changeHistory: [
+      {
+        action: String,
+        summary: String,
+        actorEmail: String,
+        timestamp: { type: Date, default: Date.now }
+      }
+    ]
   },
   {
     timestamps: true
   }
 );
-WorkshopSessionSchema.index({ workshopId: 1, dayNumber: 1 }, { unique: true });
+WorkshopSessionSchema.index({ workshopId: 1, startAt: 1 });
+WorkshopSessionSchema.index({ batchCode: 1, startAt: 1 });
+WorkshopSessionSchema.index({ instructorId: 1, startAt: 1 });
 const WorkshopSession = import_mongoose.default.model(
   "WorkshopSession",
   WorkshopSessionSchema

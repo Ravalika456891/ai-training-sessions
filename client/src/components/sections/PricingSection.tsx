@@ -15,12 +15,14 @@ import { BATCH_OPTIONS } from '../../data/workshopData';
 import type { BatchOption } from '../../types/workshop';
 
 interface PricingSectionProps {
+  batches?: BatchOption[];
   selectedBatchId: string;
   onSelectBatch: (batchId: string) => void;
   onProceedToRegister: () => void;
 }
 
 export const PricingSection: React.FC<PricingSectionProps> = ({
+  batches = BATCH_OPTIONS,
   selectedBatchId,
   onSelectBatch,
   onProceedToRegister,
@@ -92,7 +94,7 @@ export const PricingSection: React.FC<PricingSectionProps> = ({
               Select Your Preferred Live Cohort
             </h3>
 
-            {BATCH_OPTIONS.map((batch: BatchOption) => {
+            {batches.map((batch: BatchOption) => {
               const isSelected = selectedBatchId === batch.id;
               const taxAmount = Math.round(batch.pricing.basePrice * (batch.pricing.taxPercentage / 100));
               const totalAmount = batch.pricing.basePrice + taxAmount;

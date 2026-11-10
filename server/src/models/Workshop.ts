@@ -159,10 +159,10 @@ const WorkshopSchema = new Schema<IWorkshop>(
       liveUrl: { type: String, default: 'https://meet.google.com/ailp-day2-cohort' },
       instructorName: { type: String },
     },
-    curriculum: { type: [Schema.Types.Mixed], default: [] },
-    learningOutcomes: { type: [Schema.Types.Mixed], default: [] },
-    aiTools: { type: [Schema.Types.Mixed], default: [] },
-    faqs: { type: [Schema.Types.Mixed], default: [] },
+    curriculum: { type: [Schema.Types.Mixed] as any, default: [] },
+    learningOutcomes: { type: [Schema.Types.Mixed] as any, default: [] },
+    aiTools: { type: [Schema.Types.Mixed] as any, default: [] },
+    faqs: { type: [Schema.Types.Mixed] as any, default: [] },
   },
   {
     timestamps: true,
@@ -172,7 +172,7 @@ const WorkshopSchema = new Schema<IWorkshop>(
 );
 
 // Virtual for real-time available seats
-WorkshopSchema.virtual('availableSeats').get(function () {
+WorkshopSchema.virtual('availableSeats').get(function (this: any) {
   const seats = this.capacity - (this.enrolledCount + this.reservedCount);
   return Math.max(0, seats);
 });

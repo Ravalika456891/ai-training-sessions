@@ -15,17 +15,33 @@ export const SignUpPage: React.FC = () => {
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [isInputUnlocked, setIsInputUnlocked] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [agreeTerms, setAgreeTerms] = useState(false);
+  const [agreeTerms, setAgreeTerms] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [showGoogleChooser, setShowGoogleChooser] = useState(false);
   const [googleEmail, setGoogleEmail] = useState('');
-  const [googleName, setGoogleName] = useState('');
+  const [googlePassword, setGooglePassword] = useState('');
+  const [showGooglePassword, setShowGooglePassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (phone && /[^\d]/.test(phone)) {
+      setPhone(phone.replace(/\D/g, '').slice(0, 15));
+    }
+  }, [phone]);
+
+  useEffect(() => {
     if (user) {
-      navigate(redirect, { replace: true });
+      const target =
+        user.role === 'admin'
+          ? redirect.startsWith('/admin')
+            ? redirect
+            : '/admin'
+          : redirect.startsWith('/admin')
+          ? '/dashboard'
+          : redirect;
+      navigate(target, { replace: true });
     }
   }, [user, navigate, redirect]);
 
@@ -36,8 +52,8 @@ export const SignUpPage: React.FC = () => {
       return;
     }
 
-    if (password.length < 8) {
-      setError('Password must be at least 8 characters long.');
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters long.');
       return;
     }
 
@@ -55,13 +71,21 @@ export const SignUpPage: React.FC = () => {
     setError(null);
 
     try {
-      await registerUser({
+      const registeredUser = await registerUser({
         name: name.trim(),
         email: email.trim().toLowerCase(),
         password,
         phone: phone ? { countryCode: '+91', number: phone.trim() } : undefined,
       });
-      navigate(redirect, { replace: true });
+      const isUserAdmin = registeredUser?.role === 'admin';
+      const target = isUserAdmin
+        ? redirect.startsWith('/admin')
+          ? redirect
+          : '/admin'
+        : redirect.startsWith('/admin')
+        ? '/dashboard'
+        : redirect;
+      navigate(target, { replace: true });
     } catch (err: any) {
       setError(err.message || 'Registration failed. Please try again.');
     } finally {
@@ -69,18 +93,32 @@ export const SignUpPage: React.FC = () => {
     }
   };
 
-  const handleGoogleSignUp = async () => {
-    const targetEmail = googleEmail.trim();
-    if (!targetEmail) return;
+  const handleGoogleSignUp = async (selectedEmail?: string, selectedPassword?: string) => {
+    const targetEmail = (selectedEmail ?? googleEmail).trim();
+    const targetPassword = selectedPassword ?? googlePassword;
+    if (!targetEmail || !targetPassword) {
+      setError('Please enter both your Google Email and Password.');
+      return;
+    }
 
     setIsLoading(true);
     setError(null);
     try {
-      await googleLogin({
+      const loggedInUser = await googleLogin({
         email: targetEmail,
-        name: googleName.trim() || targetEmail.split('@')[0],
+        name: name.trim() || targetEmail.split('@')[0],
+        password: targetPassword,
+        mode: 'register',
       });
-      navigate(redirect, { replace: true });
+      const isUserAdmin = loggedInUser?.role === 'admin';
+      const target = isUserAdmin
+        ? redirect.startsWith('/admin')
+          ? redirect
+          : '/admin'
+        : redirect.startsWith('/admin')
+        ? '/dashboard'
+        : redirect;
+      navigate(target, { replace: true });
     } catch (err: any) {
       setError(err.message || 'Google account creation failed.');
     } finally {
@@ -160,14 +198,24 @@ export const SignUpPage: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Full Name</label>
-                  <input
-                    type="text"
-                    value={googleName}
-                    onChange={(e) => setGoogleName(e.target.value)}
-                    placeholder="Your Name"
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs text-[#0F172A] focus:outline-none focus:ring-2 focus:ring-blue-600"
-                  />
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Password</label>
+                  <div className="relative">
+                    <input
+                      type={showGooglePassword ? 'text' : 'password'}
+                      required
+                      value={googlePassword}
+                      onChange={(e) => setGooglePassword(e.target.value)}
+                      placeholder="Enter your password"
+                      className="w-full px-3.5 pr-10 py-2.5 rounded-xl border border-slate-200 text-xs text-[#0F172A] focus:outline-none focus:ring-2 focus:ring-blue-600"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowGooglePassword(!showGooglePassword)}
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-700 cursor-pointer"
+                    >
+                      {showGooglePassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
                 </div>
                 <div className="flex items-center gap-2 pt-1">
                   <Button
@@ -193,7 +241,7 @@ export const SignUpPage: React.FC = () => {
             </div>
           ) : (
             <>
-              <form onSubmit={handleSubmit} className="space-y-3.5">
+              <form onSubmit={handleSubmit} className="space-y-3.5" autoComplete="off">
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 mb-1">Full Name</label>
                   <div className="relative rounded-xl shadow-xs">
@@ -202,27 +250,19 @@ export const SignUpPage: React.FC = () => {
                     </div>
                     <input
                       type="text"
+                      name="signup_full_name"
+                      autoComplete="off"
+                      readOnly={!isInputUnlocked}
+                      onFocus={() => setIsInputUnlocked(true)}
+                      onMouseDown={() => setIsInputUnlocked(true)}
+                      onTouchStart={() => setIsInputUnlocked(true)}
+                      onKeyDown={() => setIsInputUnlocked(true)}
                       required
                       value={name}
-                      onChange={(e) => setName(e.target.value)}
+                      onChange={(e) => {
+                        if (isInputUnlocked) setName(e.target.value);
+                      }}
                       placeholder="e.g. Rahul Sharma"
-                      className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-slate-200 text-xs text-[#0F172A] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition-colors bg-white"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Email Address</label>
-                  <div className="relative rounded-xl shadow-xs">
-                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                      <Mail className="h-4 w-4 text-slate-400" />
-                    </div>
-                    <input
-                      type="email"
-                      required
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="student@example.com"
                       className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-slate-200 text-xs text-[#0F172A] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition-colors bg-white"
                     />
                   </div>
@@ -236,9 +276,48 @@ export const SignUpPage: React.FC = () => {
                     </div>
                     <input
                       type="tel"
+                      name="signup_mobile_number"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      autoComplete="off"
+                      readOnly={!isInputUnlocked}
+                      onFocus={() => setIsInputUnlocked(true)}
+                      onMouseDown={() => setIsInputUnlocked(true)}
+                      onTouchStart={() => setIsInputUnlocked(true)}
+                      onKeyDown={() => setIsInputUnlocked(true)}
+                      maxLength={10}
                       value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
+                      onChange={(e) => {
+                        if (isInputUnlocked) setPhone(e.target.value.replace(/\D/g, '').slice(0, 10));
+                      }}
                       placeholder="9876543210"
+                      className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-slate-200 text-xs text-[#0F172A] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition-colors bg-white"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Email Address</label>
+                  <div className="relative rounded-xl shadow-xs">
+                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                      <Mail className="h-4 w-4 text-slate-400" />
+                    </div>
+                    <input
+                      type="text"
+                      inputMode="email"
+                      name="signup_email_address"
+                      autoComplete="off"
+                      readOnly={!isInputUnlocked}
+                      onFocus={() => setIsInputUnlocked(true)}
+                      onMouseDown={() => setIsInputUnlocked(true)}
+                      onTouchStart={() => setIsInputUnlocked(true)}
+                      onKeyDown={() => setIsInputUnlocked(true)}
+                      required
+                      value={email}
+                      onChange={(e) => {
+                        if (isInputUnlocked) setEmail(e.target.value);
+                      }}
+                      placeholder="student@example.com"
                       className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-slate-200 text-xs text-[#0F172A] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition-colors bg-white"
                     />
                   </div>
@@ -251,11 +330,21 @@ export const SignUpPage: React.FC = () => {
                       <Lock className="h-4 w-4 text-slate-400" />
                     </div>
                     <input
-                      type={showPassword ? 'text' : 'password'}
+                      type={showPassword || !isInputUnlocked ? 'text' : 'password'}
+                      style={!showPassword ? ({ WebkitTextSecurity: 'disc' } as React.CSSProperties) : undefined}
+                      name="signup_new_password"
+                      autoComplete="off"
+                      readOnly={!isInputUnlocked}
+                      onFocus={() => setIsInputUnlocked(true)}
+                      onMouseDown={() => setIsInputUnlocked(true)}
+                      onTouchStart={() => setIsInputUnlocked(true)}
+                      onKeyDown={() => setIsInputUnlocked(true)}
                       required
                       value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      placeholder="Min. 8 characters"
+                      onChange={(e) => {
+                        if (isInputUnlocked) setPassword(e.target.value);
+                      }}
+                      placeholder="Min. 6 characters"
                       className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-slate-200 text-xs text-[#0F172A] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition-colors bg-white"
                     />
                     <button
@@ -275,10 +364,20 @@ export const SignUpPage: React.FC = () => {
                       <Lock className="h-4 w-4 text-slate-400" />
                     </div>
                     <input
-                      type={showPassword ? 'text' : 'password'}
+                      type={showPassword || !isInputUnlocked ? 'text' : 'password'}
+                      style={!showPassword ? ({ WebkitTextSecurity: 'disc' } as React.CSSProperties) : undefined}
+                      name="signup_confirm_password"
+                      autoComplete="off"
+                      readOnly={!isInputUnlocked}
+                      onFocus={() => setIsInputUnlocked(true)}
+                      onMouseDown={() => setIsInputUnlocked(true)}
+                      onTouchStart={() => setIsInputUnlocked(true)}
+                      onKeyDown={() => setIsInputUnlocked(true)}
                       required
                       value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      onChange={(e) => {
+                        if (isInputUnlocked) setConfirmPassword(e.target.value);
+                      }}
                       placeholder="Repeat your password"
                       className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-slate-200 text-xs text-[#0F172A] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition-colors bg-white"
                     />
@@ -323,7 +422,17 @@ export const SignUpPage: React.FC = () => {
 
               <button
                 type="button"
-                onClick={() => setShowGoogleChooser(true)}
+                onClick={() => {
+                  const trimmedEmail = email.trim();
+                  if (trimmedEmail && password) {
+                    handleGoogleSignUp(trimmedEmail, password);
+                  } else {
+                    if (trimmedEmail && !googleEmail) {
+                      setGoogleEmail(trimmedEmail);
+                    }
+                    setShowGoogleChooser(true);
+                  }
+                }}
                 disabled={isLoading}
                 className="w-full flex items-center justify-center gap-3 py-2.5 px-4 bg-white hover:bg-slate-50 border border-slate-300 rounded-xl text-xs font-semibold text-[#0F172A] shadow-xs transition-all cursor-pointer"
               >

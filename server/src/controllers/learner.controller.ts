@@ -11,6 +11,7 @@ import { Certificate } from '../models/Certificate.js';
 import { Attendance } from '../models/Attendance.js';
 import { EnrollmentService } from '../services/enrollment.service.js';
 import { PaymentService } from '../services/payment.service.js';
+import { WorkshopService } from '../services/workshop.service.js';
 import { ApiError } from '../utils/apiError.js';
 import { isDBConnected } from '../config/db.js';
 import { memoryStore } from '../services/memoryStore.js';
@@ -21,28 +22,39 @@ export class LearnerController {
    * across both MongoDB Atlas and the resilient memoryStore, enriched with real
    * WorkshopSession and LearningResource records.
    */
-  private static async getStudentWorkshops(userId: string, userEmail: string): Promise<any[]> {
+  static async getStudentWorkshops(userId: string, userEmail: string): Promise<any[]> {
     const normalizedEmail = (userEmail || '').toLowerCase().trim();
     const rawEnrollments: any[] = [];
     const seenBatchCodes = new Set<string>();
 
-    // Fetch real sessions & learning resources from MongoDB or memoryStore
-    let allSessions: any[] = [];
+    // Fetch real sessions & learning resources from MongoDB AND memoryStore (merged by _id)
+    let dbSessions: any[] = [];
     let allResources: any[] = [];
 
     if (isDBConnected()) {
       try {
-        [allSessions, allResources] = await Promise.all([
-          WorkshopSession.find().sort({ dayNumber: 1 }),
+        [dbSessions, allResources] = await Promise.all([
+          WorkshopSession.find().sort({ startAt: 1, sessionDate: 1, dayNumber: 1 }),
           LearningResource.find({ isPublished: true }).sort({ createdAt: -1 }),
         ]);
       } catch (err: any) {
         console.warn('[LearnerController Sessions/Resources Fallback]', err.message);
       }
     }
-    if (allSessions.length === 0) {
-      allSessions = await memoryStore.getAllSessions();
+    const memSessions = await memoryStore.getAllSessions();
+    const mergedSessionMap = new Map<string, any>();
+    for (const s of [...dbSessions, ...memSessions]) {
+      const sid = s._id?.toString();
+      if (sid && !mergedSessionMap.has(sid)) {
+        mergedSessionMap.set(sid, typeof s.toObject === 'function' ? s.toObject() : s);
+      }
     }
+    const allSessions = Array.from(mergedSessionMap.values()).sort(
+      (a, b) =>
+        new Date(a.startAt || a.sessionDate || 0).getTime() -
+        new Date(b.startAt || b.sessionDate || 0).getTime()
+    );
+
     if (allResources.length === 0) {
       allResources = (await memoryStore.getAllResources()).filter(
         (r) => r.isPublished && !['faq', 'testimonial'].includes(r.category)
@@ -180,58 +192,92 @@ export class LearnerController {
         now.getTime() >= start.getTime() - 30 * 60 * 1000 &&
         now.getTime() <= end.getTime();
 
-      // Match real Day 1 & Day 2 sessions for this batch
+      // Match real scheduled/live/completed/cancelled sessions for this batch (exclude draft)
       const batchSessions = allSessions.filter(
         (s) =>
-          s.batchCode === batchCode ||
-          s.workshopId?.toString() === workshop._id?.toString()
+          s.status !== 'draft' &&
+          (s.batchCode?.toUpperCase() === batchCode.toUpperCase() ||
+            s.workshopId?.toString() === workshop._id?.toString())
       );
 
       const formattedSessions =
         batchSessions.length > 0
-          ? batchSessions.map((s) => ({
-              _id: s._id?.toString(),
-              dayNumber: s.dayNumber,
-              title: s.title,
-              sessionDate: s.sessionDate,
-              startTime: s.startTime || '10:00 AM',
-              endTime: s.endTime || '3:00 PM',
-              timezone: s.timezone || workshop.timezone || 'Asia/Kolkata (IST)',
-              instructorName: s.instructorName || workshop.instructor?.name || 'Vikram Malhotra',
-              liveSessionUrl: isPaidConfirmed ? s.liveSessionUrl : null,
-              meetingPasscode: isPaidConfirmed ? s.meetingPasscode : null,
-              status: s.status || 'scheduled',
-            }))
+          ? batchSessions.map((s, idx) => {
+              const wasRescheduled =
+                Array.isArray(s.changeHistory) &&
+                s.changeHistory.some((h: any) => h.action === 'rescheduled');
+              const isCancelled = s.status === 'cancelled';
+              return {
+                _id: s._id?.toString(),
+                dayNumber: s.dayNumber || idx + 1,
+                title: s.title,
+                description:
+                  s.description ||
+                  `Live interactive session for batch ${batchCode} with ${s.instructorName || 'Instructor'}.`,
+                sessionDate: s.startAt || s.sessionDate,
+                startAt: s.startAt || s.sessionDate,
+                endAt: s.endAt || new Date(new Date(s.startAt || s.sessionDate || Date.now()).getTime() + (s.durationMinutes || 120) * 60000),
+                startTime: s.startTime || '10:00 AM',
+                endTime: s.endTime || '3:00 PM',
+                durationMinutes: s.durationMinutes || 120,
+                timezone: s.timezone || workshop.timezone || 'Asia/Kolkata (IST)',
+                instructorName: s.instructorName || workshop.instructor?.name || 'Vikram Malhotra',
+                classType: s.classType || 'live',
+                meetingProvider: s.meetingProvider || 'google_meet',
+                liveSessionUrl: isPaidConfirmed && !isCancelled ? s.liveSessionUrl : null,
+                meetingPasscode: isPaidConfirmed && !isCancelled ? s.meetingPasscode : null,
+                status: s.status || 'scheduled',
+                wasRescheduled,
+                cancellationReason: s.cancellationReason || null,
+                recurrenceSeriesId: s.recurrenceSeriesId || null,
+              };
+            })
           : [
               {
                 _id: `${batchCode}-day1`,
                 dayNumber: 1,
                 title: 'Day 1: LLM Foundations, Prompt Engineering & Custom AI Assistants',
+                description: 'Core LLM reasoning patterns, prompt engineering, and custom assistant design.',
                 sessionDate: workshop.startDate,
+                startAt: workshop.startDate,
+                endAt: new Date(new Date(workshop.startDate || Date.now()).getTime() + 300 * 60000),
                 startTime: '10:00 AM',
                 endTime: '3:00 PM',
+                durationMinutes: 300,
                 timezone: workshop.timezone || 'Asia/Kolkata (IST)',
                 instructorName: workshop.instructor?.name || 'Vikram Malhotra',
+                classType: 'live',
+                meetingProvider: 'google_meet',
                 liveSessionUrl: isPaidConfirmed
                   ? workshop.liveSessionUrl || 'https://meet.google.com/ailp-live-cohort'
                   : null,
                 meetingPasscode: isPaidConfirmed ? workshop.meetingPasscode || 'AILP2026' : null,
                 status: 'scheduled',
+                wasRescheduled: false,
+                cancellationReason: null,
               },
               {
                 _id: `${batchCode}-day2`,
                 dayNumber: 2,
                 title: 'Day 2: Multi-Step AI Workflows, Functional Prototyping & Capstone Lab',
+                description: 'Agentic workflows, RAG pipelines, and full-stack AI prototyping.',
                 sessionDate: workshop.endDate,
+                startAt: workshop.endDate,
+                endAt: new Date(new Date(workshop.endDate || Date.now()).getTime() + 300 * 60000),
                 startTime: '10:00 AM',
                 endTime: '3:00 PM',
+                durationMinutes: 300,
                 timezone: workshop.timezone || 'Asia/Kolkata (IST)',
                 instructorName: workshop.instructor?.name || 'Vikram Malhotra',
+                classType: 'live',
+                meetingProvider: 'google_meet',
                 liveSessionUrl: isPaidConfirmed
                   ? workshop.liveSessionUrl || 'https://meet.google.com/ailp-live-cohort'
                   : null,
                 meetingPasscode: isPaidConfirmed ? workshop.meetingPasscode || 'AILP2026' : null,
                 status: 'scheduled',
+                wasRescheduled: false,
+                cancellationReason: null,
               },
             ];
 
@@ -346,14 +392,20 @@ export class LearnerController {
   private static async getAvailableWorkshops(): Promise<any[]> {
     let workshops: any[] = [];
     let allResources: any[] = [];
+    let dbSessions: any[] = [];
+    try {
+      workshops = await WorkshopService.getPublishedWorkshops();
+    } catch (err: any) {
+      console.warn('[LearnerController AvailableWorkshops Fallback]', err.message);
+    }
     if (isDBConnected()) {
       try {
-        [workshops, allResources] = await Promise.all([
-          Workshop.find({ status: 'published' }).sort({ startDate: 1 }),
+        [allResources, dbSessions] = await Promise.all([
           LearningResource.find({ isPublished: true }),
+          WorkshopSession.find().sort({ startAt: 1, sessionDate: 1 }),
         ]);
       } catch (err: any) {
-        console.warn('[LearnerController AvailableWorkshops Fallback]', err.message);
+        console.warn('[LearnerController Resources/Sessions Fallback]', err.message);
       }
     }
     if (workshops.length === 0) {
@@ -364,6 +416,20 @@ export class LearnerController {
       allResources = memRes.filter((r: any) => r.isPublished !== false);
     }
 
+    const memSessions = await memoryStore.getAllSessions();
+    const mergedSessionMap = new Map<string, any>();
+    for (const s of [...dbSessions, ...memSessions]) {
+      const sid = s._id?.toString();
+      if (sid && !mergedSessionMap.has(sid)) {
+        mergedSessionMap.set(sid, typeof s.toObject === 'function' ? s.toObject() : s);
+      }
+    }
+    const allSessions = Array.from(mergedSessionMap.values()).sort(
+      (a, b) =>
+        new Date(a.startAt || a.sessionDate || 0).getTime() -
+        new Date(b.startAt || b.sessionDate || 0).getTime()
+    );
+
     return workshops.map((w: any) => {
       const batchCode = w.batchCode || 'AILP-2026-NOV-14';
       const batchResources = allResources.filter(
@@ -372,35 +438,85 @@ export class LearnerController {
           (r.workshopBatchCode === 'ALL' || !r.workshopBatchCode || r.workshopBatchCode === batchCode)
       );
 
+      const batchSessions = allSessions.filter(
+        (s: any) =>
+          s.status !== 'draft' &&
+          (s.batchCode?.toUpperCase() === batchCode.toUpperCase() ||
+            s.workshopId?.toString() === w._id?.toString())
+      );
+
       // Safe schedule preview for Registered Users (joinUrl and passcode strictly null)
-      const sessionsPreview = [
-        {
-          _id: `${batchCode}-day1`,
-          dayNumber: 1,
-          title: 'Day 1: LLM Foundations, Prompt Engineering & Custom AI Assistants',
-          sessionDate: w.startDate,
-          startTime: '10:00 AM',
-          endTime: '3:00 PM',
-          timezone: w.timezone || 'Asia/Kolkata (IST)',
-          instructorName: w.instructor?.name || 'Vikram Malhotra',
-          liveSessionUrl: null,
-          meetingPasscode: null,
-          status: 'scheduled',
-        },
-        {
-          _id: `${batchCode}-day2`,
-          dayNumber: 2,
-          title: 'Day 2: Multi-Step AI Workflows, Functional Prototyping & Capstone Lab',
-          sessionDate: w.endDate,
-          startTime: '10:00 AM',
-          endTime: '3:00 PM',
-          timezone: w.timezone || 'Asia/Kolkata (IST)',
-          instructorName: w.instructor?.name || 'Vikram Malhotra',
-          liveSessionUrl: null,
-          meetingPasscode: null,
-          status: 'scheduled',
-        },
-      ];
+      const sessionsPreview =
+        batchSessions.length > 0
+          ? batchSessions.map((s: any, idx: number) => ({
+              _id: s._id?.toString(),
+              dayNumber: s.dayNumber || idx + 1,
+              title: s.title,
+              description:
+                s.description ||
+                `Live training session for ${batchCode} with ${s.instructorName || 'Instructor'}.`,
+              sessionDate: s.startAt || s.sessionDate,
+              startAt: s.startAt || s.sessionDate,
+              endAt:
+                s.endAt ||
+                new Date(
+                  new Date(s.startAt || s.sessionDate || Date.now()).getTime() +
+                    (s.durationMinutes || 120) * 60000
+                ),
+              startTime: s.startTime || '10:00 AM',
+              endTime: s.endTime || '3:00 PM',
+              durationMinutes: s.durationMinutes || 120,
+              timezone: s.timezone || w.timezone || 'Asia/Kolkata (IST)',
+              instructorName: s.instructorName || w.instructor?.name || 'Vikram Malhotra',
+              classType: s.classType || 'live',
+              meetingProvider: s.meetingProvider || 'google_meet',
+              joinUrl: null,
+              liveSessionUrl: null,
+              meetingPasscode: null,
+              status: s.status || 'scheduled',
+              wasRescheduled:
+                Array.isArray(s.changeHistory) &&
+                s.changeHistory.some((h: any) => h.action === 'rescheduled'),
+              cancellationReason: s.cancellationReason || null,
+            }))
+          : [
+              {
+                _id: `${batchCode}-day1`,
+                dayNumber: 1,
+                title: 'Day 1: LLM Foundations, Prompt Engineering & Custom AI Assistants',
+                sessionDate: w.startDate,
+                startAt: w.startDate,
+                startTime: '10:00 AM',
+                endTime: '3:00 PM',
+                durationMinutes: 300,
+                timezone: w.timezone || 'Asia/Kolkata (IST)',
+                instructorName: w.instructor?.name || 'Vikram Malhotra',
+                classType: 'live',
+                meetingProvider: 'google_meet',
+                joinUrl: null,
+                liveSessionUrl: null,
+                meetingPasscode: null,
+                status: 'scheduled',
+              },
+              {
+                _id: `${batchCode}-day2`,
+                dayNumber: 2,
+                title: 'Day 2: Multi-Step AI Workflows, Functional Prototyping & Capstone Lab',
+                sessionDate: w.endDate,
+                startAt: w.endDate,
+                startTime: '10:00 AM',
+                endTime: '3:00 PM',
+                durationMinutes: 300,
+                timezone: w.timezone || 'Asia/Kolkata (IST)',
+                instructorName: w.instructor?.name || 'Vikram Malhotra',
+                classType: 'live',
+                meetingProvider: 'google_meet',
+                joinUrl: null,
+                liveSessionUrl: null,
+                meetingPasscode: null,
+                status: 'scheduled',
+              },
+            ];
 
       // Safe learning material previews (downloadUrl and content strictly null)
       const materialsPreview = [

@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import {
   User,
   Lock,
@@ -8,22 +7,20 @@ import {
   CheckCircle2,
   Loader2,
   CreditCard,
-  LogOut,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useDashboard } from './DashboardLayout';
 import { api } from '../../services/api';
 
 export const DashboardProfile: React.FC = () => {
-  const { user, refreshUser, logout } = useAuth();
+  const { user, refreshUser } = useAuth();
   const { payments, dashboardData, openCheckout } = useDashboard();
-  const navigate = useNavigate();
 
   const workshops = dashboardData?.workshops || [];
 
   // Profile fields
   const [name, setName] = useState(user?.name || '');
-  const [phoneNumber, setPhoneNumber] = useState(user?.phone?.number || '');
+  const [phoneNumber, setPhoneNumber] = useState((user?.phone?.number || '').replace(/\D/g, ''));
   const [experienceLevel, setExperienceLevel] = useState(user?.experienceLevel || 'beginner');
   const [userCategory, setUserCategory] = useState(user?.userCategory || 'working_professional');
   const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
@@ -93,30 +90,15 @@ export const DashboardProfile: React.FC = () => {
     }
   };
 
-  const handleSignOut = async () => {
-    await logout();
-    navigate('/signin', { replace: true });
-  };
-
   return (
     <div className="space-y-8">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-xl sm:text-2xl font-black text-[#0F172A] tracking-tight">
-            Profile & Account Settings
-          </h2>
-          <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
-            Manage your personal information, payment history, security settings, and session.
-          </p>
-        </div>
-
-        <button
-          onClick={handleSignOut}
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 text-xs font-bold transition-colors self-start sm:self-auto cursor-pointer"
-        >
-          <LogOut className="w-4 h-4" />
-          <span>Logout of Account</span>
-        </button>
+      <div>
+        <h2 className="text-xl sm:text-2xl font-black text-[#0F172A] tracking-tight">
+          Profile & Account Settings
+        </h2>
+        <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
+          Manage your personal information, payment history, security settings, and session.
+        </p>
       </div>
 
       {/* 1. Personal Information & Account Settings Grid */}
@@ -173,8 +155,13 @@ export const DashboardProfile: React.FC = () => {
               <label className="block font-semibold text-slate-700 mb-1">Phone Number</label>
               <input
                 type="tel"
+                name="phoneNumber"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                autoComplete="tel-national"
+                maxLength={10}
                 value={phoneNumber}
-                onChange={(e) => setPhoneNumber(e.target.value)}
+                onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, '').slice(0, 10))}
                 placeholder="9876543210"
                 className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs text-[#0F172A] focus:outline-none focus:ring-2 focus:ring-indigo-600 bg-white"
               />

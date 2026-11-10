@@ -212,7 +212,7 @@ export const DashboardLayout: React.FC = () => {
         openCheckout,
       }}
     >
-      <div className="min-h-screen bg-[#F8FAFC] text-[#0F172A] flex font-sans">
+      <div className="min-h-screen bg-[#F8FAFC] text-[#0F172A] flex font-sans w-full">
         {/* Desktop Collapsible Light Sidebar */}
         <aside
           className={`hidden lg:flex lg:flex-col bg-white text-[#0F172A] border-r border-slate-200 shrink-0 select-none transition-all duration-200 ${
@@ -312,6 +312,20 @@ export const DashboardLayout: React.FC = () => {
 
           {/* Bottom Actions */}
           <div className="p-3 border-t border-slate-200 space-y-1">
+            {user?.role === 'admin' && (
+              <Link
+                to="/admin"
+                title={isSidebarCollapsed ? 'Admin Console' : undefined}
+                className={`flex items-center ${
+                  isSidebarCollapsed ? 'justify-center px-2' : 'justify-between px-3'
+                } py-2 rounded-xl text-xs font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 transition-colors`}
+              >
+                <span className="flex items-center gap-2.5">
+                  <ShieldCheck className="w-4 h-4 text-indigo-600 shrink-0" />
+                  {!isSidebarCollapsed && <span>Admin Console</span>}
+                </span>
+              </Link>
+            )}
             <Link
               to="/"
               title={isSidebarCollapsed ? 'Public Website' : undefined}
@@ -365,12 +379,23 @@ export const DashboardLayout: React.FC = () => {
             </div>
 
             <div className="flex items-center gap-2 sm:gap-3">
+              {user?.role === 'admin' && (
+                <Link
+                  to="/admin"
+                  className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 transition-colors"
+                  title="Admin Console"
+                >
+                  <ShieldCheck className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+                  <span className="hidden sm:inline">Admin Console</span>
+                </Link>
+              )}
               <Link
                 to="/dashboard"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 transition-colors"
+                className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 transition-colors"
+                title="My Dashboard"
               >
                 <LayoutDashboard className="w-3.5 h-3.5 text-blue-600 shrink-0" />
-                <span>My Dashboard</span>
+                <span className="hidden sm:inline">My Dashboard</span>
               </Link>
 
               <button
@@ -453,6 +478,15 @@ export const DashboardLayout: React.FC = () => {
                 </nav>
 
                 <div className="pt-3 border-t border-slate-200 space-y-1">
+                  {user?.role === 'admin' && (
+                    <Link
+                      to="/admin"
+                      className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold text-indigo-700 bg-indigo-50 border border-indigo-200"
+                    >
+                      <ShieldCheck className="w-4 h-4 text-indigo-600" />
+                      <span>Admin Operations Console</span>
+                    </Link>
+                  )}
                   <Link
                     to="/"
                     className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium text-[#475569] hover:bg-slate-50"

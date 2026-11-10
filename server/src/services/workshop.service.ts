@@ -14,8 +14,11 @@ export class WorkshopService {
           status: 'published',
         }).sort({ startDate: 1 });
 
-        // If database is connected but no cohorts exist yet, auto-seed default batches
-        if (workshops.length === 0) {
+        // If database is connected but no cohorts exist yet (or legacy duplicate cohorts exist), sync seedDatabase
+        const hasLegacyDuplicates = workshops.some((w: any) =>
+          ['AILP-2026-NOV-28', 'AILP-2026-DEC-12'].includes(w.batchCode)
+        );
+        if (workshops.length === 0 || hasLegacyDuplicates) {
           try {
             await seedDatabase();
             workshops = await Workshop.find({

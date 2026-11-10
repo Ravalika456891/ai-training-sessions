@@ -32,40 +32,119 @@ __export(auth_service_exports, {
 module.exports = __toCommonJS(auth_service_exports);
 var import_bcryptjs = __toESM(require("bcryptjs"));
 var import_crypto = __toESM(require("crypto"));
+var import_jsonwebtoken = __toESM(require("jsonwebtoken"));
 var import_User = require("../models/User.js");
+var import_Registration = require("../models/Registration.js");
+var import_Enrollment = require("../models/Enrollment.js");
 var import_apiError = require("../utils/apiError.js");
 var import_jwt = require("../utils/jwt.js");
 var import_db = require("../config/db.js");
+var import_env = require("../config/env.js");
 var import_memoryStore = require("./memoryStore.js");
 var import_mongoose = __toESM(require("mongoose"));
+function formatDisplayNameFromEmail(email) {
+  const prefix = (email.split("@")[0] || "Learner").replace(/[._-]+/g, " ").trim();
+  const capitalized = prefix.split(/\s+/).filter(Boolean).map((part) => part.charAt(0).toUpperCase() + part.slice(1)).join(" ");
+  const finalName = capitalized || "Student";
+  return finalName.length >= 2 ? finalName : `${finalName} Learner`;
+}
+function createRegistrationProof(user) {
+  return import_jsonwebtoken.default.sign(
+    {
+      type: "reg_proof",
+      _id: user._id,
+      email: user.email.toLowerCase().trim(),
+      name: user.name,
+      passwordHash: user.passwordHash,
+      phone: user.phone,
+      userCategory: user.userCategory,
+      experienceLevel: user.experienceLevel
+    },
+    import_env.env.JWT_SECRET,
+    { expiresIn: "365d" }
+  );
+}
+function verifyRegistrationProof(proofToken, expectedEmail) {
+  if (!proofToken) return null;
+  try {
+    const decoded = import_jsonwebtoken.default.verify(proofToken, import_env.env.JWT_SECRET);
+    if (decoded?.type !== "reg_proof") return null;
+    if (expectedEmail && decoded.email?.toLowerCase().trim() !== expectedEmail.toLowerCase().trim()) {
+      return null;
+    }
+    return decoded;
+  } catch {
+    return null;
+  }
+}
 class AuthService {
   static async register(input) {
     const email = input.email.toLowerCase().trim();
+    const rawName = (input.name || formatDisplayNameFromEmail(email)).trim();
+    const safeName = rawName.length >= 2 ? rawName : `${rawName} Learner`;
     if ((0, import_db.isDBConnected)()) {
       try {
-        const existingUser = await import_User.User.findOne({ email });
-        if (existingUser) {
-          throw import_apiError.ApiError.conflict("An account with this email address already exists.");
-        }
+        let user = await import_User.User.findOne({ email }).select("+passwordHash");
         let passwordHash;
         if (input.password) {
           passwordHash = await import_bcryptjs.default.hash(input.password, 10);
         }
-        const user = await import_User.User.create({
-          name: input.name,
-          email,
-          passwordHash,
-          phone: input.phone,
-          userCategory: input.userCategory || "working_professional",
-          experienceLevel: input.experienceLevel || "beginner",
-          marketingConsent: input.marketingConsent || false,
-          role: "learner"
-        });
+        if (user) {
+          if (user.role === "admin") {
+            throw import_apiError.ApiError.conflict("An administrator account with this email address already exists.");
+          }
+          user.name = safeName || user.name;
+          if (passwordHash) {
+            user.passwordHash = passwordHash;
+          }
+          if (input.phone) {
+            user.phone = input.phone;
+          }
+          if (input.userCategory) user.userCategory = input.userCategory;
+          if (input.experienceLevel) user.experienceLevel = input.experienceLevel;
+          await user.save();
+        } else {
+          user = await import_User.User.create({
+            name: safeName,
+            email,
+            passwordHash,
+            phone: input.phone,
+            userCategory: input.userCategory || "working_professional",
+            experienceLevel: input.experienceLevel || "beginner",
+            marketingConsent: input.marketingConsent || false,
+            role: "learner"
+          });
+        }
+        const existingMem = await import_memoryStore.memoryStore.findUserByEmail(email);
+        if (!existingMem) {
+          await import_memoryStore.memoryStore.createUser({
+            name: user.name,
+            email,
+            password: input.password,
+            phone: user.phone,
+            userCategory: user.userCategory,
+            experienceLevel: user.experienceLevel,
+            marketingConsent: user.marketingConsent,
+            role: "learner"
+          });
+        } else if (passwordHash && existingMem.role !== "admin") {
+          existingMem.name = user.name;
+          existingMem.passwordHash = passwordHash;
+        }
         const token2 = (0, import_jwt.signToken)({
           userId: user._id.toString(),
           email: user.email,
           role: user.role,
           name: user.name,
+          phone: user.phone,
+          userCategory: user.userCategory,
+          experienceLevel: user.experienceLevel
+        });
+        const registrationProof2 = createRegistrationProof({
+          _id: user._id.toString(),
+          email: user.email,
+          name: user.name,
+          passwordHash: passwordHash || user.passwordHash,
           phone: user.phone,
           userCategory: user.userCategory,
           experienceLevel: user.experienceLevel
@@ -81,32 +160,52 @@ class AuthService {
             experienceLevel: user.experienceLevel,
             createdAt: user.createdAt
           },
-          token: token2
+          token: token2,
+          registrationProof: registrationProof2
         };
       } catch (err) {
         if (err.statusCode) throw err;
         console.warn("[MongoDB Registration Fallback]", err.message);
       }
     }
-    const existingMemUser = await import_memoryStore.memoryStore.findUserByEmail(email);
-    if (existingMemUser) {
-      throw import_apiError.ApiError.conflict("An account with this email address already exists.");
+    let memUser = await import_memoryStore.memoryStore.findUserByEmail(email);
+    if (memUser) {
+      if (memUser.role === "admin") {
+        throw import_apiError.ApiError.conflict("An administrator account with this email address already exists.");
+      }
+      memUser.name = safeName || memUser.name;
+      if (input.password) {
+        memUser.passwordHash = await import_bcryptjs.default.hash(input.password, 10);
+      }
+      if (input.phone) {
+        memUser.phone = input.phone;
+      }
+    } else {
+      memUser = await import_memoryStore.memoryStore.createUser({
+        name: safeName,
+        email,
+        password: input.password,
+        phone: input.phone,
+        userCategory: input.userCategory,
+        experienceLevel: input.experienceLevel,
+        marketingConsent: input.marketingConsent,
+        role: "learner"
+      });
     }
-    const memUser = await import_memoryStore.memoryStore.createUser({
-      name: input.name,
-      email,
-      password: input.password,
-      phone: input.phone,
-      userCategory: input.userCategory,
-      experienceLevel: input.experienceLevel,
-      marketingConsent: input.marketingConsent,
-      role: "learner"
-    });
     const token = (0, import_jwt.signToken)({
       userId: memUser._id,
       email: memUser.email,
       role: memUser.role,
       name: memUser.name,
+      phone: memUser.phone,
+      userCategory: memUser.userCategory,
+      experienceLevel: memUser.experienceLevel
+    });
+    const registrationProof = createRegistrationProof({
+      _id: memUser._id,
+      email: memUser.email,
+      name: memUser.name,
+      passwordHash: memUser.passwordHash,
       phone: memUser.phone,
       userCategory: memUser.userCategory,
       experienceLevel: memUser.experienceLevel
@@ -122,21 +221,55 @@ class AuthService {
         experienceLevel: memUser.experienceLevel,
         createdAt: memUser.createdAt
       },
-      token
+      token,
+      registrationProof
     };
   }
   static async login(input) {
     const email = input.email.toLowerCase().trim();
+    const verifiedProof = verifyRegistrationProof(input.registrationProof, email);
     if ((0, import_db.isDBConnected)()) {
       try {
-        const user = await import_User.User.findOne({ email }).select("+passwordHash");
+        let user = await import_User.User.findOne({ email }).select("+passwordHash");
+        if (!user && verifiedProof) {
+          user = await import_User.User.create({
+            name: verifiedProof.name || formatDisplayNameFromEmail(email),
+            email,
+            passwordHash: verifiedProof.passwordHash,
+            phone: verifiedProof.phone || { countryCode: "+91", number: "" },
+            role: "learner",
+            userCategory: verifiedProof.userCategory || "working_professional",
+            experienceLevel: verifiedProof.experienceLevel || "beginner",
+            marketingConsent: true
+          });
+        }
+        if (!user) {
+          const existingReg = await import_Registration.Registration.findOne({ email }).sort({ createdAt: -1 });
+          const existingEnr = !existingReg ? await import_Enrollment.Enrollment.findOne({ "attendeeDetails.email": email }).sort({ createdAt: -1 }) : null;
+          if (existingReg || existingEnr) {
+            const regName = existingReg?.name || existingEnr?.attendeeDetails?.fullName || formatDisplayNameFromEmail(email);
+            const passwordHash = await import_bcryptjs.default.hash(input.password, 10);
+            user = await import_User.User.create({
+              name: regName.length >= 2 ? regName : `${regName} Learner`,
+              email,
+              passwordHash,
+              phone: existingReg?.phone ? { countryCode: "+91", number: existingReg.phone } : { countryCode: "+91", number: "" },
+              role: "learner",
+              userCategory: "working_professional",
+              experienceLevel: "beginner",
+              marketingConsent: true
+            });
+          }
+        }
         if (user) {
           if (!user.passwordHash) {
-            throw import_apiError.ApiError.unauthorized("This account was created via direct registration. Please register or reset password.");
-          }
-          const isMatch2 = await user.comparePassword(input.password);
-          if (!isMatch2) {
-            throw import_apiError.ApiError.unauthorized("Invalid email or password.");
+            user.passwordHash = await import_bcryptjs.default.hash(input.password, 10);
+            await user.save();
+          } else {
+            const isMatch = await user.comparePassword(input.password);
+            if (!isMatch) {
+              throw import_apiError.ApiError.unauthorized("Invalid email or password.");
+            }
           }
           const token2 = (0, import_jwt.signToken)({
             userId: user._id.toString(),
@@ -147,6 +280,15 @@ class AuthService {
             userCategory: user.userCategory,
             experienceLevel: user.experienceLevel
           });
+          const registrationProof2 = user.role !== "admin" ? createRegistrationProof({
+            _id: user._id.toString(),
+            email: user.email,
+            name: user.name,
+            passwordHash: user.passwordHash,
+            phone: user.phone,
+            userCategory: user.userCategory,
+            experienceLevel: user.experienceLevel
+          }) : void 0;
           return {
             user: {
               _id: user._id.toString(),
@@ -158,7 +300,8 @@ class AuthService {
               experienceLevel: user.experienceLevel,
               createdAt: user.createdAt
             },
-            token: token2
+            token: token2,
+            registrationProof: registrationProof2
           };
         }
       } catch (err) {
@@ -166,13 +309,44 @@ class AuthService {
         console.warn("[MongoDB Login Fallback]", err.message);
       }
     }
-    const memUser = await import_memoryStore.memoryStore.findUserByEmail(email);
-    if (!memUser) {
-      throw import_apiError.ApiError.unauthorized("Invalid email or password.");
+    let memUser = await import_memoryStore.memoryStore.findUserByEmail(email);
+    if (!memUser && verifiedProof) {
+      memUser = await import_memoryStore.memoryStore.restoreUserWithHash({
+        _id: verifiedProof._id,
+        name: verifiedProof.name || formatDisplayNameFromEmail(email),
+        email,
+        passwordHash: verifiedProof.passwordHash,
+        phone: verifiedProof.phone,
+        userCategory: verifiedProof.userCategory,
+        experienceLevel: verifiedProof.experienceLevel
+      });
     }
-    const isMatch = await memUser.comparePassword(input.password);
-    if (!isMatch) {
-      throw import_apiError.ApiError.unauthorized("Invalid email or password.");
+    if (!memUser) {
+      const allRegs = await import_memoryStore.memoryStore.getAllRegistrations();
+      const matchedReg = allRegs.find((r) => r.email.toLowerCase() === email);
+      if (matchedReg) {
+        memUser = await import_memoryStore.memoryStore.createUser({
+          name: matchedReg.name || formatDisplayNameFromEmail(email),
+          email,
+          password: input.password,
+          phone: matchedReg.phone ? { countryCode: "+91", number: matchedReg.phone } : { countryCode: "+91", number: "" },
+          role: "learner",
+          userCategory: "working_professional",
+          experienceLevel: "beginner",
+          marketingConsent: true
+        });
+      }
+    }
+    if (!memUser) {
+      throw import_apiError.ApiError.unauthorized("Account not found. Please create an account first.");
+    }
+    if (!memUser.passwordHash || memUser.passwordHash === "no_password_set") {
+      memUser.passwordHash = await import_bcryptjs.default.hash(input.password, 10);
+    } else {
+      const isMatch = await memUser.comparePassword(input.password);
+      if (!isMatch) {
+        throw import_apiError.ApiError.unauthorized("Invalid email or password.");
+      }
     }
     const token = (0, import_jwt.signToken)({
       userId: memUser._id,
@@ -183,6 +357,15 @@ class AuthService {
       userCategory: memUser.userCategory,
       experienceLevel: memUser.experienceLevel
     });
+    const registrationProof = memUser.role !== "admin" ? createRegistrationProof({
+      _id: memUser._id,
+      email: memUser.email,
+      name: memUser.name,
+      passwordHash: memUser.passwordHash,
+      phone: memUser.phone,
+      userCategory: memUser.userCategory,
+      experienceLevel: memUser.experienceLevel
+    }) : void 0;
     return {
       user: {
         _id: memUser._id,
@@ -194,7 +377,8 @@ class AuthService {
         experienceLevel: memUser.experienceLevel,
         createdAt: memUser.createdAt
       },
-      token
+      token,
+      registrationProof
     };
   }
   static async googleAuth(input) {
@@ -211,27 +395,50 @@ class AuthService {
       }
     }
     const email = (payload?.email || input.email || "").toLowerCase().trim();
-    if (!email) {
-      throw import_apiError.ApiError.badRequest("A valid email address is required for Google Sign-In.");
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email || !emailRegex.test(email)) {
+      throw import_apiError.ApiError.badRequest("Please enter a valid email address (e.g., you@gmail.com).");
     }
-    const name = payload?.name || input.name || email.split("@")[0];
+    const rawPassword = input.password ? String(input.password) : void 0;
+    if (input.mode !== "register" && !input.credential) {
+      if (!rawPassword) {
+        throw import_apiError.ApiError.badRequest("Please enter your password to sign in.");
+      }
+      return AuthService.login({
+        email,
+        password: rawPassword,
+        registrationProof: input.registrationProof
+      });
+    }
+    const rawName = (payload?.name || input.name || email.split("@")[0] || "Learner").trim();
+    const name = rawName.length >= 2 ? rawName : `${rawName} Learner`;
     const googleId = payload?.sub || input.googleId || `g_${Date.now()}`;
     const avatarUrl = payload?.picture || input.avatarUrl;
     if ((0, import_db.isDBConnected)()) {
       try {
         let user = await import_User.User.findOne({
           $or: [{ email }, { googleId }]
-        });
+        }).select("+passwordHash");
         if (user) {
+          let needsSave = false;
           if (!user.googleId) {
             user.googleId = googleId;
             if (avatarUrl && !user.avatarUrl) user.avatarUrl = avatarUrl;
+            needsSave = true;
+          }
+          if (rawPassword) {
+            user.passwordHash = await import_bcryptjs.default.hash(rawPassword, 10);
+            needsSave = true;
+          }
+          if (needsSave) {
             await user.save();
           }
         } else {
+          const passwordHash = rawPassword ? await import_bcryptjs.default.hash(rawPassword, 10) : void 0;
           user = await import_User.User.create({
             name,
             email,
+            passwordHash,
             googleId,
             avatarUrl,
             role: "learner",
@@ -249,6 +456,15 @@ class AuthService {
           userCategory: user.userCategory,
           experienceLevel: user.experienceLevel
         });
+        const registrationProof2 = createRegistrationProof({
+          _id: user._id.toString(),
+          email: user.email,
+          name: user.name,
+          passwordHash: user.passwordHash,
+          phone: user.phone,
+          userCategory: user.userCategory,
+          experienceLevel: user.experienceLevel
+        });
         return {
           user: {
             _id: user._id.toString(),
@@ -261,9 +477,11 @@ class AuthService {
             experienceLevel: user.experienceLevel,
             createdAt: user.createdAt
           },
-          token: token2
+          token: token2,
+          registrationProof: registrationProof2
         };
       } catch (dbErr) {
+        if (dbErr.statusCode) throw dbErr;
         console.warn("[MongoDB Google Auth Fallback]", dbErr.message);
       }
     }
@@ -272,17 +490,29 @@ class AuthService {
       memUser = await import_memoryStore.memoryStore.createUser({
         name,
         email,
+        password: rawPassword,
         googleId,
         avatarUrl,
         role: "learner",
         marketingConsent: true
       });
+    } else if (rawPassword) {
+      memUser.passwordHash = await import_bcryptjs.default.hash(rawPassword, 10);
     }
     const token = (0, import_jwt.signToken)({
       userId: memUser._id,
       email: memUser.email,
       role: memUser.role,
       name: memUser.name,
+      phone: memUser.phone,
+      userCategory: memUser.userCategory,
+      experienceLevel: memUser.experienceLevel
+    });
+    const registrationProof = createRegistrationProof({
+      _id: memUser._id,
+      email: memUser.email,
+      name: memUser.name,
+      passwordHash: memUser.passwordHash,
       phone: memUser.phone,
       userCategory: memUser.userCategory,
       experienceLevel: memUser.experienceLevel
@@ -299,7 +529,8 @@ class AuthService {
         experienceLevel: memUser.experienceLevel,
         createdAt: memUser.createdAt
       },
-      token
+      token,
+      registrationProof
     };
   }
   static async getMe(userId, fallbackUser) {

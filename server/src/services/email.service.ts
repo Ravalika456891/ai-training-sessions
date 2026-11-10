@@ -1,4 +1,5 @@
 import nodemailer from 'nodemailer';
+import type { Transporter } from 'nodemailer';
 import { env } from '../config/env.js';
 
 export interface EmailDispatchResult {
@@ -9,9 +10,9 @@ export interface EmailDispatchResult {
 }
 
 export class EmailService {
-  private static transporter: nodemailer.Transporter | null = null;
+  private static transporter: Transporter | null = null;
 
-  private static getTransporter(): nodemailer.Transporter | null {
+  private static getTransporter(): Transporter | null {
     if (this.transporter) return this.transporter;
 
     if (env.SMTP_HOST && env.SMTP_USER && env.SMTP_PASS) {
