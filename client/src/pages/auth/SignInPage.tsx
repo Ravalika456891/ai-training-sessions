@@ -389,16 +389,18 @@ export const SignInPage: React.FC = () => {
                 </svg>
                 <span>Sign in with Google</span>
               </button>
-              {/* Quick Admin Portal Sign-In */}
-              <button
-                type="button"
-                onClick={handleQuickAdminLogin}
-                disabled={isLoading}
-                className="w-full mt-2.5 flex items-center justify-center gap-2 py-2.5 px-4 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 rounded-xl text-xs font-bold text-indigo-700 transition-all cursor-pointer"
-              >
-                <ShieldCheck className="w-4 h-4 text-indigo-600 shrink-0" />
-                <span>Sign In as Administrator (Admin Console)</span>
-              </button>
+              {/* Quick Admin Portal Sign-In - Only visible on explicit admin routes (/admin/login or ?portal=admin), never for normal users on /signin */}
+              {isAdminRoute && (
+                <button
+                  type="button"
+                  onClick={handleQuickAdminLogin}
+                  disabled={isLoading}
+                  className="w-full mt-2.5 flex items-center justify-center gap-2 py-2.5 px-4 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 rounded-xl text-xs font-bold text-indigo-700 transition-all cursor-pointer"
+                >
+                  <ShieldCheck className="w-4 h-4 text-indigo-600 shrink-0" />
+                  <span>Sign In as Administrator (Admin Console)</span>
+                </button>
+              )}
             </>
           )}
 

@@ -408,32 +408,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 <span>Sign in with Google</span>
               </button>
 
-              {/* Quick Admin Portal Sign-In */}
-              <button
-                type="button"
-                onClick={async () => {
-                  setError(null);
-                  setIsLoading(true);
-                  try {
-                    const res = await api.login('admin@ailaunchpad.edu', 'AdminLaunchpad2026!');
-                    if (res.success) {
-                      await refreshUser();
-                      onClose();
-                      navigate('/admin');
-                    }
-                  } catch (err: any) {
-                    setError(err.message || 'Admin login failed.');
-                  } finally {
-                    setIsLoading(false);
-                  }
-                }}
-                disabled={isGoogleLoading || isLoading}
-                className="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 rounded-xl text-xs font-bold text-indigo-700 transition-all cursor-pointer"
-              >
-                <Lock className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
-                <span>Sign In as Administrator (Admin Console)</span>
-              </button>
-
               {/* Toggle between login and register */}
               <div className="mt-5 text-center text-xs text-slate-500 border-t border-slate-200 pt-4">
                 {mode === 'login' ? (

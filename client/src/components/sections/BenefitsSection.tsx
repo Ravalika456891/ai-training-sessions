@@ -136,11 +136,10 @@ export const BenefitsSection: React.FC<BenefitsSectionProps> = ({ onRegisterClic
                 <button
                   key={item.persona}
                   onClick={() => setActivePersonaIndex(idx)}
-                  className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all ${
-                    activePersonaIndex === idx
+                  className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all ${activePersonaIndex === idx
                       ? 'bg-blue-600 text-white shadow-sm'
                       : 'text-[#475569] hover:text-[#0F172A] hover:bg-slate-200/60'
-                  }`}
+                    }`}
                 >
                   {getPersonaIcon(item.iconName)}
                   <span>{item.persona}</span>
