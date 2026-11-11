@@ -140,13 +140,13 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 
               {/* Clean Visual + Essential Info Only */}
               <div className="p-5 sm:p-6 space-y-5">
-                <div className="relative rounded-2xl overflow-hidden aspect-[16/9] bg-slate-100 border border-slate-200">
+                <div className="group relative rounded-2xl overflow-hidden aspect-[16/9] bg-[#081E4A] border border-slate-200 shadow-inner">
                   <img
-                    src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=900&q=80"
+                    src="/assets/hero-cohort-showcase.jpg"
                     alt="AI Launchpad Live Bootcamp"
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/75 via-slate-950/20 to-transparent flex items-end p-4">
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/20 to-transparent flex items-end p-4">
                     <div className="text-white">
                       <span className="inline-block text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-md bg-blue-600 text-white mb-1">
                         Batch {currentBatch.batchCode}
