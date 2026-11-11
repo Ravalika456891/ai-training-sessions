@@ -13,6 +13,14 @@
     overflow-x: hidden;
   }
 
+  a {
+    text-decoration: none;
+    color: inherit;
+  }
+  a:hover {
+    text-decoration: none;
+  }
+
   select {
     appearance: none;
     -webkit-appearance: none;

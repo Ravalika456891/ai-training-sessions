@@ -111,7 +111,54 @@ export const DashboardOverview: React.FC = () => {
           </div>
         </div>
 
-        {/* 2. Clear 3-Step Enrollment & Payment Guide */}
+        {/* 2. Bootstrap 5 KPI Metric Overview Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="p-5 rounded-2xl bg-white border border-slate-200/90 shadow-xs flex items-center gap-3.5">
+            <div className="w-11 h-11 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 border border-blue-100">
+              <Calendar className="w-5 h-5 text-blue-600" />
+            </div>
+            <div>
+              <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Cohort Batch</div>
+              <div className="text-sm font-black text-[#0F172A] mt-0.5">Nov 14 – 15, 2026</div>
+              <div className="text-[11px] font-semibold text-blue-600">Saturday & Sunday</div>
+            </div>
+          </div>
+
+          <div className="p-5 rounded-2xl bg-white border border-slate-200/90 shadow-xs flex items-center gap-3.5">
+            <div className="w-11 h-11 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0 border border-indigo-100">
+              <Clock className="w-5 h-5 text-indigo-600" />
+            </div>
+            <div>
+              <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Live Training</div>
+              <div className="text-sm font-black text-[#0F172A] mt-0.5">10 Hours Total</div>
+              <div className="text-[11px] font-semibold text-indigo-600">10:00 AM – 3:00 PM IST</div>
+            </div>
+          </div>
+
+          <div className="p-5 rounded-2xl bg-white border border-slate-200/90 shadow-xs flex items-center gap-3.5">
+            <div className="w-11 h-11 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center shrink-0 border border-purple-100">
+              <Sparkles className="w-5 h-5 text-purple-600" />
+            </div>
+            <div>
+              <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">AI Toolkit</div>
+              <div className="text-sm font-black text-[#0F172A] mt-0.5">8+ Industry Tools</div>
+              <div className="text-[11px] font-semibold text-purple-600">5 Capstone Projects</div>
+            </div>
+          </div>
+
+          <div className="p-5 rounded-2xl bg-white border border-slate-200/90 shadow-xs flex items-center gap-3.5">
+            <div className="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 border border-emerald-100">
+              <Award className="w-5 h-5 text-emerald-600" />
+            </div>
+            <div>
+              <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Certification</div>
+              <div className="text-sm font-black text-[#0F172A] mt-0.5">Alumni Credential</div>
+              <div className="text-[11px] font-semibold text-emerald-600">Cryptographically Signed</div>
+            </div>
+          </div>
+        </div>
+
+        {/* 3. Clear 3-Step Enrollment & Payment Guide */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-xs flex items-start gap-3.5">
             <div className="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 font-black text-xs flex items-center justify-center shrink-0 border border-indigo-200">
@@ -152,31 +199,292 @@ export const DashboardOverview: React.FC = () => {
 
         {/* 3. Pending Reservation Callout (if the user already started enrollment) */}
         {pendingWorkshop && (
-          <div className="p-6 rounded-3xl bg-amber-50/90 border border-amber-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div className="space-y-1">
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-md bg-amber-100 text-amber-800 border border-amber-300">
-                  Seat Reserved • Payment Pending
-                </span>
-                <span className="text-xs font-mono font-bold text-slate-600">
-                  ID: {pendingWorkshop.enrollmentId}
-                </span>
+          <div className="space-y-6">
+            {/* Top Alert Bar */}
+            <div className="p-6 rounded-3xl bg-amber-50/90 border border-amber-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xs">
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-md bg-amber-100 text-amber-800 border border-amber-300">
+                    Seat Reserved • Payment Pending
+                  </span>
+                  <span className="text-xs font-mono font-bold text-slate-600">
+                    Enrollment ID: {pendingWorkshop.enrollmentId}
+                  </span>
+                </div>
+                <h3 className="text-base font-extrabold text-[#0F172A]">
+                  {pendingWorkshop.workshop?.title} ({pendingWorkshop.workshop?.batchCode})
+                </h3>
+                <p className="text-xs text-slate-600">
+                  Your seat is temporarily reserved. Complete your payment below to confirm your admission and unlock all learning modules.
+                </p>
               </div>
-              <h3 className="text-base font-extrabold text-[#0F172A]">
-                {pendingWorkshop.workshop?.title} ({pendingWorkshop.workshop?.batchCode})
-              </h3>
-              <p className="text-xs text-slate-600">
-                Complete your payment to confirm your enrollment and unlock all learning modules.
-              </p>
+
+              <button
+                onClick={() => openCheckout(pendingWorkshop.enrollmentId)}
+                className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-sm hover:shadow-md transition-all cursor-pointer shrink-0"
+              >
+                <CreditCard className="w-4 h-4" />
+                <span>Complete Payment Now</span>
+              </button>
             </div>
 
-            <button
-              onClick={() => openCheckout(pendingWorkshop.enrollmentId)}
-              className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-sm transition-all cursor-pointer shrink-0"
-            >
-              <CreditCard className="w-4 h-4" />
-              <span>Complete Payment Now</span>
-            </button>
+            {/* Comprehensive Reservation & Order Summary Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+              {/* Left Column (8 cols): Cohort Details & What You'll Learn */}
+              <div className="lg:col-span-8 space-y-6">
+                {/* Cohort Spec Card */}
+                <div className="p-6 sm:p-7 rounded-3xl bg-white border border-slate-200 shadow-xs space-y-5">
+                  <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+                    <div>
+                      <h4 className="text-base font-extrabold text-[#0F172A]">Reserved Workshop Details</h4>
+                      <p className="text-xs text-slate-500">Live 2-day interactive bootcamp led by senior industry AI architects</p>
+                    </div>
+                    <span className="px-3 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200">
+                      {pendingWorkshop.workshop?.batchCode || 'AILP-2026-NOV-14'}
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="flex items-start gap-3 p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80">
+                      <Calendar className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
+                      <div>
+                        <div className="text-[11px] font-bold text-slate-400 uppercase">Dates & Schedule</div>
+                        <div className="text-xs font-extrabold text-[#0F172A] mt-0.5">
+                          {pendingWorkshop.workshop?.startDate
+                            ? `${new Date(pendingWorkshop.workshop.startDate).toLocaleDateString('en-US', {
+                                month: 'short',
+                                day: 'numeric',
+                              })} – ${new Date(pendingWorkshop.workshop.endDate).toLocaleDateString('en-US', {
+                                month: 'short',
+                                day: 'numeric',
+                                year: 'numeric',
+                              })}`
+                            : 'Nov 14 – Nov 15, 2026'}
+                        </div>
+                        <div className="text-[11px] text-slate-500">Saturday & Sunday</div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-start gap-3 p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80">
+                      <Clock className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
+                      <div>
+                        <div className="text-[11px] font-bold text-slate-400 uppercase">Timings & Format</div>
+                        <div className="text-xs font-extrabold text-[#0F172A] mt-0.5">
+                          {pendingWorkshop.workshop?.timings || '10:00 AM – 3:00 PM IST'}
+                        </div>
+                        <div className="text-[11px] text-slate-500">10 Hours Total • Live Online</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Mentor Info */}
+                  <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-center gap-4">
+                    <img
+                      src={
+                        pendingWorkshop.workshop?.instructor?.avatarUrl ||
+                        'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80'
+                      }
+                      alt="Instructor"
+                      className="w-12 h-12 rounded-xl object-cover border border-slate-200"
+                    />
+                    <div>
+                      <div className="text-xs font-bold text-[#0F172A]">
+                        {pendingWorkshop.workshop?.instructor?.name || 'Vikram Malhotra'}
+                      </div>
+                      <div className="text-[11px] text-blue-600 font-medium">
+                        {pendingWorkshop.workshop?.instructor?.role || 'Staff AI Engineer & Former ML Lead'}
+                      </div>
+                      <p className="text-[11px] text-slate-500 mt-0.5 line-clamp-1">
+                        {pendingWorkshop.workshop?.instructor?.bio || 'Over 12 years building production software and 4 years leading enterprise LLM integrations.'}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* What Unlocks Upon Payment */}
+                  <div className="space-y-3 pt-2">
+                    <h5 className="text-xs font-bold text-[#0F172A] uppercase tracking-wider text-slate-500">
+                      Included with Your Enrollment
+                    </h5>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                      <div className="flex items-center gap-2 text-xs text-slate-700">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                        <span>Live Interactive HD Video Sessions</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-xs text-slate-700">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                        <span>100+ Production Prompt Templates</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-xs text-slate-700">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                        <span>Capstone Project Review & Feedback</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-xs text-slate-700">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                        <span>Cryptographically Verified Certificate</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 2-Day Detailed Syllabus Accordion / Timeline Card */}
+                <div className="p-6 sm:p-7 rounded-3xl bg-white border border-slate-200 shadow-xs space-y-4">
+                  <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <div>
+                      <h4 className="text-sm font-extrabold text-[#0F172A]">2-Day Hands-On Curriculum Breakdown</h4>
+                      <p className="text-xs text-slate-500">Structured for immediate workplace applicability with live coding</p>
+                    </div>
+                    <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2.5 py-1 rounded-lg border border-blue-200">
+                      10 Modules Total
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
+                    {/* Day 1 */}
+                    <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded bg-blue-100 text-blue-800">
+                          Day 1 • Saturday (5 Hours)
+                        </span>
+                        <span className="text-[11px] text-slate-500 font-medium">10 AM – 3 PM IST</span>
+                      </div>
+                      <h5 className="text-xs font-extrabold text-[#0F172A]">Prompt Architecture, Multi-Modal AI & Agentic Workflows</h5>
+                      <ul className="space-y-1.5 text-[11px] text-slate-600">
+                        <li className="flex items-start gap-1.5">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-blue-600 shrink-0 mt-0.5" />
+                          <span>System Prompting & Multi-turn Context Windows (ChatGPT, Claude 3.5 Sonnet)</span>
+                        </li>
+                        <li className="flex items-start gap-1.5">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-blue-600 shrink-0 mt-0.5" />
+                          <span>Structured Outputs & JSON Schema Generation</span>
+                        </li>
+                        <li className="flex items-start gap-1.5">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-blue-600 shrink-0 mt-0.5" />
+                          <span>Multi-Modal Prompting (Image, Audio, PDF extraction)</span>
+                        </li>
+                        <li className="flex items-start gap-1.5">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-blue-600 shrink-0 mt-0.5" />
+                          <span>Hands-On Lab: Build an Autonomous Research Agent</span>
+                        </li>
+                      </ul>
+                    </div>
+
+                    {/* Day 2 */}
+                    <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded bg-purple-100 text-purple-800">
+                          Day 2 • Sunday (5 Hours)
+                        </span>
+                        <span className="text-[11px] text-slate-500 font-medium">10 AM – 3 PM IST</span>
+                      </div>
+                      <h5 className="text-xs font-extrabold text-[#0F172A]">Full-Stack AI Apps, Vector DBs & Production Deployment</h5>
+                      <ul className="space-y-1.5 text-[11px] text-slate-600">
+                        <li className="flex items-start gap-1.5">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-purple-600 shrink-0 mt-0.5" />
+                          <span>Function Calling & Tool Execution with External APIs</span>
+                        </li>
+                        <li className="flex items-start gap-1.5">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-purple-600 shrink-0 mt-0.5" />
+                          <span>RAG Architecture with Pinecone Vector Database</span>
+                        </li>
+                        <li className="flex items-start gap-1.5">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-purple-600 shrink-0 mt-0.5" />
+                          <span>AI Workflow Automation with n8n & Webhooks</span>
+                        </li>
+                        <li className="flex items-start gap-1.5">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-purple-600 shrink-0 mt-0.5" />
+                          <span>Capstone: Deploy Live AI Micro-SaaS to Production</span>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Bootcamp Prerequisites & What to Prepare */}
+                <div className="p-6 sm:p-7 rounded-3xl bg-white border border-slate-200 shadow-xs space-y-3">
+                  <h4 className="text-sm font-extrabold text-[#0F172A]">Student Prerequisites & Preparation</h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs text-slate-600">
+                    <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-100 space-y-1">
+                      <div className="font-bold text-[#0F172A]">1. Laptop & Browser</div>
+                      <p className="text-[11px] text-slate-500 leading-relaxed">
+                        Any Windows, Mac, or Linux laptop with Google Chrome or modern browser.
+                      </p>
+                    </div>
+                    <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-100 space-y-1">
+                      <div className="font-bold text-[#0F172A]">2. Free AI Accounts</div>
+                      <p className="text-[11px] text-slate-500 leading-relaxed">
+                        Free tier accounts on OpenAI, Anthropic Claude, and Cursor (setup guide provided).
+                      </p>
+                    </div>
+                    <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-100 space-y-1">
+                      <div className="font-bold text-[#0F172A]">3. Zero Coding Barrier</div>
+                      <p className="text-[11px] text-slate-500 leading-relaxed">
+                        Beginner-friendly step-by-step guidance. No prior ML or Python experience needed.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Column (4 cols): Pricing Breakdown & Action */}
+              <div className="lg:col-span-4 space-y-6">
+                <div className="p-6 rounded-3xl bg-white border border-slate-200 shadow-xs space-y-5">
+                  <h4 className="text-sm font-extrabold text-[#0F172A] border-b border-slate-100 pb-3">
+                    Order Summary
+                  </h4>
+
+                  <div className="space-y-2.5 text-xs text-slate-600">
+                    <div className="flex items-center justify-between">
+                      <span>Tuition Fee</span>
+                      <span className="font-semibold text-slate-800">
+                        ₹{(pendingWorkshop.workshop?.price?.basePrice || 1999).toLocaleString('en-IN')}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span>GST (18%)</span>
+                      <span className="font-semibold text-slate-800">
+                        ₹{Math.round((pendingWorkshop.workshop?.price?.basePrice || 1999) * 0.18).toLocaleString('en-IN')}
+                      </span>
+                    </div>
+                    <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-sm font-black text-[#0F172A]">
+                      <span>Total Due</span>
+                      <span className="text-blue-600 text-base">
+                        ₹{(Math.round((pendingWorkshop.workshop?.price?.basePrice || 1999) * 1.18)).toLocaleString('en-IN')}
+                      </span>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => openCheckout(pendingWorkshop.enrollmentId)}
+                    className="w-full inline-flex items-center justify-center gap-2 py-3.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-md hover:shadow-lg transition-all cursor-pointer"
+                  >
+                    <CreditCard className="w-4 h-4" />
+                    <span>Pay ₹{(Math.round((pendingWorkshop.workshop?.price?.basePrice || 1999) * 1.18)).toLocaleString('en-IN')} to Confirm</span>
+                  </button>
+
+                  <div className="space-y-2 pt-2 border-t border-slate-100 text-[11px] text-slate-500">
+                    <div className="flex items-center gap-1.5">
+                      <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                      <span>Razorpay 256-bit SSL encrypted checkout</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                      <span>Instant confirmation & invoice sent via email</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Need Assistance Card */}
+                <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 text-xs text-slate-600 space-y-2">
+                  <div className="font-bold text-[#0F172A]">Need Assistance?</div>
+                  <p className="text-[11px] leading-relaxed">
+                    Have questions about the cohort, group registrations, or billing? Reach out to our admissions team at{' '}
+                    <a href="mailto:support@ailaunchpad.edu" className="text-blue-600 font-semibold hover:underline">
+                      support@ailaunchpad.edu
+                    </a>
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         )}
 

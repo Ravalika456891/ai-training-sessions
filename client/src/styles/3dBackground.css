@@ -36,10 +36,11 @@
   position: absolute;
   inset: 0;
   background-image: 
-    linear-gradient(180deg, #ffffff 0%, rgba(255, 255, 255, 0.95) 18%, rgba(248, 250, 252, 0.8) 55%, rgba(241, 245, 249, 0.88) 100%),
-    url('/assets/3d-bootstrap-bg.svg');
-  background-size: cover;
-  background-position: center top;
+    linear-gradient(180deg, #ffffff 0%, rgba(255, 255, 255, 0.92) 15%, rgba(248, 250, 252, 0.82) 55%, #ffffff 100%),
+    url('/assets/3d-bootstrap-bg.svg'),
+    url('/assets/3d-view-background.jpg');
+  background-size: cover, cover, cover;
+  background-position: center top, center top, center center;
   background-repeat: no-repeat;
   opacity: 1;
   pointer-events: none;
