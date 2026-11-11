@@ -379,87 +379,87 @@ export const DashboardOverview: React.FC = () => {
 
     // Case B: User has NOT selected or reserved any batch yet
     return (
-      <div className="space-y-6">
-        {/* 1. Personalized Welcome Banner (Light Theme) */}
-        <div className="p-5 sm:p-6 rounded-2xl bg-gradient-to-r from-blue-50/80 via-white to-indigo-50/40 text-[#0F172A] border border-blue-200 shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-5">
-          <div className="space-y-1.5">
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-100/80 border border-blue-200 text-blue-700 text-xs font-semibold">
+      <div className="space-y-4 sm:space-y-5">
+        {/* 1. Compact Welcome Banner (Responsive: Phone & Desktop) */}
+        <div className="p-4 sm:p-6 rounded-2xl bg-gradient-to-r from-blue-50/80 via-white to-indigo-50/40 text-[#0F172A] border border-blue-200 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="space-y-1">
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-100/80 border border-blue-200 text-blue-700 text-[11px] font-semibold">
               <Sparkles className="w-3.5 h-3.5 text-blue-600" />
               <span>Welcome to AI Launchpad</span>
             </div>
-            <h2 className="text-xl sm:text-2xl font-black tracking-tight text-[#0F172A]">
+            <h2 className="text-lg sm:text-2xl font-black tracking-tight text-[#0F172A]">
               Hello, {user?.name || 'Learner'}!
             </h2>
-            <p className="text-xs sm:text-sm text-slate-600 max-w-xl leading-relaxed">
-              Your learner account is ready. Select an upcoming 2-Day Hands-On AI Bootcamp cohort below and complete enrollment to unlock your live classes, prompt libraries, assignments, and certificate.
+            <p className="text-xs sm:text-sm text-slate-600 max-w-2xl leading-relaxed">
+              Your learner account is ready. Enroll in the upcoming 2-Day Hands-On AI Bootcamp cohort below to unlock live classes, prompt libraries, assignments, and your verified certificate.
             </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-2.5 shrink-0">
             <button
               onClick={scrollToBatches}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-sm transition-all cursor-pointer"
+              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-sm transition-all cursor-pointer"
             >
-              <span>Explore Workshops</span>
+              <span>Enroll Now</span>
               <ArrowRight className="w-4 h-4" />
             </button>
             <Link
               to="/dashboard/profile"
-              className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-[#0F172A] text-xs font-semibold shadow-2xs transition-colors"
+              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-[#0F172A] text-xs font-semibold shadow-2xs transition-colors"
             >
               <User className="w-4 h-4 text-blue-600" />
-              <span>Profile Settings</span>
+              <span>Profile</span>
             </Link>
           </div>
         </div>
 
-        {/* 2. Clear 3-Step Enrollment Guide */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
-          <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-2xs flex items-start gap-3">
+        {/* 2. Compact 3-Step Enrollment Guide (Responsive 1-col mobile, 3-col desktop) */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
+          <div className="p-3.5 sm:p-4 rounded-xl bg-white border border-slate-200 shadow-2xs flex items-start gap-3">
             <div className="w-7 h-7 rounded-lg bg-indigo-50 text-indigo-600 font-black text-xs flex items-center justify-center shrink-0 border border-indigo-200">
               1
             </div>
             <div>
-              <h3 className="text-xs font-bold text-[#0F172A]">Choose Your Weekend Batch</h3>
+              <h3 className="text-xs font-bold text-[#0F172A]">Confirm Your Cohort</h3>
               <p className="text-[11px] text-slate-500 mt-0.5 leading-relaxed">
-                Pick a Saturday & Sunday cohort that fits your schedule. Seats are capped at 60 learners.
+                Reserve your seat in the upcoming weekend live bootcamp (max 60 learners).
               </p>
             </div>
           </div>
 
-          <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-2xs flex items-start gap-3">
+          <div className="p-3.5 sm:p-4 rounded-xl bg-white border border-slate-200 shadow-2xs flex items-start gap-3">
             <div className="w-7 h-7 rounded-lg bg-purple-50 text-purple-600 font-black text-xs flex items-center justify-center shrink-0 border border-purple-200">
               2
             </div>
             <div>
               <h3 className="text-xs font-bold text-[#0F172A]">Complete Verified Payment</h3>
               <p className="text-[11px] text-slate-500 mt-0.5 leading-relaxed">
-                Confirm your seat securely via Razorpay (UPI, Cards, NetBanking) with instant GST receipt.
+                Pay securely via Razorpay (UPI, Cards, NetBanking) with instant GST receipt.
               </p>
             </div>
           </div>
 
-          <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-2xs flex items-start gap-3">
+          <div className="p-3.5 sm:p-4 rounded-xl bg-white border border-slate-200 shadow-2xs flex items-start gap-3">
             <div className="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 font-black text-xs flex items-center justify-center shrink-0 border border-emerald-200">
               3
             </div>
             <div>
               <h3 className="text-xs font-bold text-[#0F172A]">Start Learning Immediately</h3>
               <p className="text-[11px] text-slate-500 mt-0.5 leading-relaxed">
-                Your dashboard automatically unlocks Live Classes, Slides, Prompt Templates, and Assignments.
+                Dashboard unlocks Live Classes, Slides, Prompt Templates, and Assignments.
               </p>
             </div>
           </div>
         </div>
 
-        {/* 3. Preserved Workshop Selection from Public Landing Page */}
-        {highlightedBatch && preservedBatchId && (
-          <div className="p-6 rounded-3xl bg-indigo-50/70 border border-indigo-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        {/* 3. Preserved Workshop Selection (Only shown if multiple cohorts exist) */}
+        {availableWorkshops.length > 1 && highlightedBatch && preservedBatchId && (
+          <div className="p-4 sm:p-5 rounded-2xl bg-indigo-50/70 border border-indigo-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="space-y-1">
-              <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-md bg-indigo-100 text-indigo-700">
+              <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-indigo-100 text-indigo-700">
                 Saved Selection
               </span>
-              <h3 className="text-base font-extrabold text-[#0F172A]">
+              <h3 className="text-sm font-extrabold text-[#0F172A]">
                 Continue Enrolling in {highlightedBatch.batchCode}
               </h3>
               <p className="text-xs text-slate-600">
@@ -480,29 +480,35 @@ export const DashboardOverview: React.FC = () => {
             <button
               disabled={isEnrolling}
               onClick={() => enrollInBatch(highlightedBatch._id)}
-              className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-sm transition-all cursor-pointer shrink-0 disabled:opacity-60"
+              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-sm transition-all cursor-pointer shrink-0 disabled:opacity-60"
             >
-              <span>{isEnrolling ? 'Reserving...' : 'Continue to Enrollment & Payment'}</span>
+              <span>{isEnrolling ? 'Reserving...' : 'Continue to Payment'}</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>
         )}
 
-        {/* 5. Available Workshop Cohorts - Display all sessions initially; once selection for payment is made, this is hidden */}
+        {/* 4. Available Training Session(s) — Full-Width Responsive Showcase */}
         {!hasConfirmedEnrollment && !pendingWorkshop && workshops.length === 0 && availableWorkshops.length > 0 && (
-          <div id="available-batches" className="space-y-4 scroll-mt-20">
-            <div className="flex items-center justify-between">
+          <div id="available-batches" className="space-y-3 scroll-mt-20">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
               <div>
-                <h3 className="text-lg font-extrabold text-[#0F172A]">Available Training Sessions</h3>
+                <h3 className="text-base sm:text-lg font-extrabold text-[#0F172A]">
+                  Upcoming Workshop Cohort
+                </h3>
                 <p className="text-xs text-slate-500">
-                  All upcoming workshop sessions are shown below. Select your preferred cohort to proceed to payment.
+                  Review the full 2-day bootcamp details and confirm your enrollment seat below.
                 </p>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-              {availableWorkshops.map((batch: any) => {
+            {availableWorkshops.length === 1 ? (
+              // Full-width 12-column layout for single active cohort (zero empty gaps on desktop & clean stack on phone)
+              (() => {
+                const batch = availableWorkshops[0];
                 const basePrice = batch.price?.basePrice ?? 1999;
+                const gstAmount = Math.round(basePrice * 0.18);
+                const totalAmount = basePrice + gstAmount;
                 const isFree = Boolean(batch.price?.isFree || basePrice === 0);
                 const dateRange = `${new Date(batch.startDate).toLocaleDateString('en-US', {
                   month: 'short',
@@ -514,72 +520,268 @@ export const DashboardOverview: React.FC = () => {
                 })}`;
 
                 return (
-                  <div
-                    key={batch._id}
-                    className="p-6 rounded-3xl bg-white border border-slate-200 hover:border-indigo-300 shadow-xs flex flex-col justify-between space-y-5 transition-all"
-                  >
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="font-mono text-xs font-bold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-lg border border-indigo-200">
-                          {batch.batchCode}
-                        </span>
-                        <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
-                          {batch.availableSeats} of {batch.capacity} seats open
-                        </span>
-                      </div>
-
-                      <div>
-                        <h4 className="text-base font-extrabold text-[#0F172A]">{batch.title}</h4>
-                        <p className="text-xs text-slate-500 mt-1 line-clamp-2">
-                          {batch.description}
-                        </p>
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-2.5 pt-1 text-xs">
-                        <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center gap-2">
-                          <Calendar className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
-                          <span className="font-semibold text-[#0F172A] truncate">{dateRange}</span>
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-5 items-stretch">
+                    {/* Left 8 Columns: Complete Workshop Details & 2-Day Curriculum Preview */}
+                    <div className="lg:col-span-8 p-4 sm:p-6 rounded-2xl bg-white border border-slate-200 shadow-2xs flex flex-col justify-between space-y-4">
+                      <div className="space-y-4">
+                        {/* Batch Header */}
+                        <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-100">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span className="font-mono text-xs font-bold text-blue-700 bg-blue-50 px-2.5 py-1 rounded-lg border border-blue-200">
+                              {batch.batchCode}
+                            </span>
+                            <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
+                              {batch.availableSeats} of {batch.capacity} seats open
+                            </span>
+                          </div>
+                          <span className="text-[11px] font-semibold text-slate-500">
+                            Live Online Bootcamp
+                          </span>
                         </div>
-                        <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center gap-2">
-                          <Clock className="w-3.5 h-3.5 text-purple-600 shrink-0" />
-                          <span className="font-semibold text-[#0F172A] truncate">{batch.timings}</span>
+
+                        {/* Title & Description */}
+                        <div>
+                          <h4 className="text-base sm:text-xl font-black text-[#0F172A]">
+                            {batch.title}
+                          </h4>
+                          <p className="text-xs sm:text-sm text-slate-600 mt-1 leading-relaxed">
+                            {batch.description}
+                          </p>
+                        </div>
+
+                        {/* Dates & Timings Row */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                          <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-lg bg-blue-100/70 text-blue-600 flex items-center justify-center shrink-0">
+                              <Calendar className="w-4 h-4" />
+                            </div>
+                            <div>
+                              <div className="text-[10px] font-bold text-slate-400 uppercase">Dates</div>
+                              <div className="font-bold text-[#0F172A]">{dateRange} (Sat & Sun)</div>
+                            </div>
+                          </div>
+
+                          <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-lg bg-purple-100/70 text-purple-600 flex items-center justify-center shrink-0">
+                              <Clock className="w-4 h-4" />
+                            </div>
+                            <div>
+                              <div className="text-[10px] font-bold text-slate-400 uppercase">Schedule</div>
+                              <div className="font-bold text-[#0F172A]">{batch.timings} • 10 Hrs Live</div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Instructor & Curriculum Grid */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
+                          <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 space-y-1.5">
+                            <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded bg-blue-100 text-blue-800 inline-block">
+                              Day 1 • Saturday
+                            </span>
+                            <div className="text-xs font-bold text-[#0F172A]">
+                              Prompt Architecture & AI Workflows
+                            </div>
+                            <p className="text-[11px] text-slate-600 leading-relaxed">
+                              Master system prompting, JSON schemas, multi-modal models (ChatGPT & Claude), and build a live research agent.
+                            </p>
+                          </div>
+
+                          <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 space-y-1.5">
+                            <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded bg-purple-100 text-purple-800 inline-block">
+                              Day 2 • Sunday
+                            </span>
+                            <div className="text-xs font-bold text-[#0F172A]">
+                              Full-Stack AI Apps & Deployment
+                            </div>
+                            <p className="text-[11px] text-slate-600 leading-relaxed">
+                              Build RAG pipelines with Pinecone, connect APIs via function calling, automate with n8n, and deploy to web.
+                            </p>
+                          </div>
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-2 text-xs text-slate-600 pt-1">
-                        <Users className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
-                        <span>
-                          Instructor: <strong className="text-[#0F172A]">{batch.instructor?.name || 'Vikram Malhotra'}</strong>
-                        </span>
+                      {/* Mentor Strip */}
+                      <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center gap-3">
+                        <img
+                          src={
+                            batch.instructor?.avatarUrl ||
+                            'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80'
+                          }
+                          alt="Instructor"
+                          className="w-10 h-10 rounded-lg object-cover border border-slate-200 shrink-0"
+                        />
+                        <div className="min-w-0">
+                          <div className="text-xs font-bold text-[#0F172A] truncate">
+                            Lead Instructor: {batch.instructor?.name || 'Vikram Malhotra'}
+                          </div>
+                          <div className="text-[11px] text-blue-600 font-medium truncate">
+                            {batch.instructor?.role || 'Staff AI Engineer & Former ML Lead'}
+                          </div>
+                        </div>
                       </div>
                     </div>
 
-                    <div className="pt-4 border-t border-slate-100 flex items-center justify-between gap-3">
-                      <div>
-                        <span className="text-[10px] uppercase font-bold text-slate-400 block">
-                          Tuition Fee
-                        </span>
-                        <span className="text-lg font-black text-[#0F172A]">
-                          {isFree ? 'Free' : `₹${basePrice.toLocaleString('en-IN')}`}
-                        </span>
-                        {!isFree && (
-                          <span className="text-[10px] text-slate-500 ml-1">+ 18% GST</span>
-                        )}
+                    {/* Right 4 Columns: Enrollment Action & Price Summary */}
+                    <div className="lg:col-span-4 p-4 sm:p-6 rounded-2xl bg-white border border-slate-200 shadow-2xs flex flex-col justify-between space-y-4">
+                      <div className="space-y-4">
+                        <div className="border-b border-slate-100 pb-3">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-blue-600">
+                            Cohort Enrollment
+                          </span>
+                          <h4 className="text-base font-black text-[#0F172A] mt-0.5">
+                            Reserve Your Seat
+                          </h4>
+                        </div>
+
+                        <div className="space-y-2 text-xs text-slate-600">
+                          <div className="flex items-center justify-between">
+                            <span>Bootcamp Tuition</span>
+                            <span className="font-semibold text-[#0F172A]">
+                              {isFree ? 'Free' : `₹${basePrice.toLocaleString('en-IN')}`}
+                            </span>
+                          </div>
+                          {!isFree && (
+                            <div className="flex items-center justify-between">
+                              <span>GST (18%)</span>
+                              <span className="font-semibold text-[#0F172A]">
+                                ₹{gstAmount.toLocaleString('en-IN')}
+                              </span>
+                            </div>
+                          )}
+                          <div className="pt-2.5 border-t border-slate-100 flex items-center justify-between text-sm font-black text-[#0F172A]">
+                            <span>Total Payable</span>
+                            <span className="text-lg text-blue-600">
+                              {isFree ? 'Free' : `₹${totalAmount.toLocaleString('en-IN')}`}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="space-y-2 pt-2 border-t border-slate-100 text-xs text-slate-700">
+                          <div className="flex items-center gap-2">
+                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                            <span>10 Hours of Live HD Training</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                            <span>100+ Prompt & Workflow Templates</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                            <span>Lifetime Recordings & Code Repos</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                            <span>Verified Certificate of Completion</span>
+                          </div>
+                        </div>
                       </div>
 
-                      <button
-                        disabled={isEnrolling}
-                        onClick={() => enrollInBatch(batch._id)}
-                        className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-sm transition-all cursor-pointer disabled:opacity-60"
-                      >
-                        <span>{isFree ? 'Enroll for Free' : 'Enroll & Pay'}</span>
-                        <ArrowRight className="w-3.5 h-3.5" />
-                      </button>
+                      <div className="space-y-2.5 pt-2">
+                        <button
+                          disabled={isEnrolling}
+                          onClick={() => enrollInBatch(batch._id)}
+                          className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-bold shadow-sm transition-all cursor-pointer disabled:opacity-60"
+                        >
+                          <span>
+                            {isEnrolling
+                              ? 'Reserving Seat...'
+                              : isFree
+                              ? 'Enroll for Free'
+                              : `Enroll & Pay ₹${totalAmount.toLocaleString('en-IN')}`}
+                          </span>
+                          <ArrowRight className="w-4 h-4" />
+                        </button>
+                        <div className="flex items-center justify-center gap-1.5 text-[11px] text-slate-500">
+                          <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                          <span>100% Satisfaction Guarantee • Instant Receipt</span>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 );
-              })}
-            </div>
+              })()
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {availableWorkshops.map((batch: any) => {
+                  const basePrice = batch.price?.basePrice ?? 1999;
+                  const isFree = Boolean(batch.price?.isFree || basePrice === 0);
+                  const dateRange = `${new Date(batch.startDate).toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                  })} – ${new Date(batch.endDate).toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric',
+                  })}`;
+
+                  return (
+                    <div
+                      key={batch._id}
+                      className="p-5 rounded-2xl bg-white border border-slate-200 hover:border-indigo-300 shadow-2xs flex flex-col justify-between space-y-4 transition-all"
+                    >
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="font-mono text-xs font-bold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-lg border border-indigo-200">
+                            {batch.batchCode}
+                          </span>
+                          <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
+                            {batch.availableSeats} of {batch.capacity} seats open
+                          </span>
+                        </div>
+
+                        <div>
+                          <h4 className="text-base font-extrabold text-[#0F172A]">{batch.title}</h4>
+                          <p className="text-xs text-slate-500 mt-1 line-clamp-2">
+                            {batch.description}
+                          </p>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-2.5 pt-1 text-xs">
+                          <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center gap-2">
+                            <Calendar className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+                            <span className="font-semibold text-[#0F172A] truncate">{dateRange}</span>
+                          </div>
+                          <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center gap-2">
+                            <Clock className="w-3.5 h-3.5 text-purple-600 shrink-0" />
+                            <span className="font-semibold text-[#0F172A] truncate">{batch.timings}</span>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-2 text-xs text-slate-600 pt-1">
+                          <Users className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+                          <span>
+                            Instructor: <strong className="text-[#0F172A]">{batch.instructor?.name || 'Vikram Malhotra'}</strong>
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="pt-4 border-t border-slate-100 flex items-center justify-between gap-3">
+                        <div>
+                          <span className="text-[10px] uppercase font-bold text-slate-400 block">
+                            Tuition Fee
+                          </span>
+                          <span className="text-lg font-black text-[#0F172A]">
+                            {isFree ? 'Free' : `₹${basePrice.toLocaleString('en-IN')}`}
+                          </span>
+                          {!isFree && (
+                            <span className="text-[10px] text-slate-500 ml-1">+ 18% GST</span>
+                          )}
+                        </div>
+
+                        <button
+                          disabled={isEnrolling}
+                          onClick={() => enrollInBatch(batch._id)}
+                          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-sm transition-all cursor-pointer disabled:opacity-60"
+                        >
+                          <span>{isFree ? 'Enroll for Free' : 'Enroll & Pay'}</span>
+                          <ArrowRight className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
         )}
       </div>

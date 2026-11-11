@@ -298,7 +298,7 @@ export const DashboardWorkshops: React.FC = () => {
             )}
           </div>
 
-          <div className="grid grid-cols-1 max-w-2xl gap-5">
+          <div className="grid grid-cols-1 w-full gap-5">
             {[displayedOtherBatch].filter(Boolean).map((batch: any) => {
               const basePrice = batch.price?.basePrice ?? 1999;
               const previewSessions = batch.sessionsPreview || [];
