@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Clock, CheckCircle2, ArrowRight, BookOpen } from 'lucide-react';
-import { Badge } from '../common/Badge';
-import { Button } from '../common/Button';
+import { Clock, CheckCircle2, ArrowRight } from 'lucide-react';
 import { SegmentedTabs, type SegmentedTabItem } from '../ui/SegmentedTabs';
 import {
   UiAccordion,
@@ -17,6 +15,7 @@ interface CurriculumSectionProps {
   onRegisterClick: () => void;
 }
 
+/** IIEM Part 5 "OUR COURSES" inspired 2-day institutional curriculum with single-line tool badges. */
 export const CurriculumSection: React.FC<CurriculumSectionProps> = ({ onRegisterClick }) => {
   const [activeDay, setActiveDay] = useState<string>('day-1');
 
@@ -34,26 +33,20 @@ export const CurriculumSection: React.FC<CurriculumSectionProps> = ({ onRegister
   return (
     <section
       id="curriculum"
-      className="py-20 sm:py-24 bg-[#F4F7FE] relative scroll-mt-20 border-b border-slate-200/80"
+      className="py-16 sm:py-20 bg-white relative scroll-mt-20 border-b border-slate-200/80"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <MotionReveal className="text-center max-w-3xl mx-auto space-y-4">
-          <Badge variant="primary" size="md" icon={<BookOpen className="w-3.5 h-3.5 text-[#081e4a]" />}>
-            Interactive Syllabus
-          </Badge>
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-[#0F172A] tracking-tight">
-            Comprehensive{' '}
-            <span className="text-[#081e4a]">
-              2-Day Curriculum
-            </span>
+        <MotionReveal className="text-center max-w-3xl mx-auto space-y-3">
+          <h2 className="text-2xl sm:text-4xl font-black uppercase tracking-tight text-[#222222] iiem-line-bottom-center">
+            OUR <span className="text-[#E41937]">CURRICULUM</span>
           </h2>
-          <p className="text-slate-600 text-sm sm:text-base leading-relaxed">
-            Every module includes structured demonstrations, guided lab exercises, and tangible outputs. No passive lectures.
+          <p className="text-slate-600 text-sm sm:text-base leading-relaxed pt-2">
+            Explore our structured 2-day practical syllabus and live lab modules designed for immediate career impact.
           </p>
         </MotionReveal>
 
-        {/* Radix UI Day 1 / Day 2 Switcher */}
-        <div className="mt-10">
+        {/* Day 1 / Day 2 Switcher Tabs */}
+        <div className="mt-9">
           <SegmentedTabs
             value={activeDay}
             onValueChange={setActiveDay}
@@ -68,25 +61,25 @@ export const CurriculumSection: React.FC<CurriculumSectionProps> = ({ onRegister
           <AnimatePresence mode="wait">
             <motion.div
               key={currentDayData.dayNumber}
-              initial={{ opacity: 0, y: 12 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -12 }}
-              transition={{ duration: 0.22 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
               className="space-y-6"
             >
-              {/* Roadmap Banner */}
-              <div className="rounded-2xl bg-[#081e4a] text-white p-5 sm:p-6 shadow-lg shadow-[#081e4a]/15 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              {/* Navy Banner Strip with Crimson Accent */}
+              <div className="rounded-md bg-[#1F386B] text-white p-5 sm:p-6 shadow-lg border-l-4 border-[#E41937] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                   <div className="flex items-center gap-2.5 flex-wrap">
-                    <span className="text-[11px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-white/15 border border-white/20 text-blue-100">
-                      Day {currentDayData.dayNumber} Roadmap
+                    <span className="text-[11px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded bg-[#E41937] text-white">
+                      Day {currentDayData.dayNumber} Track
                     </span>
                     <span className="text-xs text-blue-100 flex items-center gap-1 font-medium">
                       <Clock className="w-3.5 h-3.5 text-blue-200" />
                       {currentDayData.scheduleTime}
                     </span>
                   </div>
-                  <h3 className="text-xl sm:text-2xl font-extrabold text-white mt-2">
+                  <h3 className="text-xl sm:text-2xl font-extrabold uppercase tracking-tight text-white mt-2">
                     {currentDayData.title}
                   </h3>
                   <p className="text-blue-100/90 text-sm mt-1">
@@ -94,18 +87,17 @@ export const CurriculumSection: React.FC<CurriculumSectionProps> = ({ onRegister
                   </p>
                 </div>
 
-                <Button
-                  variant="outline"
-                  size="sm"
+                <button
+                  type="button"
                   onClick={onRegisterClick}
-                  className="shrink-0 bg-white hover:bg-blue-50 border-white text-[#081e4a] font-bold"
-                  rightIcon={<ArrowRight className="w-3.5 h-3.5" />}
+                  className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded bg-white hover:bg-[#E41937] text-[#1F386B] hover:text-white text-xs font-extrabold uppercase tracking-wider transition-colors shrink-0 cursor-pointer"
                 >
-                  Enroll in Cohort
-                </Button>
+                  <span>Enroll in Cohort</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
               </div>
 
-              {/* Radix UI Accordion Modules */}
+              {/* Institutional Module Accordion Cards */}
               <UiAccordion
                 key={`acc-${currentDayData.dayNumber}`}
                 type="multiple"
@@ -118,23 +110,16 @@ export const CurriculumSection: React.FC<CurriculumSectionProps> = ({ onRegister
                   >
                     <UiAccordionTrigger>
                       <div className="flex items-start sm:items-center gap-3.5">
-                        <div className="w-9 h-9 rounded-xl bg-blue-50 border border-[#081e4a]/20 text-[#081e4a] font-mono font-bold text-sm flex items-center justify-center shrink-0">
+                        <div className="w-10 h-10 rounded bg-[#1F386B] text-white font-mono font-bold text-sm flex items-center justify-center shrink-0">
                           0{module.order}
                         </div>
                         <div className="min-w-0">
-                          <h4 className="text-base sm:text-lg font-bold text-[#0F172A]">
+                          <span className="block text-[11px] font-extrabold uppercase tracking-wider text-[#E41937]">
+                            Interactive Lab Module • {module.duration}
+                          </span>
+                          <h4 className="text-base sm:text-lg font-extrabold text-[#222222] mt-0.5">
                             {module.moduleName}
                           </h4>
-                          <div className="flex items-center gap-2.5 text-xs text-slate-500 mt-0.5 flex-wrap">
-                            <span className="flex items-center gap-1">
-                              <Clock className="w-3 h-3 text-slate-400" />
-                              {module.duration}
-                            </span>
-                            <span>•</span>
-                            <span className="text-[#081e4a] font-semibold">
-                              Interactive Live Lab
-                            </span>
-                          </div>
                         </div>
                       </div>
                     </UiAccordionTrigger>
@@ -147,25 +132,25 @@ export const CurriculumSection: React.FC<CurriculumSectionProps> = ({ onRegister
                         <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-slate-600">
                           {module.topics.map((topic, i) => (
                             <li key={i} className="flex items-start gap-2">
-                              <span className="w-1.5 h-1.5 rounded-full bg-[#081e4a] mt-2 shrink-0" />
+                              <span className="w-1.5 h-1.5 rounded-full bg-[#E41937] mt-2 shrink-0" />
                               <span>{topic}</span>
                             </li>
                           ))}
                         </ul>
                       </div>
 
-                      <div className="min-w-0 max-w-full flex flex-col gap-2.5 bg-slate-50/90 p-3.5 rounded-xl border border-slate-200/80">
-                        <div className="flex items-center gap-2 text-xs sm:text-sm font-semibold text-[#081e4a]">
-                          <CheckCircle2 className="w-4 h-4 text-[#081e4a] shrink-0" />
+                      <div className="flex flex-col gap-2.5 bg-[#F7F8FA] p-3.5 rounded border border-slate-200/90 min-w-0 max-w-full">
+                        <div className="flex items-center gap-2 text-xs sm:text-sm font-bold text-[#1F386B]">
+                          <CheckCircle2 className="w-4 h-4 text-[#E41937] shrink-0" />
                           <span>{module.handsOnOutput}</span>
                         </div>
 
-                        <div className="w-full max-w-full flex items-center gap-1.5 pt-2 border-t border-slate-200/70 flex-nowrap whitespace-nowrap overflow-x-auto no-scrollbar">
-                          <span className="text-[11px] text-slate-500 font-semibold shrink-0">Tools:</span>
+                        <div className="flex items-center gap-1.5 pt-2 border-t border-slate-200/80 flex-nowrap whitespace-nowrap overflow-x-auto no-scrollbar min-w-0 max-w-full">
+                          <span className="text-[11px] text-slate-500 font-bold shrink-0">Tools:</span>
                           {module.toolsUsed.map((tool) => (
                             <span
                               key={tool}
-                              className="text-[11px] px-2 py-0.5 rounded-md bg-white text-slate-700 border border-slate-200 font-semibold shrink-0 whitespace-nowrap"
+                              className="text-[11px] px-2.5 py-0.5 rounded bg-white text-[#1F386B] border border-slate-200 font-bold shrink-0 whitespace-nowrap"
                             >
                               {tool}
                             </span>

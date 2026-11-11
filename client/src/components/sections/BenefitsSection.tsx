@@ -14,35 +14,34 @@ import {
   CheckCircle2,
   ArrowRight,
 } from 'lucide-react';
-import { Badge } from '../common/Badge';
 import { Button } from '../common/Button';
 import { SegmentedTabs, type SegmentedTabItem } from '../ui/SegmentedTabs';
-import { MotionReveal, MotionBentoCard } from '../ui/MotionPrimitives';
 import { LEARNING_OUTCOMES, AUDIENCE_PERSONAS } from '../../data/workshopData';
 
 interface BenefitsSectionProps {
   onRegisterClick: () => void;
 }
 
+/** IIEM Part 4 full-bleed split section: Dark navy "Why Choose Us?" left column + light Audience Fit right column. */
 export const BenefitsSection: React.FC<BenefitsSectionProps> = ({ onRegisterClick }) => {
   const [activePersona, setActivePersona] = useState(AUDIENCE_PERSONAS[0].persona);
 
   const getOutcomeIcon = (iconName: string) => {
     switch (iconName) {
       case 'Cpu':
-        return <Cpu className="w-6 h-6 text-[#081e4a]" />;
+        return <Cpu className="w-6 h-6 text-[#E41937]" />;
       case 'Terminal':
-        return <Terminal className="w-6 h-6 text-[#081e4a]" />;
+        return <Terminal className="w-6 h-6 text-[#E41937]" />;
       case 'Bot':
-        return <Bot className="w-6 h-6 text-[#081e4a]" />;
+        return <Bot className="w-6 h-6 text-[#E41937]" />;
       case 'Palette':
-        return <Palette className="w-6 h-6 text-[#081e4a]" />;
+        return <Palette className="w-6 h-6 text-[#E41937]" />;
       case 'Layers':
-        return <Layers className="w-6 h-6 text-[#081e4a]" />;
+        return <Layers className="w-6 h-6 text-[#E41937]" />;
       case 'Zap':
-        return <Zap className="w-6 h-6 text-[#081e4a]" />;
+        return <Zap className="w-6 h-6 text-[#E41937]" />;
       default:
-        return <Sparkles className="w-6 h-6 text-[#081e4a]" />;
+        return <Sparkles className="w-6 h-6 text-[#E41937]" />;
     }
   };
 
@@ -69,143 +68,116 @@ export const BenefitsSection: React.FC<BenefitsSectionProps> = ({ onRegisterClic
     AUDIENCE_PERSONAS.find((p) => p.persona === activePersona) || AUDIENCE_PERSONAS[0];
 
   return (
-    <section
-      id="outcomes"
-      className="py-16 sm:py-24 bg-white relative scroll-mt-20 overflow-hidden border-b border-slate-200/80"
-    >
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0 cyber-dots-pattern opacity-25" />
+    <section id="outcomes" className="scroll-mt-20 border-b border-slate-200/80 overflow-hidden">
+      <div className="grid grid-cols-1 lg:grid-cols-12">
+        {/* Left 6 Columns: Deep IIEM Navy Panel with White Circular Icons ("WHY CHOOSE US?") */}
+        <div className="lg:col-span-6 bg-[#1F386B] text-white py-14 sm:py-16 px-6 sm:px-10 lg:px-14">
+          <div className="max-w-xl lg:ml-auto space-y-8">
+            <div>
+              <h2 className="text-2xl sm:text-3xl font-black uppercase tracking-tight text-white iiem-line-bottom">
+                WHY CHOOSE <span className="text-[#E41937] bg-white px-2 py-0.5 rounded-xs text-2xl sm:text-[1.7rem]">US?</span>
+              </h2>
+              <p className="mt-4 text-sm text-blue-100/90 leading-relaxed">
+                Move beyond basic chat prompts. Walk away with 6 concrete, production-ready AI deliverables built step-by-step.
+              </p>
+            </div>
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <MotionReveal className="text-center max-w-3xl mx-auto space-y-4">
-          <Badge variant="primary" size="md">
-            Tangible Capabilities
-          </Badge>
-          <h2 className="text-3xl sm:text-4xl lg:text-[2.65rem] font-extrabold text-[#0F172A] tracking-tight">
-            What You Will Build &amp; Master in{' '}
-            <span className="text-[#081e4a]">
-              2 Days
-            </span>
-          </h2>
-          <p className="text-slate-600 text-sm sm:text-base leading-relaxed">
-            Move beyond basic chat prompts. Walk away with concrete, deployable assistants, storyboards, prototypes, and automation pipelines.
-          </p>
-        </MotionReveal>
-
-        {/* 6 Core Learning Outcomes Bento Grid */}
-        <div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {LEARNING_OUTCOMES.map((outcome, idx) => (
-            <MotionBentoCard
-              key={outcome.id}
-              delay={idx * 0.04}
-              className="group relative p-6 flex flex-col justify-between overflow-hidden"
-            >
-              <div className="absolute top-0 left-0 right-0 h-[3px] bg-[#081e4a] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="w-12 h-12 rounded-2xl bg-blue-50/90 border border-[#081e4a]/20 flex items-center justify-center group-hover:scale-105 transition-transform">
+            <div className="space-y-6">
+              {LEARNING_OUTCOMES.map((outcome) => (
+                <div key={outcome.id} className="flex items-start gap-4 sm:gap-5 group">
+                  <div className="w-13 h-13 sm:w-14 sm:h-14 rounded-full bg-white flex items-center justify-center shrink-0 shadow-lg group-hover:scale-105 transition-transform p-3">
                     {getOutcomeIcon(outcome.iconName)}
                   </div>
-                  <span className="text-[11px] font-mono font-bold text-[#081e4a] bg-slate-100 border border-slate-200 px-2.5 py-1 rounded-lg">
-                    0{idx + 1}
-                  </span>
+                  <div className="min-w-0 flex-1 space-y-1">
+                    <h3 className="text-base font-extrabold uppercase tracking-wide text-white">
+                      {outcome.title}
+                    </h3>
+                    <p className="text-xs sm:text-sm text-blue-100/85 leading-relaxed">
+                      {outcome.description}
+                    </p>
+                    <div className="inline-flex items-center gap-1.5 text-[11px] font-bold text-emerald-300 pt-0.5">
+                      <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                      <span>Deliverable: {outcome.deliverable}</span>
+                    </div>
+                  </div>
                 </div>
-
-                <h3 className="text-lg font-bold text-[#0F172A] group-hover:text-[#081e4a] transition-colors">
-                  {outcome.title}
-                </h3>
-
-                <p className="text-slate-600 text-sm leading-relaxed">
-                  {outcome.description}
-                </p>
-              </div>
-
-              <div className="mt-6 pt-4 border-t border-slate-100 bg-slate-50/80 -mx-6 -mb-6 px-6 py-4 rounded-b-2xl">
-                <div className="text-[11px] font-bold uppercase tracking-wider text-[#081e4a] flex items-center gap-1.5">
-                  <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
-                  <span>Deliverable</span>
-                </div>
-                <div className="text-xs font-semibold text-[#0F172A] mt-1 line-clamp-2">
-                  {outcome.deliverable}
-                </div>
-              </div>
-            </MotionBentoCard>
-          ))}
+              ))}
+            </div>
+          </div>
         </div>
 
-        {/* Audience Alignment Section (Radix UI Tabs + Motion) */}
-        <div className="mt-20 pt-16 border-t border-slate-200/80">
-          <MotionReveal className="text-center max-w-2xl mx-auto space-y-3">
-            <Badge variant="primary" size="md">
-              Audience Alignment
-            </Badge>
-            <h3 className="text-2xl sm:text-3xl font-extrabold text-[#0F172A]">
-              Who is This Bootcamp Designed For?
-            </h3>
-            <p className="text-slate-600 text-sm">
-              Select your profile below to see how this curriculum transforms your day-to-day workflow.
-            </p>
-          </MotionReveal>
+        {/* Right 6 Columns: Crisp Silver-Light Audience Alignment Panel */}
+        <div className="lg:col-span-6 bg-[#F7F8FA] py-14 sm:py-16 px-6 sm:px-10 lg:px-14 flex flex-col justify-center">
+          <div className="max-w-xl space-y-7">
+            <div>
+              <span className="text-xs font-extrabold uppercase tracking-wider text-[#E41937] block mb-1">
+                Program Fit &amp; Outcomes
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-black uppercase tracking-tight text-[#222222] iiem-line-bottom">
+                WHO IS THIS <span className="text-[#E41937]">FOR?</span>
+              </h2>
+              <p className="mt-4 text-sm text-slate-600 leading-relaxed">
+                Select your background profile below to see how this 2-day institutional training elevates your workflow.
+              </p>
+            </div>
 
-          <div className="mt-8 space-y-6">
             <SegmentedTabs
               value={activePersona}
               onValueChange={setActivePersona}
               items={personaTabs}
               layoutId="audiencePersonaTabs"
+              listClassName="justify-start"
             />
 
-            <div className="max-w-3xl mx-auto">
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={currentPersona.persona}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.22 }}
-                  className="rounded-3xl bg-white/95 backdrop-blur-md border border-slate-200/90 shadow-xl shadow-blue-950/6 p-6 sm:p-8"
-                >
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
-                    <div>
-                      <h4 className="text-xl font-extrabold text-[#0F172A]">
-                        {currentPersona.persona}
-                      </h4>
-                      <p className="text-sm text-[#081e4a] font-semibold">
-                        {currentPersona.tagline}
-                      </p>
-                    </div>
-                    <Button
-                      variant="gradient"
-                      size="sm"
-                      onClick={onRegisterClick}
-                      rightIcon={<ArrowRight className="w-3.5 h-3.5" />}
-                    >
-                      Enroll Now
-                    </Button>
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentPersona.persona}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.2 }}
+                className="rounded-lg bg-white border border-slate-200 border-b-[3px] border-b-[#1F386B] shadow-md p-6 sm:p-7 space-y-5"
+              >
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+                  <div>
+                    <h3 className="text-lg sm:text-xl font-extrabold uppercase tracking-tight text-[#222222]">
+                      {currentPersona.persona}
+                    </h3>
+                    <p className="text-sm font-bold text-[#E41937] mt-0.5">
+                      {currentPersona.tagline}
+                    </p>
+                  </div>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={onRegisterClick}
+                    rightIcon={<ArrowRight className="w-3.5 h-3.5" />}
+                  >
+                    Enroll Now
+                  </Button>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="p-4 rounded bg-slate-50 border border-slate-200 space-y-1.5">
+                    <span className="text-[11px] uppercase font-extrabold text-slate-500 tracking-wider block">
+                      Current Challenge
+                    </span>
+                    <p className="text-sm text-slate-600 leading-relaxed">
+                      {currentPersona.painPoint}
+                    </p>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mt-6">
-                    <div className="space-y-2 bg-slate-50 p-4 rounded-2xl border border-slate-200/80">
-                      <span className="text-[11px] uppercase font-extrabold text-slate-500 tracking-wider block">
-                        Current Challenge
-                      </span>
-                      <p className="text-sm text-slate-600 leading-relaxed">
-                        {currentPersona.painPoint}
-                      </p>
-                    </div>
-
-                    <div className="space-y-2 bg-blue-50/70 p-4 rounded-2xl border border-[#081e4a]/20">
-                      <span className="text-[11px] uppercase font-extrabold text-[#081e4a] tracking-wider block">
-                        Your Bootcamp Transformation
-                      </span>
-                      <p className="text-sm text-[#0F172A] leading-relaxed font-semibold">
-                        {currentPersona.takeaway}
-                      </p>
-                    </div>
+                  <div className="p-4 rounded bg-[#1F386B]/5 border border-[#1F386B]/20 space-y-1.5">
+                    <span className="text-[11px] uppercase font-extrabold text-[#1F386B] tracking-wider block">
+                      Bootcamp Transformation
+                    </span>
+                    <p className="text-sm font-semibold text-[#222222] leading-relaxed">
+                      {currentPersona.takeaway}
+                    </p>
                   </div>
-                </motion.div>
-              </AnimatePresence>
-            </div>
+                </div>
+              </motion.div>
+            </AnimatePresence>
           </div>
         </div>
       </div>

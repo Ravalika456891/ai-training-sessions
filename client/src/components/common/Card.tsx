@@ -10,7 +10,7 @@ interface CardProps {
   onClick?: (e: React.MouseEvent<HTMLDivElement>) => void;
 }
 
-/** Reusable elevated UI surface card aligned with the #081e4a brand theme. */
+/** Institutional IIEM-styled surface card with crisp navy/crimson bottom border emphasis. */
 export const Card: React.FC<CardProps> = ({
   children,
   className = '',
@@ -23,17 +23,17 @@ export const Card: React.FC<CardProps> = ({
     <div
       onClick={onClick}
       className={cn(
-        'rounded-2xl transition-all duration-200 relative overflow-hidden bg-white border',
+        'rounded-lg transition-all duration-200 relative overflow-hidden bg-white border border-b-[3px]',
         glow
-          ? 'border-[#081e4a]/45 shadow-[0_12px_32px_-12px_rgba(8,30,74,0.18)]'
-          : 'border-slate-200/90 shadow-[0_4px_20px_-8px_rgba(8,30,74,0.08)]',
+          ? 'border-slate-200 border-b-[#E41937] shadow-lg shadow-[#1F386B]/10'
+          : 'border-slate-200/90 border-b-[#1F386B] shadow-[0_4px_18px_-6px_rgba(31,56,107,0.08)]',
         hoverable &&
-          'hover:border-[#081e4a]/45 hover:-translate-y-0.5 hover:shadow-[0_18px_36px_-12px_rgba(8,30,74,0.16)]',
+          'hover:border-b-[#E41937] hover:-translate-y-0.5 hover:shadow-[0_14px_28px_-10px_rgba(31,56,107,0.16)]',
         className
       )}
     >
       {accentTop && (
-        <div className="absolute top-0 left-0 right-0 h-1 bg-[#081e4a]" aria-hidden="true" />
+        <div className="h-[3px] w-full bg-gradient-to-r from-[#1F386B] via-[#081e4a] to-[#E41937]" />
       )}
       {children}
     </div>

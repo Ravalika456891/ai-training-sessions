@@ -63,7 +63,7 @@ export const SegmentedTabs: React.FC<SegmentedTabsProps> = ({
                   <motion.span
                     layoutId={layoutId}
                     transition={{ type: 'spring', bounce: 0.2, duration: 0.4 }}
-                    className="absolute inset-0 -z-10 rounded-xl bg-[#081e4a] shadow-md shadow-[#081e4a]/20"
+                    className="absolute inset-0 -z-10 rounded-lg bg-[#1F386B] shadow-md shadow-[#1F386B]/20"
                   />
                 )}
                 {item.icon && <span className="shrink-0">{item.icon}</span>}

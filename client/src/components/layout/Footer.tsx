@@ -2,12 +2,12 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import {
   Sparkles,
-  ArrowRight,
   Mail,
-  ShieldCheck,
   Award,
   Calendar,
   Clock,
+  Globe,
+  ShieldCheck,
 } from 'lucide-react';
 import { WORKSHOP_CONFIG } from '../../data/workshopData';
 
@@ -16,89 +16,148 @@ interface FooterProps {
   onOpenVerifyModal?: () => void;
 }
 
-/** Enterprise #081e4a royal-navy footer for the AI Training Session platform. */
+/** Exact IIEM Institution Part 13 dark #222222 footer with dashed link dividers and #1b1b1b bottom bar. */
 export const Footer: React.FC<FooterProps> = ({
   onRegisterClick,
   onOpenVerifyModal,
 }) => {
   const scrollToSection = (id: string) => {
     const el = document.querySelector(id);
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
-    }
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
   };
 
   return (
-    <footer className="bg-[#081e4a] text-white relative overflow-hidden">
+    <footer className="bg-[#222222] text-neutral-300 relative overflow-hidden">
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 opacity-20"
+        className="pointer-events-none absolute inset-0 opacity-15"
         style={{
-          backgroundImage:
-            'radial-gradient(rgba(147, 197, 253, 0.35) 1px, transparent 1px)',
-          backgroundSize: '24px 24px',
+          backgroundImage: 'radial-gradient(rgba(255,255,255,0.28) 1px, transparent 1px)',
+          backgroundSize: '18px 18px',
         }}
       />
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-14 pb-28 sm:pb-10">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-10 pb-12 border-b border-white/15">
-          {/* Brand Summary */}
-          <div className="md:col-span-5 space-y-4">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-14 pb-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-10">
+          {/* Col 1: Institution Identity */}
+          <div className="lg:col-span-4 space-y-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-white/15 border border-white/20 flex items-center justify-center shrink-0">
-                <Sparkles className="w-5 h-5 text-sky-300" />
+              <div className="w-10 h-10 rounded-full bg-[#1F386B] border-2 border-[#E41937] flex items-center justify-center text-white shrink-0">
+                <Sparkles className="w-5 h-5" />
               </div>
               <div>
-                <div className="font-extrabold text-lg tracking-tight text-white">
-                  {WORKSHOP_CONFIG.brandName}
+                <div className="font-black text-base uppercase tracking-tight text-white">
+                  AI LAUNCHPAD <span className="text-[#E41937]">INSTITUTION</span>
                 </div>
-                <div className="text-xs text-blue-200 font-medium">
+                <div className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
                   {WORKSHOP_CONFIG.edition}
                 </div>
               </div>
             </div>
 
-            <p className="text-sm text-blue-100/85 leading-relaxed max-w-md">
+            <p className="text-xs sm:text-sm text-neutral-400 leading-relaxed">
               {WORKSHOP_CONFIG.subTagline}
             </p>
 
-            <div className="flex flex-wrap items-center gap-3 pt-1 text-xs text-blue-100">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 border border-white/15">
-                <Calendar className="w-3.5 h-3.5 text-sky-300" />
-                Saturday &amp; Sunday Live
-              </span>
-              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 border border-white/15">
-                <Clock className="w-3.5 h-3.5 text-sky-300" />
-                10 Hours Guided Labs
-              </span>
+            <div className="flex items-center gap-2.5 pt-1">
+              {[
+                { icon: Globe, label: 'Online Live Training', onClick: () => scrollToSection('#about') },
+                { icon: Calendar, label: 'Batch Schedule', onClick: () => scrollToSection('#pricing') },
+                { icon: Award, label: 'Certificate Verification', onClick: () => onOpenVerifyModal?.() },
+                { icon: Mail, label: 'Academic Support', href: `mailto:${WORKSHOP_CONFIG.supportEmail}` },
+              ].map((item, idx) => {
+                const Icon = item.icon;
+                if (item.href) {
+                  return (
+                    <a
+                      key={idx}
+                      href={item.href}
+                      aria-label={item.label}
+                      className="w-9 h-9 rounded-full bg-white text-[#222222] hover:bg-[#E41937] hover:text-white flex items-center justify-center transition-colors shadow"
+                    >
+                      <Icon className="w-4 h-4" />
+                    </a>
+                  );
+                }
+                return (
+                  <button
+                    key={idx}
+                    type="button"
+                    aria-label={item.label}
+                    onClick={item.onClick}
+                    className="w-9 h-9 rounded-full bg-white text-[#222222] hover:bg-[#E41937] hover:text-white flex items-center justify-center transition-colors shadow cursor-pointer"
+                  >
+                    <Icon className="w-4 h-4" />
+                  </button>
+                );
+              })}
             </div>
           </div>
 
-          {/* Program Navigation */}
-          <div className="md:col-span-3 space-y-3">
-            <h4 className="text-xs font-extrabold uppercase tracking-wider text-sky-300">
-              Training Program
+          {/* Col 2: Quick Links */}
+          <div className="lg:col-span-3 space-y-3">
+            <h4 className="text-sm font-extrabold uppercase tracking-wider text-white">
+              Quick Links
             </h4>
-            <ul className="space-y-2.5 text-sm text-blue-100/90">
-              <li>
+            <ul className="text-xs sm:text-sm text-neutral-400">
+              <li className="border-b border-dashed border-neutral-700 py-2">
+                <button
+                  type="button"
+                  onClick={() => onRegisterClick?.()}
+                  className="hover:text-white transition-colors cursor-pointer"
+                >
+                  Online Registration
+                </button>
+              </li>
+              {onOpenVerifyModal && (
+                <li className="border-b border-dashed border-neutral-700 py-2">
+                  <button
+                    type="button"
+                    onClick={onOpenVerifyModal}
+                    className="hover:text-white transition-colors cursor-pointer"
+                  >
+                    Online Verification
+                  </button>
+                </li>
+              )}
+              <li className="border-b border-dashed border-neutral-700 py-2">
+                <Link to="/signin" className="hover:text-white transition-colors">
+                  Student Portal Sign In
+                </Link>
+              </li>
+              <li className="border-b border-dashed border-neutral-700 py-2">
+                <Link to="/signup" className="hover:text-white transition-colors">
+                  Create Learner Account
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Col 3: Program Links */}
+          <div className="lg:col-span-2 space-y-3">
+            <h4 className="text-sm font-extrabold uppercase tracking-wider text-white">
+              Useful Links
+            </h4>
+            <ul className="text-xs sm:text-sm text-neutral-400">
+              <li className="border-b border-dashed border-neutral-700 py-2">
                 <button
                   type="button"
                   onClick={() => scrollToSection('#outcomes')}
                   className="hover:text-white transition-colors cursor-pointer"
                 >
-                  Learning Outcomes
+                  Why Choose Us
                 </button>
               </li>
-              <li>
+              <li className="border-b border-dashed border-neutral-700 py-2">
                 <button
                   type="button"
                   onClick={() => scrollToSection('#curriculum')}
                   className="hover:text-white transition-colors cursor-pointer"
                 >
-                  2-Day Curriculum
+                  Our Curriculum
                 </button>
               </li>
-              <li>
+              <li className="border-b border-dashed border-neutral-700 py-2">
                 <button
                   type="button"
                   onClick={() => scrollToSection('#tools')}
@@ -107,86 +166,70 @@ export const Footer: React.FC<FooterProps> = ({
                   AI Tool Stack
                 </button>
               </li>
-              <li>
+              <li className="border-b border-dashed border-neutral-700 py-2">
                 <button
                   type="button"
                   onClick={() => scrollToSection('#mentors')}
                   className="hover:text-white transition-colors cursor-pointer"
                 >
-                  Lead Mentors
-                </button>
-              </li>
-              <li>
-                <button
-                  type="button"
-                  onClick={() => scrollToSection('#pricing')}
-                  className="hover:text-white transition-colors cursor-pointer"
-                >
-                  Pricing &amp; Batches
+                  Our Mentors
                 </button>
               </li>
             </ul>
           </div>
 
-          {/* Learner Portal & Quick Actions */}
-          <div className="md:col-span-4 space-y-3">
-            <h4 className="text-xs font-extrabold uppercase tracking-wider text-sky-300">
-              Learner Portal &amp; Support
+          {/* Col 4: Contact Us */}
+          <div className="lg:col-span-3 space-y-3">
+            <h4 className="text-sm font-extrabold uppercase tracking-wider text-white">
+              Contact Us
             </h4>
-            <ul className="space-y-2.5 text-sm text-blue-100/90">
-              <li>
-                <Link to="/signin" className="hover:text-white transition-colors">
-                  Student Sign In
-                </Link>
+            <ul className="text-xs sm:text-sm text-neutral-400">
+              <li className="border-b border-dashed border-neutral-700 py-2 flex items-center gap-2">
+                <Clock className="w-3.5 h-3.5 text-[#E41937] shrink-0" />
+                <span>Sat &amp; Sun • 10:00 AM – 3:00 PM IST</span>
               </li>
-              <li>
-                <Link to="/signup" className="hover:text-white transition-colors">
-                  Create Learner Account
-                </Link>
-              </li>
-              {onOpenVerifyModal && (
-                <li>
-                  <button
-                    type="button"
-                    onClick={onOpenVerifyModal}
-                    className="inline-flex items-center gap-1.5 hover:text-white transition-colors cursor-pointer"
-                  >
-                    <Award className="w-3.5 h-3.5 text-sky-300" />
-                    <span>Verify Completion Certificate</span>
-                  </button>
-                </li>
-              )}
-              <li>
+              <li className="border-b border-dashed border-neutral-700 py-2">
                 <a
                   href={`mailto:${WORKSHOP_CONFIG.supportEmail}`}
-                  className="inline-flex items-center gap-1.5 hover:text-white transition-colors"
+                  className="hover:text-white transition-colors flex items-center gap-2"
                 >
-                  <Mail className="w-3.5 h-3.5 text-sky-300" />
+                  <Mail className="w-3.5 h-3.5 text-[#E41937] shrink-0" />
                   <span>{WORKSHOP_CONFIG.supportEmail}</span>
                 </a>
               </li>
+              <li className="border-b border-dashed border-neutral-700 py-2 flex items-start gap-2">
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
+                <span>Live Online Interactive Cohort • 100% Refund Guarantee</span>
+              </li>
             </ul>
-
-            {onRegisterClick && (
-              <div className="pt-2">
-                <button
-                  type="button"
-                  onClick={onRegisterClick}
-                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white hover:bg-blue-50 text-[#081e4a] text-xs font-extrabold shadow-md transition-colors cursor-pointer"
-                >
-                  <span>Reserve Upcoming Cohort</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            )}
           </div>
         </div>
+      </div>
 
-        <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-blue-200/85">
-          <p>© {new Date().getFullYear()} {WORKSHOP_CONFIG.brandName}. Practical Generative AI Training.</p>
-          <div className="flex items-center gap-1.5">
-            <ShieldCheck className="w-4 h-4 text-emerald-300 shrink-0" />
-            <span>100% Refund Guarantee • Instant GST Receipt</span>
+      {/* IIEM Darkest Bottom Copyright Strip */}
+      <div className="bg-[#181818] border-t border-white/10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-24 sm:pb-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-neutral-400">
+          <p>{WORKSHOP_CONFIG.brandName} Institution • © {new Date().getFullYear()}</p>
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => scrollToSection('#faq')}
+              className="hover:text-white transition-colors cursor-pointer"
+            >
+              FAQ
+            </button>
+            <span className="text-neutral-600">|</span>
+            <button
+              type="button"
+              onClick={() => onOpenVerifyModal?.()}
+              className="hover:text-white transition-colors cursor-pointer"
+            >
+              Verify Certificate
+            </button>
+            <span className="text-neutral-600">|</span>
+            <a href={`mailto:${WORKSHOP_CONFIG.supportEmail}`} className="hover:text-white transition-colors">
+              Support
+            </a>
           </div>
         </div>
       </div>

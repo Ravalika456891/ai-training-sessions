@@ -174,29 +174,21 @@ export const RegistrationSection: React.FC<RegistrationSectionProps> = ({
   }));
 
   return (
-    <section id="register" className="py-20 sm:py-24 bg-white relative scroll-mt-20 border-b border-slate-200/80 overflow-hidden">
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0 ui-canvas-gradient opacity-50" />
-
+    <section id="register" className="py-16 sm:py-20 bg-white relative scroll-mt-20 border-b border-slate-200/80 overflow-hidden">
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <MotionReveal className="text-center max-w-3xl mx-auto space-y-4">
-          <Badge variant="primary" size="md" icon={<Sparkles className="w-3.5 h-3.5 text-[#081e4a]" />}>
-            Workshop Enrollment
-          </Badge>
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-[#0F172A] tracking-tight">
-            Reserve Your Seat in{' '}
-            <span className="text-[#081e4a]">
-              AI Launchpad
-            </span>
+        <MotionReveal className="text-center max-w-3xl mx-auto space-y-3">
+          <h2 className="text-2xl sm:text-4xl font-black uppercase tracking-tight text-[#222222] iiem-line-bottom-center">
+            ONLINE <span className="text-[#E41937]">REGISTRATION</span>
           </h2>
-          <p className="text-slate-600 text-sm sm:text-base leading-relaxed">
+          <p className="text-slate-600 text-sm sm:text-base leading-relaxed pt-2">
             Pick your weekend cohort from the dropdown menu and fill in your participant details to continue to verified Razorpay checkout.
           </p>
         </MotionReveal>
 
-        <MotionReveal delay={0.08} className="mt-10 max-w-5xl mx-auto">
-          <Card className="p-0 border-slate-200/90 bg-white shadow-2xl shadow-[#081e4a]/8 rounded-3xl overflow-hidden">
+        <MotionReveal className="mt-10 max-w-5xl mx-auto">
+          <Card glow accentTop className="p-0 border-slate-200/90 bg-white shadow-xl shadow-[#1F386B]/10 overflow-hidden">
             {!user && (
-              <div className="px-5 sm:px-9 py-4 sm:py-5 bg-[#081e4a] text-white flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="px-5 sm:px-9 py-4 sm:py-5 bg-[#1F386B] text-white flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b-2 border-[#E41937]">
                 <div className="flex items-start sm:items-center gap-3">
                   <div className="w-9 h-9 rounded-xl bg-white/15 border border-white/20 text-blue-100 flex items-center justify-center shrink-0">
                     <Sparkles className="w-4 h-4" />
@@ -447,7 +439,7 @@ export const RegistrationSection: React.FC<RegistrationSectionProps> = ({
                       triggerClassName="h-[46px] min-h-[46px]"
                     />
 
-                    <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-[#F4F7FE] to-white border border-[#081e4a]/20 shadow-xs space-y-2">
+                    <div className="p-4 sm:p-5 rounded-lg bg-[#F7F8FA] border border-slate-200 border-b-[3px] border-b-[#1F386B] shadow-xs space-y-2">
                       <div className="flex items-center justify-between text-xs text-slate-600">
                         <span>Workshop Tuition ({selectedBatch.batchCode})</span>
                         <span className="font-bold text-[#0F172A]">₹{basePrice.toLocaleString('en-IN')}</span>
@@ -456,9 +448,9 @@ export const RegistrationSection: React.FC<RegistrationSectionProps> = ({
                         <span>GST ({selectedBatch.pricing.taxPercentage || 18}%)</span>
                         <span className="font-bold text-[#0F172A]">₹{gstAmount.toLocaleString('en-IN')}</span>
                       </div>
-                      <div className="flex items-center justify-between text-sm font-extrabold text-[#081e4a] pt-2 border-t border-[#081e4a]/15">
+                      <div className="flex items-center justify-between text-sm font-extrabold text-[#1F386B] pt-2 border-t border-slate-200">
                         <span>Total Payable</span>
-                        <span className="text-lg font-black text-[#081e4a]">
+                        <span className="text-lg font-black text-[#E41937]">
                           ₹{totalPayable.toLocaleString('en-IN')}
                         </span>
                       </div>
@@ -472,7 +464,7 @@ export const RegistrationSection: React.FC<RegistrationSectionProps> = ({
                         type="checkbox"
                         checked={formData.acceptTerms}
                         onChange={(e) => setFormData({ ...formData, acceptTerms: e.target.checked })}
-                        className="mt-0.5 w-4 h-4 rounded bg-white border-slate-300 text-[#081e4a] focus:ring-[#081e4a] cursor-pointer"
+                        className="mt-0.5 w-4 h-4 rounded bg-white border-slate-300 text-[#1F386B] focus:ring-[#1F386B] cursor-pointer"
                       />
                       <span className="text-xs text-slate-600 leading-relaxed">
                         I agree to the Terms of Service, Privacy Policy, and 100% Refund Guarantee.{' '}
@@ -491,10 +483,10 @@ export const RegistrationSection: React.FC<RegistrationSectionProps> = ({
                   <div className="pt-1">
                     <Button
                       type="submit"
-                      variant="gradient"
+                      variant="secondary"
                       size="lg"
                       isLoading={isSubmitting}
-                      className="w-full py-4 rounded-2xl text-base"
+                      className="w-full py-4 rounded-md text-sm sm:text-base uppercase tracking-wide"
                       rightIcon={<ArrowRight className="w-5 h-5" />}
                     >
                       {isSubmitting
@@ -502,7 +494,7 @@ export const RegistrationSection: React.FC<RegistrationSectionProps> = ({
                         : 'Continue to Enrollment & Payment'}
                     </Button>
                     <div className="flex items-center justify-center gap-2 text-xs text-slate-500 mt-3">
-                      <ShieldCheck className="w-4 h-4 text-[#081e4a]" />
+                      <ShieldCheck className="w-4 h-4 text-[#1F386B]" />
                       <span>256-Bit Encrypted Razorpay Checkout • Instant Dashboard Access</span>
                     </div>
                   </div>

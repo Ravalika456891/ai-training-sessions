@@ -25,7 +25,7 @@ interface MotionBentoCardProps {
   className?: string;
 }
 
-/** Interactive elevated SaaS bento card with crisp #081e4a elevation on hover. */
+/** Interactive institutional IIEM card with navy/crimson bottom border emphasis. */
 export const MotionBentoCard: React.FC<MotionBentoCardProps> = ({
   children,
   className,
@@ -35,9 +35,9 @@ export const MotionBentoCard: React.FC<MotionBentoCardProps> = ({
       whileHover={{ y: -3 }}
       transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
       className={cn(
-        'rounded-2xl bg-white border border-slate-200/90',
-        'shadow-[0_4px_20px_-8px_rgba(8,30,74,0.08)] hover:shadow-[0_18px_36px_-12px_rgba(8,30,74,0.16)]',
-        'hover:border-[#081e4a]/40 transition-all duration-200',
+        'rounded-lg bg-white border border-slate-200/90 border-b-[3px] border-b-[#1F386B]',
+        'shadow-[0_4px_20px_-8px_rgba(31,56,107,0.08)] hover:shadow-[0_18px_36px_-12px_rgba(31,56,107,0.16)]',
+        'hover:border-b-[#E41937] transition-all duration-200',
         className
       )}
     >

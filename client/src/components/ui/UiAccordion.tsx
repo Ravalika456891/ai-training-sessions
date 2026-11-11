@@ -59,8 +59,8 @@ export const UiAccordionItem: React.FC<{
   <Accordion.Item
     value={value}
     className={cn(
-      'group rounded-2xl bg-white border border-slate-200/90 shadow-sm transition-all duration-200 overflow-hidden',
-      'data-[state=open]:border-[#081e4a]/45 data-[state=open]:shadow-md data-[state=open]:shadow-[#081e4a]/8',
+      'group rounded-lg bg-white border border-slate-200/90 border-b-2 border-b-[#1F386B] shadow-sm transition-all duration-200 overflow-hidden',
+      'data-[state=open]:border-b-[#E41937] data-[state=open]:shadow-md data-[state=open]:shadow-[#1F386B]/10',
       'hover:border-slate-300',
       className
     )}
@@ -77,12 +77,12 @@ export const UiAccordionTrigger: React.FC<{
     <Accordion.Trigger
       className={cn(
         'flex flex-1 items-center justify-between gap-3 p-4 sm:p-5 text-left transition-colors outline-none cursor-pointer',
-        'focus-visible:ring-2 focus-visible:ring-blue-500/40',
+        'focus-visible:ring-2 focus-visible:ring-[#1F386B]/40',
         className
       )}
     >
       <div className="flex-1 min-w-0">{children}</div>
-      <div className="w-8 h-8 rounded-xl bg-slate-100/90 text-slate-600 flex items-center justify-center shrink-0 transition-all duration-200 group-data-[state=open]:bg-[#081e4a] group-data-[state=open]:text-white">
+      <div className="w-8 h-8 rounded-lg bg-slate-100/90 text-slate-600 flex items-center justify-center shrink-0 transition-all duration-200 group-data-[state=open]:bg-[#E41937] group-data-[state=open]:text-white">
         <ChevronDown className="w-4 h-4 transition-transform duration-200 group-data-[state=open]:rotate-180" />
       </div>
     </Accordion.Trigger>

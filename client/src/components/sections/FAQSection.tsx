@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { HelpCircle, Mail } from 'lucide-react';
-import { Badge } from '../common/Badge';
 import { SegmentedTabs, type SegmentedTabItem } from '../ui/SegmentedTabs';
 import {
   UiAccordion,
@@ -11,6 +10,7 @@ import {
 import { MotionReveal } from '../ui/MotionPrimitives';
 import { FAQ_DATA, WORKSHOP_CONFIG } from '../../data/workshopData';
 
+/** IIEM-styled categorized FAQ accordion band. */
 export const FAQSection: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
 
@@ -27,24 +27,17 @@ export const FAQSection: React.FC = () => {
       : FAQ_DATA.filter((faq) => faq.category === selectedCategory);
 
   return (
-    <section id="faq" className="py-16 sm:py-24 bg-[#F4F7FE] relative scroll-mt-20 border-b border-slate-200/80">
+    <section id="faq" className="py-16 sm:py-20 bg-[#F7F8FA] relative scroll-mt-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <MotionReveal className="text-center max-w-3xl mx-auto space-y-4">
-          <Badge variant="primary" size="md" icon={<HelpCircle className="w-3.5 h-3.5 text-[#081e4a]" />}>
-            Clear Answers
-          </Badge>
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-[#0F172A] tracking-tight">
-            Frequently Asked{' '}
-            <span className="text-[#081e4a]">
-              Questions
-            </span>
+        <MotionReveal className="text-center max-w-3xl mx-auto space-y-3">
+          <h2 className="text-2xl sm:text-4xl font-black uppercase tracking-tight text-[#222222] iiem-line-bottom-center">
+            FREQUENTLY ASKED <span className="text-[#E41937]">QUESTIONS</span>
           </h2>
-          <p className="text-slate-600 text-sm sm:text-base leading-relaxed">
+          <p className="text-slate-600 text-sm sm:text-base leading-relaxed pt-2">
             Everything you need to know about batch logistics, prerequisite hardware, recordings, and certificate verification.
           </p>
         </MotionReveal>
 
-        {/* Radix UI Category Switcher */}
         <div className="mt-8">
           <SegmentedTabs
             value={selectedCategory}
@@ -54,7 +47,6 @@ export const FAQSection: React.FC = () => {
           />
         </div>
 
-        {/* Radix UI Accordion List */}
         <div className="mt-10 max-w-4xl mx-auto">
           <UiAccordion
             key={selectedCategory}
@@ -65,10 +57,10 @@ export const FAQSection: React.FC = () => {
               <UiAccordionItem key={faq.id} value={faq.id}>
                 <UiAccordionTrigger>
                   <div className="flex items-start sm:items-center gap-3 pr-2">
-                    <div className="w-8 h-8 rounded-xl bg-blue-50 border border-[#081e4a]/20 text-[#081e4a] flex items-center justify-center shrink-0 mt-0.5 sm:mt-0">
+                    <div className="w-8 h-8 rounded bg-[#1F386B]/10 border border-[#1F386B]/20 text-[#E41937] flex items-center justify-center shrink-0 mt-0.5 sm:mt-0">
                       <HelpCircle className="w-4 h-4" />
                     </div>
-                    <span className="text-sm sm:text-base font-bold text-[#0F172A] leading-snug">
+                    <span className="text-sm sm:text-base font-bold text-[#222222] leading-snug">
                       {faq.question}
                     </span>
                   </div>
@@ -77,7 +69,7 @@ export const FAQSection: React.FC = () => {
                 <UiAccordionContent className="text-slate-600 text-sm sm:text-base leading-relaxed">
                   <p className="mt-2">{faq.answer}</p>
                   <div className="mt-3 flex items-center gap-2">
-                    <span className="text-[11px] font-mono px-2.5 py-0.5 rounded-md bg-blue-50 text-[#081e4a] border border-[#081e4a]/20 font-semibold">
+                    <span className="text-[11px] font-mono px-2.5 py-0.5 rounded bg-[#1F386B]/10 text-[#1F386B] border border-[#1F386B]/20 font-bold">
                       Category: {faq.category}
                     </span>
                   </div>
@@ -87,11 +79,11 @@ export const FAQSection: React.FC = () => {
           </UiAccordion>
         </div>
 
-        <MotionReveal delay={0.08} className="mt-12 text-center text-xs sm:text-sm text-slate-600">
-          <span>Have an unanswered question? Email our lead academic advisor at </span>
+        <MotionReveal className="mt-12 text-center text-xs sm:text-sm text-slate-600">
+          <span>Have an unanswered question? Email our academic helpdesk at </span>
           <a
             href={`mailto:${WORKSHOP_CONFIG.supportEmail}`}
-            className="text-[#081e4a] font-bold hover:underline inline-flex items-center gap-1 ml-1"
+            className="text-[#E41937] font-bold hover:underline inline-flex items-center gap-1 ml-1"
           >
             <Mail className="w-3.5 h-3.5" />
             {WORKSHOP_CONFIG.supportEmail}

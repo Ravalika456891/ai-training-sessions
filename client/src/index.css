@@ -134,3 +134,35 @@
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* IIEM Institution Signature Section Underlines */
+.iiem-line-bottom {
+  position: relative;
+  padding-bottom: 10px;
+}
+
+.iiem-line-bottom::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 56px;
+  height: 2.5px;
+  background-color: #E41937;
+}
+
+.iiem-line-bottom-center {
+  position: relative;
+  padding-bottom: 12px;
+}
+
+.iiem-line-bottom-center::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 0;
+  width: 60px;
+  height: 2.5px;
+  background-color: #E41937;
+}

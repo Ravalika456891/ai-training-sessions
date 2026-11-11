@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Navbar } from '../../components/layout/Navbar';
 import { Footer } from '../../components/layout/Footer';
 import { HeroSection } from '../../components/sections/HeroSection';
+import { WelcomeSection } from '../../components/sections/WelcomeSection';
 import { BenefitsSection } from '../../components/sections/BenefitsSection';
 import { CurriculumSection } from '../../components/sections/CurriculumSection';
 import { AIToolsSection } from '../../components/sections/AIToolsSection';
@@ -14,8 +15,8 @@ import { CheckoutModal } from '../../components/checkout/CheckoutModal';
 import { AuthModal } from '../../components/auth/AuthModal';
 import { AdminConsoleModal } from '../../components/admin/AdminConsoleModal';
 import { CertificateVerifyModal } from '../../components/certificate/CertificateVerifyModal';
-import { BATCH_OPTIONS } from '../../data/workshopData';
-import { ArrowRight, X } from 'lucide-react';
+import { BATCH_OPTIONS, WORKSHOP_CONFIG } from '../../data/workshopData';
+import { ArrowRight, Clock, Mail, ShieldCheck, LogIn, UserPlus, LayoutDashboard } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { api, type ApiWorkshop } from '../../services/api';
 import type { BatchOption } from '../../types/workshop';
@@ -30,7 +31,6 @@ export const HomePage: React.FC = () => {
   const [selectedBatchId, setSelectedBatchId] = useState<string>(
     () => batchFromUrl || sessionStorage.getItem('ailp_selected_batch') || BATCH_OPTIONS[0].id
   );
-  const [showSampleBanner, setShowSampleBanner] = useState<boolean>(true);
   const [activeCheckoutEnrollmentId, setActiveCheckoutEnrollmentId] = useState<string | null>(null);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState<boolean>(false);
   const [isAdminConsoleOpen, setIsAdminConsoleOpen] = useState<boolean>(false);
@@ -114,45 +114,79 @@ export const HomePage: React.FC = () => {
     batches.find((b) => b.id === selectedBatchId) || batches[0] || BATCH_OPTIONS[0];
 
   return (
-    <div className="min-h-screen bg-white text-[#0F172A] flex flex-col font-sans selection:bg-[#081e4a] selection:text-white relative">
-      {/* Top Cohort & Signed-In Status Bar */}
-      {showSampleBanner && (
-        <aside
-          aria-label="Upcoming Cohort Announcement"
-          className="bg-[#081e4a] border-b border-white/10 py-2 px-4 text-xs text-blue-100 relative z-50"
-        >
-          <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
-            <div className="flex items-center gap-2.5 overflow-hidden text-ellipsis whitespace-nowrap min-w-0">
-              <span className="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
-              <p className="font-medium text-blue-100 truncate">
-                Next Live Cohort:{' '}
-                <span className="font-extrabold text-white">{currentNextBatch.dateRange}</span>
-                <span className="hidden sm:inline"> • Limited to {currentNextBatch.totalSeats} Seats</span>
-              </p>
+    <div className="min-h-screen bg-white text-[#1E293B] flex flex-col font-sans selection:bg-[#1F386B] selection:text-white relative">
+      {/* IIEM-Style Crimson Top Institutional Utility Bar */}
+      <aside
+        aria-label="Training Utility & Verification Bar"
+        className="bg-[#E41937] text-white text-xs relative z-50 border-b border-white/15"
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-1 text-white/95">
+            <span className="inline-flex items-center gap-1.5 font-medium">
+              <Clock className="w-3.5 h-3.5 text-white shrink-0" />
+              <span>Sat &amp; Sun • 10:00 AM – 3:00 PM IST</span>
+            </span>
+            <a
+              href={`mailto:${WORKSHOP_CONFIG.supportEmail}`}
+              className="hidden md:inline-flex items-center gap-1.5 font-medium hover:underline text-white/95"
+            >
+              <Mail className="w-3.5 h-3.5 text-white shrink-0" />
+              <span>{WORKSHOP_CONFIG.supportEmail}</span>
+            </a>
+            <span className="hidden lg:inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-white/15 text-white font-semibold">
+              Next Cohort: {currentNextBatch.dateRange}
+            </span>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 font-semibold">
+            <button
+              type="button"
+              onClick={() => setIsVerifyModalOpen(true)}
+              className="inline-flex items-center gap-1.5 text-white hover:text-blue-100 transition-colors cursor-pointer"
+            >
+              <ShieldCheck className="w-3.5 h-3.5" />
+              <span>Online Verification</span>
+            </button>
+            <span className="text-white/40 hidden sm:inline">|</span>
+            <a
+              href="#pricing"
+              className="text-white hover:text-blue-100 transition-colors"
+            >
+              Cohort Status
+            </a>
+            <span className="text-white/40 hidden sm:inline">|</span>
+            {user ? (
               <button
                 type="button"
-                onClick={scrollToRegister}
-                className="hidden sm:inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-white/15 hover:bg-white/25 text-white font-bold text-[11px] border border-white/20 transition-colors shrink-0 cursor-pointer"
+                onClick={() => navigate('/dashboard')}
+                className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded bg-[#1F386B] hover:bg-[#192e57] text-white font-bold transition-colors cursor-pointer"
               >
-                <span>Reserve Seat</span>
-                <ArrowRight className="w-3 h-3" />
+                <LayoutDashboard className="w-3.5 h-3.5" />
+                <span>{user.name} ({user.role})</span>
               </button>
-              {user && (
-                <span className="hidden md:inline-flex px-2.5 py-0.5 rounded-md bg-white text-[#081e4a] font-bold text-[11px] shrink-0">
-                  Signed in: {user.name} ({user.role})
-                </span>
-              )}
-            </div>
-            <button
-              onClick={() => setShowSampleBanner(false)}
-              className="text-blue-200 hover:text-white p-1 rounded transition-colors shrink-0 cursor-pointer"
-              aria-label="Dismiss banner"
-            >
-              <X className="w-3.5 h-3.5" />
-            </button>
+            ) : (
+              <div className="inline-flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => setIsAuthModalOpen(true)}
+                  className="inline-flex items-center gap-1 text-white hover:text-blue-100 transition-colors cursor-pointer"
+                >
+                  <LogIn className="w-3.5 h-3.5" />
+                  <span>Sign In</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsAuthModalOpen(true)}
+                  className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded bg-[#1F386B] hover:bg-[#192e57] text-white font-bold transition-colors cursor-pointer"
+                >
+                  <UserPlus className="w-3.5 h-3.5" />
+                  <span>Sign Up</span>
+                </button>
+              </div>
+            )}
           </div>
-        </aside>
-      )}
+        </div>
+      </aside>
 
       {/* 1. Sticky Navigation Bar */}
       <Navbar
@@ -164,14 +198,23 @@ export const HomePage: React.FC = () => {
 
       {/* Main Public Page Content */}
       <main className="flex-1 min-w-0">
-        {/* 2. Hero Section */}
+        {/* 2. Hero Section + Overlapping 4-Card Navy Action Strip */}
         <HeroSection
           onRegisterClick={scrollToRegister}
           onExploreCurriculum={scrollToCurriculum}
           batch={currentNextBatch}
         />
 
-        {/* 3. Learning Outcomes & Beginner-Friendly Fit */}
+        {/* 3. IIEM Split Welcome Overview + Quick Cohort Admission Box */}
+        <WelcomeSection
+          batches={batches}
+          selectedBatchId={selectedBatchId}
+          onSelectBatch={updateSelectedBatch}
+          onRegisterClick={scrollToRegister}
+          onExploreCurriculum={scrollToCurriculum}
+        />
+
+        {/* 4. Learning Outcomes (Why Choose Us) & Audience Switcher */}
         <BenefitsSection onRegisterClick={scrollToRegister} />
 
         {/* 4. Day 1 & Day 2 Curriculum */}
@@ -251,24 +294,24 @@ export const HomePage: React.FC = () => {
       {/* Mobile Sticky Register Pill for Guests */}
       {!user && (
         <div className="sm:hidden fixed bottom-3 left-3 right-3 z-40">
-          <div className="p-3 rounded-2xl bg-white/95 backdrop-blur-xl border border-blue-200/80 shadow-2xl shadow-blue-950/15 flex items-center justify-between gap-3">
+          <div className="p-3 rounded-lg bg-[#1F386B]/95 backdrop-blur-md border border-white/15 border-b-2 border-b-[#E41937] shadow-2xl shadow-blue-950/30 flex items-center justify-between gap-3">
             <div className="min-w-0">
-              <div className="text-[11px] text-slate-500 font-semibold truncate">
+              <div className="text-[11px] text-blue-100 font-semibold truncate">
                 {currentNextBatch.batchCode}:{' '}
-                <span className="text-[#081e4a] font-bold">
+                <span className="text-white font-bold">
                   {currentNextBatch.dateRange.split('–')[0]}
                 </span>
               </div>
-              <div className="text-sm font-black text-[#081e4a]">
+              <div className="text-sm font-black text-white">
                 ₹{currentNextBatch.pricing.basePrice.toLocaleString('en-IN')}{' '}
-                <span className="text-[10px] text-slate-500 font-medium">+ 18% GST</span>
+                <span className="text-[10px] text-blue-200 font-medium">+ 18% GST</span>
               </div>
             </div>
             <button
               onClick={scrollToRegister}
-              className="inline-flex items-center gap-1.5 py-2.5 px-4 rounded-xl bg-[#081e4a] hover:bg-[#0c2d6e] text-white text-xs font-bold shadow-md shadow-[#081e4a]/20 cursor-pointer shrink-0 active:scale-[0.98]"
+              className="inline-flex items-center gap-1.5 py-2.5 px-4 rounded-md bg-[#E41937] hover:bg-[#c5122d] text-white text-xs font-extrabold uppercase tracking-wide shadow-md cursor-pointer shrink-0 active:scale-[0.98]"
             >
-              <span>Register Now</span>
+              <span>Enroll Now</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>
