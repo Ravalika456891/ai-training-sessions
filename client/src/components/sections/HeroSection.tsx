@@ -122,22 +122,6 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
           {/* Right Column: Minimal, Clean Cohort Card */}
           <div className="lg:col-span-6">
             <div className="rounded-3xl bg-white border border-slate-200/90 shadow-xl overflow-hidden max-w-lg mx-auto lg:ml-auto">
-              {/* Minimal Top Bar */}
-              <div className="px-5 py-3.5 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-rose-400" />
-                  <span className="w-2.5 h-2.5 rounded-full bg-amber-400" />
-                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
-                  <span className="ml-2 text-xs font-bold text-slate-700">
-                    Next Live Cohort
-                  </span>
-                </div>
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-[11px] font-bold border border-emerald-200">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                  {currentBatch.availableSeats} Seats Open
-                </span>
-              </div>
-
               {/* Clean Visual + Essential Info Only */}
               <div className="p-5 sm:p-6 space-y-5">
                 <div className="group relative rounded-2xl overflow-hidden aspect-[16/9] bg-[#081E4A] border border-slate-200 shadow-inner">
