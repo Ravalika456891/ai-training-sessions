@@ -1,0 +1,151 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <!-- Executive Bootstrap 5 Light Background Gradient -->
+    <linearGradient id="bsBgGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="28%" stop-color="#F8FAFC" />
+      <stop offset="65%" stop-color="#F1F5F9" />
+      <stop offset="100%" stop-color="#E2E8F0" />
+    </linearGradient>
+
+    <!-- 3D Perspective Horizon Glow -->
+    <radialGradient id="bsHorizonGlow" cx="50%" cy="32%" r="65%">
+      <stop offset="0%" stop-color="#0D6EFD" stop-opacity="0.18" />
+      <stop offset="30%" stop-color="#6610F2" stop-opacity="0.12" />
+      <stop offset="60%" stop-color="#0DCAF0" stop-opacity="0.05" />
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0" />
+    </radialGradient>
+
+    <!-- 3D Perspective Grid Rays Gradient -->
+    <linearGradient id="bsRayGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0D6EFD" stop-opacity="0.04" />
+      <stop offset="35%" stop-color="#6610F2" stop-opacity="0.15" />
+      <stop offset="70%" stop-color="#0D6EFD" stop-opacity="0.32" />
+      <stop offset="100%" stop-color="#0A58CA" stop-opacity="0.5" />
+    </linearGradient>
+
+    <!-- Transverse Grid Fade -->
+    <linearGradient id="bsTransverseFade" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#0D6EFD" stop-opacity="0.1" />
+      <stop offset="20%" stop-color="#0D6EFD" stop-opacity="0.4" />
+      <stop offset="50%" stop-color="#6610F2" stop-opacity="0.55" />
+      <stop offset="80%" stop-color="#0D6EFD" stop-opacity="0.4" />
+      <stop offset="100%" stop-color="#0D6EFD" stop-opacity="0.1" />
+    </linearGradient>
+
+    <!-- 3D Floating Glass Cube Face Shading (Left Flank) -->
+    <linearGradient id="cubeTopShade" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.9" />
+      <stop offset="100%" stop-color="#E0E7FF" stop-opacity="0.7" />
+    </linearGradient>
+    <linearGradient id="cubeLeftShade" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#93C5FD" stop-opacity="0.6" />
+      <stop offset="100%" stop-color="#3B82F6" stop-opacity="0.75" />
+    </linearGradient>
+    <linearGradient id="cubeRightShade" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#A5B4FC" stop-opacity="0.6" />
+      <stop offset="100%" stop-color="#6366F1" stop-opacity="0.75" />
+    </linearGradient>
+
+    <!-- Node Glow -->
+    <radialGradient id="bsNodeCyan" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#0DCAF0" stop-opacity="1" />
+      <stop offset="60%" stop-color="#0AA2C0" stop-opacity="0.8" />
+      <stop offset="100%" stop-color="#0D6EFD" stop-opacity="0" />
+    </radialGradient>
+    <radialGradient id="bsNodeBlue" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#0D6EFD" stop-opacity="1" />
+      <stop offset="70%" stop-color="#0A58CA" stop-opacity="0.8" />
+      <stop offset="100%" stop-color="#6610F2" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+
+  <!-- 1. Background Surface -->
+  <rect width="1920" height="1080" fill="url(#bsBgGrad)" />
+
+  <!-- 2. Smooth Horizon Glow -->
+  <ellipse cx="960" cy="360" rx="980" ry="260" fill="url(#bsHorizonGlow)" />
+
+  <!-- 3. 3D Perspective Plane & Grid Floor -->
+  <g stroke="url(#bsRayGrad)" stroke-width="1.2">
+    <!-- Vanishing point (960, 320) -->
+    <line x1="960" y1="320" x2="-280" y2="1080" stroke-opacity="0.3" />
+    <line x1="960" y1="320" x2="-120" y2="1080" stroke-opacity="0.35" />
+    <line x1="960" y1="320" x2="40" y2="1080" stroke-opacity="0.4" />
+    <line x1="960" y1="320" x2="200" y2="1080" stroke-opacity="0.45" />
+    <line x1="960" y1="320" x2="360" y2="1080" stroke-opacity="0.5" />
+    <line x1="960" y1="320" x2="520" y2="1080" stroke-opacity="0.55" />
+    <line x1="960" y1="320" x2="680" y2="1080" stroke-opacity="0.6" />
+    <line x1="960" y1="320" x2="820" y2="1080" stroke-opacity="0.65" />
+    
+    <line x1="960" y1="320" x2="960" y2="1080" stroke="#0D6EFD" stroke-width="1.8" stroke-opacity="0.7" />
+    
+    <line x1="960" y1="320" x2="1100" y2="1080" stroke-opacity="0.65" />
+    <line x1="960" y1="320" x2="1240" y2="1080" stroke-opacity="0.6" />
+    <line x1="960" y1="320" x2="1400" y2="1080" stroke-opacity="0.55" />
+    <line x1="960" y1="320" x2="1560" y2="1080" stroke-opacity="0.5" />
+    <line x1="960" y1="320" x2="1720" y2="1080" stroke-opacity="0.45" />
+    <line x1="960" y1="320" x2="1880" y2="1080" stroke-opacity="0.4" />
+    <line x1="960" y1="320" x2="2040" y2="1080" stroke-opacity="0.35" />
+    <line x1="960" y1="320" x2="2200" y2="1080" stroke-opacity="0.3" />
+  </g>
+
+  <!-- Transverse Perspective Depth Rungs -->
+  <g stroke="url(#bsTransverseFade)">
+    <line x1="0" y1="350" x2="1920" y2="350" stroke-width="0.8" stroke-opacity="0.15" />
+    <line x1="0" y1="370" x2="1920" y2="370" stroke-width="0.8" stroke-opacity="0.2" />
+    <line x1="0" y1="395" x2="1920" y2="395" stroke-width="0.9" stroke-opacity="0.25" />
+    <line x1="0" y1="428" x2="1920" y2="428" stroke-width="1.0" stroke-opacity="0.3" />
+    <line x1="0" y1="472" x2="1920" y2="472" stroke-width="1.1" stroke-opacity="0.38" />
+    <line x1="0" y1="530" x2="1920" y2="530" stroke-width="1.2" stroke-opacity="0.45" />
+    <line x1="0" y1="605" x2="1920" y2="605" stroke-width="1.3" stroke-opacity="0.55" />
+    <line x1="0" y1="700" x2="1920" y2="700" stroke-width="1.5" stroke-opacity="0.65" />
+    <line x1="0" y1="820" x2="1920" y2="820" stroke-width="1.7" stroke-opacity="0.75" />
+    <line x1="0" y1="970" x2="1920" y2="970" stroke-width="2.0" stroke-opacity="0.85" />
+  </g>
+
+  <!-- 4. Left Flank: Floating 3D Geometric Isometric Crystal Cubes (Kept at margins, far from center) -->
+  <g transform="translate(80, 200) scale(0.95)">
+    <!-- Top Face -->
+    <polygon points="50,0 100,25 50,50 0,25" fill="url(#cubeTopShade)" stroke="#BFDBFE" stroke-width="1" />
+    <!-- Left Face -->
+    <polygon points="0,25 50,50 50,110 0,85" fill="url(#cubeLeftShade)" stroke="#60A5FA" stroke-width="1" />
+    <!-- Right Face -->
+    <polygon points="50,50 100,25 100,85 50,110" fill="url(#cubeRightShade)" stroke="#818CF8" stroke-width="1" />
+    <!-- Highlight Outline -->
+    <polygon points="50,0 100,25 100,85 50,110 0,85 0,25" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-opacity="0.7" />
+  </g>
+
+  <!-- Secondary Smaller Left Cube -->
+  <g transform="translate(20, 110) scale(0.55) opacity(0.8)">
+    <polygon points="50,0 100,25 50,50 0,25" fill="url(#cubeTopShade)" stroke="#BFDBFE" stroke-width="1" />
+    <polygon points="0,25 50,50 50,110 0,85" fill="url(#cubeLeftShade)" stroke="#60A5FA" stroke-width="1" />
+    <polygon points="50,50 100,25 100,85 50,110" fill="url(#cubeRightShade)" stroke="#818CF8" stroke-width="1" />
+  </g>
+
+  <!-- 5. Right Flank: Floating 3D Geometric Isometric Crystal Cubes (Kept at margins, far from center) -->
+  <g transform="translate(1740, 240) scale(0.95)">
+    <polygon points="50,0 100,25 50,50 0,25" fill="url(#cubeTopShade)" stroke="#BFDBFE" stroke-width="1" />
+    <polygon points="0,25 50,50 50,110 0,85" fill="url(#cubeLeftShade)" stroke="#60A5FA" stroke-width="1" />
+    <polygon points="50,50 100,25 100,85 50,110" fill="url(#cubeRightShade)" stroke="#818CF8" stroke-width="1" />
+    <polygon points="50,0 100,25 100,85 50,110 0,85 0,25" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-opacity="0.7" />
+  </g>
+
+  <!-- Secondary Smaller Right Cube -->
+  <g transform="translate(1820, 140) scale(0.55) opacity(0.75)">
+    <polygon points="50,0 100,25 50,50 0,25" fill="url(#cubeTopShade)" stroke="#BFDBFE" stroke-width="1" />
+    <polygon points="0,25 50,50 50,110 0,85" fill="url(#cubeLeftShade)" stroke="#60A5FA" stroke-width="1" />
+    <polygon points="50,50 100,25 100,85 50,110" fill="url(#cubeRightShade)" stroke="#818CF8" stroke-width="1" />
+  </g>
+
+  <!-- 6. 3D Glowing Nodes on Lower Grid Intersections -->
+  <circle cx="820" cy="700" r="5" fill="url(#bsNodeCyan)" />
+  <circle cx="1100" cy="700" r="5" fill="url(#bsNodeBlue)" />
+  <circle cx="680" cy="820" r="6" fill="url(#bsNodeBlue)" />
+  <circle cx="1240" cy="820" r="6" fill="url(#bsNodeCyan)" />
+  <circle cx="520" cy="970" r="8" fill="url(#bsNodeCyan)" />
+  <circle cx="1400" cy="970" r="8" fill="url(#bsNodeBlue)" />
+
+  <!-- Subtle 3D Energy Link Arc between nodes -->
+  <path d="M 680 820 Q 960 660 1240 820" fill="none" stroke="#0D6EFD" stroke-width="1.5" stroke-dasharray="4 4" stroke-opacity="0.6" />
+</svg>

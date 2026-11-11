@@ -60,9 +60,8 @@ export const AIToolsSection: React.FC = () => {
       id="tools"
       className="py-24 stylish-3d-view-backdrop relative scroll-mt-20 overflow-hidden border-b border-slate-200/80"
     >
-      {/* 3D Photorealistic Landscape & Vector Mesh Backdrop */}
+      {/* Modern 3D Architectural Backdrop */}
       <div className="stylish-3d-bg-layer" />
-      <div className="stylish-3d-vector-mesh" />
 
       {/* Dynamic Luminous Ambient Glows & Cyber Dot Matrix */}
       <div
@@ -78,31 +77,29 @@ export const AIToolsSection: React.FC = () => {
       </div>
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section Header with Frosted Glass Backdrop for Perfect Legibility */}
-        <div className="text-center max-w-3xl mx-auto space-y-4 p-6 sm:p-8 rounded-3xl bg-white/80 backdrop-blur-xl border border-white/90 shadow-sm relative z-10">
-          <div>
-            <Badge variant="primary" size="md">
-              Ecosystem & Tooling
-            </Badge>
-          </div>
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+        {/* Section Header */}
+        <div className="text-center max-w-3xl mx-auto space-y-4">
+          <Badge variant="primary" size="md">
+            Ecosystem & Tooling
+          </Badge>
+          <h2 className="text-3xl sm:text-4xl font-extrabold text-[#0F172A] tracking-tight">
             Industry-Standard AI Tools You Will Master
           </h2>
-          <p className="text-slate-700 font-medium text-sm sm:text-base leading-relaxed max-w-2xl mx-auto">
+          <p className="text-[#475569] text-sm sm:text-base leading-relaxed">
             We curate the most reliable and productive tools in the current ecosystem. Complete transparency regarding tiers and free alternatives.
           </p>
         </div>
 
         {/* Category Filter Pills */}
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-2 relative z-10">
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-2">
           {categories.map((category) => (
             <button
               key={category}
               onClick={() => setSelectedCategory(category)}
-              className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all ${
+              className={`px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-medium transition-all ${
                 selectedCategory === category
-                  ? 'bg-blue-600 text-white shadow-md shadow-blue-500/25 scale-105'
-                  : 'bg-white/90 backdrop-blur-md border border-slate-200/90 text-slate-700 hover:text-slate-900 hover:bg-white shadow-xs'
+                  ? 'bg-blue-600 text-white shadow-sm'
+                  : 'bg-white/90 border border-slate-200 text-[#475569] hover:text-[#0F172A] hover:bg-white'
               }`}
             >
               {category}
@@ -111,15 +108,15 @@ export const AIToolsSection: React.FC = () => {
         </div>
 
         {/* Tools Cards Grid */}
-        <div className="mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7">
           {filteredTools.map((tool) => (
             <div
               key={tool.name}
-              className="stylish-glass-card group p-6 sm:p-7 flex flex-col justify-between rounded-2xl relative overflow-hidden transition-all duration-300"
+              className="stylish-glass-card group p-6 sm:p-7 flex flex-col justify-between rounded-2xl transition-all"
             >
               <div>
                 <div className="flex items-center justify-between">
-                  <div className="w-11 h-11 rounded-xl bg-blue-50/90 border border-blue-200/80 flex items-center justify-center group-hover:scale-110 transition-transform shadow-xs">
+                  <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-center group-hover:scale-105 transition-transform">
                     {getToolIcon(tool.icon)}
                   </div>
                   <Badge variant={getTierBadgeVariant(tool.accessTier)} size="sm">
@@ -139,7 +136,7 @@ export const AIToolsSection: React.FC = () => {
                 </p>
               </div>
 
-              <div className="mt-6 pt-4 border-t border-slate-200/60 flex items-center gap-1.5 text-xs text-slate-500">
+              <div className="mt-6 pt-4 border-t border-slate-100 flex items-center gap-1.5 text-xs text-slate-500">
                 <CheckCircle2 className="w-3.5 h-3.5 text-blue-600" />
                 <span>Guided interactive lab included</span>
               </div>
