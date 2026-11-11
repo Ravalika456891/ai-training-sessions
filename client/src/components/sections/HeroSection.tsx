@@ -137,13 +137,13 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                     alt="AI Launchpad Live Bootcamp"
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#081e4a]/90 via-[#081e4a]/25 to-transparent flex items-end p-4 sm:p-5">
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#081e4a]/95 via-[#081e4a]/45 to-transparent flex items-end p-4 sm:p-5">
                     <div className="text-white w-full flex flex-col gap-1">
                       <div className="flex items-center justify-between gap-2 flex-wrap">
-                        <span className="inline-block text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-md bg-white/15 backdrop-blur-md border border-white/25 text-white">
+                        <span className="inline-block text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-md bg-[#081e4a]/75 backdrop-blur-md border border-white/25 text-white">
                           Batch {currentBatch.batchCode}
                         </span>
-                        <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-200 border border-emerald-400/30 backdrop-blur-xs">
+                        <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-950/60 text-emerald-200 border border-emerald-400/35 backdrop-blur-md">
                           <Users className="w-3 h-3" />
                           {currentBatch.availableSeats} Seats Open
                         </span>

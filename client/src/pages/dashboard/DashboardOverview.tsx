@@ -1052,7 +1052,7 @@ export const DashboardOverview: React.FC = () => {
                 alt="AI Launchpad Cohort"
                 className="w-full h-full object-cover"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/30 to-transparent flex items-end p-3.5">
+              <div className="absolute inset-0 bg-gradient-to-t from-[#081e4a]/95 via-[#081e4a]/45 to-transparent flex items-end p-3.5">
                 <div>
                   <div className="text-[10px] font-bold uppercase tracking-wider text-cyan-300">
                     Active Weekend Cohort
