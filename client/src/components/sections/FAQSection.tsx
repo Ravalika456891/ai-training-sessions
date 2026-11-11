@@ -1,116 +1,103 @@
 import React, { useState } from 'react';
-import { ChevronDown, HelpCircle, Mail } from 'lucide-react';
-import { Card } from '../common/Card';
+import { HelpCircle, Mail } from 'lucide-react';
 import { Badge } from '../common/Badge';
+import { SegmentedTabs, type SegmentedTabItem } from '../ui/SegmentedTabs';
+import {
+  UiAccordion,
+  UiAccordionItem,
+  UiAccordionTrigger,
+  UiAccordionContent,
+} from '../ui/UiAccordion';
+import { MotionReveal } from '../ui/MotionPrimitives';
 import { FAQ_DATA, WORKSHOP_CONFIG } from '../../data/workshopData';
 
 export const FAQSection: React.FC = () => {
-  const [openFaqIds, setOpenFaqIds] = useState<string[]>([FAQ_DATA[0].id]);
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
 
   const categories = ['All', 'General', 'Curriculum', 'Logistics', 'Pricing & Policy'];
 
-  const filteredFaqs = selectedCategory === 'All'
-    ? FAQ_DATA
-    : FAQ_DATA.filter((faq) => faq.category === selectedCategory);
+  const categoryTabs: SegmentedTabItem[] = categories.map((cat) => ({
+    value: cat,
+    label: cat,
+  }));
 
-  const toggleFaq = (id: string) => {
-    setOpenFaqIds((prev) =>
-      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
-    );
-  };
+  const filteredFaqs =
+    selectedCategory === 'All'
+      ? FAQ_DATA
+      : FAQ_DATA.filter((faq) => faq.category === selectedCategory);
 
   return (
-    <section id="faq" className="py-20 bg-[#F8FAFC] relative scroll-mt-20">
+    <section id="faq" className="py-20 sm:py-24 bg-[#F4F7FE] relative scroll-mt-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto space-y-4">
-          <Badge variant="primary" size="md">
+        <MotionReveal className="text-center max-w-3xl mx-auto space-y-4">
+          <Badge variant="primary" size="md" icon={<HelpCircle className="w-3.5 h-3.5 text-[#1D4ED8]" />}>
             Clear Answers
           </Badge>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-[#0F172A] tracking-tight">
-            Frequently Asked Questions
+            Frequently Asked{' '}
+            <span className="bg-gradient-to-r from-[#0A2558] via-[#1D4ED8] to-[#0EA5E9] bg-clip-text text-transparent">
+              Questions
+            </span>
           </h2>
-          <p className="text-[#475569] text-sm sm:text-base leading-relaxed">
+          <p className="text-slate-600 text-sm sm:text-base leading-relaxed">
             Everything you need to know about batch logistics, prerequisite hardware, recordings, and certificate verification.
           </p>
+        </MotionReveal>
+
+        {/* Radix UI Category Switcher */}
+        <div className="mt-8">
+          <SegmentedTabs
+            value={selectedCategory}
+            onValueChange={setSelectedCategory}
+            items={categoryTabs}
+            layoutId="faqCategoryTabs"
+          />
         </div>
 
-        {/* Category Pills */}
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-2">
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setSelectedCategory(cat)}
-              className={`px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-medium transition-all ${
-                selectedCategory === cat
-                  ? 'bg-blue-600 text-white shadow-sm'
-                  : 'bg-white border border-slate-200 text-[#475569] hover:text-[#0F172A]'
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
-        </div>
-
-        {/* Accordion List */}
-        <div className="mt-10 max-w-4xl mx-auto space-y-3.5">
-          {filteredFaqs.map((faq) => {
-            const isOpen = openFaqIds.includes(faq.id);
-
-            return (
-              <Card
-                key={faq.id}
-                className="border-slate-200 bg-white shadow-sm transition-all hover:border-slate-300"
-              >
-                <button
-                  onClick={() => toggleFaq(faq.id)}
-                  className="w-full p-5 sm:p-6 text-left flex items-start sm:items-center justify-between gap-4 focus:outline-none"
-                  aria-expanded={isOpen}
-                >
-                  <div className="flex items-start sm:items-center gap-3">
-                    <HelpCircle className="w-5 h-5 text-blue-600 shrink-0 mt-0.5 sm:mt-0" />
-                    <span className="text-base sm:text-lg font-bold text-[#0F172A]">
+        {/* Radix UI Accordion List */}
+        <div className="mt-10 max-w-4xl mx-auto">
+          <UiAccordion
+            key={selectedCategory}
+            type="multiple"
+            defaultValue={filteredFaqs.length > 0 ? [filteredFaqs[0].id] : []}
+          >
+            {filteredFaqs.map((faq) => (
+              <UiAccordionItem key={faq.id} value={faq.id}>
+                <UiAccordionTrigger>
+                  <div className="flex items-start sm:items-center gap-3 pr-2">
+                    <div className="w-8 h-8 rounded-xl bg-blue-50 border border-blue-200/80 text-[#1D4ED8] flex items-center justify-center shrink-0 mt-0.5 sm:mt-0">
+                      <HelpCircle className="w-4 h-4" />
+                    </div>
+                    <span className="text-sm sm:text-base font-bold text-[#0F172A] leading-snug">
                       {faq.question}
                     </span>
                   </div>
-                  <div className="p-1.5 rounded-lg bg-slate-100 text-slate-500 shrink-0">
-                    <ChevronDown
-                      className={`w-4 h-4 transition-transform duration-200 ${
-                        isOpen ? 'rotate-180 text-[#0F172A]' : ''
-                      }`}
-                    />
-                  </div>
-                </button>
+                </UiAccordionTrigger>
 
-                {isOpen && (
-                  <div className="px-5 pb-6 sm:px-6 pt-1 text-[#475569] text-sm sm:text-base leading-relaxed border-t border-slate-100 animate-in fade-in-50 duration-200">
-                    <p className="mt-3">{faq.answer}</p>
-                    <div className="mt-3 flex items-center gap-2">
-                      <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200 font-medium">
-                        Category: {faq.category}
-                      </span>
-                    </div>
+                <UiAccordionContent className="text-slate-600 text-sm sm:text-base leading-relaxed">
+                  <p className="mt-2">{faq.answer}</p>
+                  <div className="mt-3 flex items-center gap-2">
+                    <span className="text-[11px] font-mono px-2.5 py-0.5 rounded-md bg-blue-50 text-[#0A2558] border border-blue-200/80 font-semibold">
+                      Category: {faq.category}
+                    </span>
                   </div>
-                )}
-              </Card>
-            );
-          })}
+                </UiAccordionContent>
+              </UiAccordionItem>
+            ))}
+          </UiAccordion>
         </div>
 
-        {/* Still have questions? */}
-        <div className="mt-12 text-center text-xs sm:text-sm text-slate-500">
+        <MotionReveal delay={0.08} className="mt-12 text-center text-xs sm:text-sm text-slate-600">
           <span>Have an unanswered question? Email our lead academic advisor at </span>
           <a
             href={`mailto:${WORKSHOP_CONFIG.supportEmail}`}
-            className="text-blue-600 font-semibold hover:underline inline-flex items-center gap-1 ml-1"
+            className="text-[#1D4ED8] font-bold hover:underline inline-flex items-center gap-1 ml-1"
           >
             <Mail className="w-3.5 h-3.5" />
             {WORKSHOP_CONFIG.supportEmail}
           </a>
-        </div>
+        </MotionReveal>
       </div>
     </section>
   );
 };
-

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import {
   Calendar,
   Clock,
@@ -9,7 +10,9 @@ import {
   Sparkles,
   LayoutDashboard,
   BookOpen,
+  Users,
 } from 'lucide-react';
+import { Button } from '../common/Button';
 import { BATCH_OPTIONS } from '../../data/workshopData';
 import type { BatchOption } from '../../types/workshop';
 
@@ -25,116 +28,126 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   batch,
 }) => {
   const currentBatch = batch || BATCH_OPTIONS[0];
+  const pillars = [
+    { icon: Calendar, label: 'Saturday & Sunday Live', tint: 'bg-blue-50 text-[#1D4ED8] border-blue-200/80' },
+    { icon: Clock, label: '10 Hours of Guided Labs', tint: 'bg-indigo-50 text-indigo-600 border-indigo-200/80' },
+    { icon: Terminal, label: 'No Coding Required', tint: 'bg-sky-50 text-sky-600 border-sky-200/80' },
+    { icon: Award, label: 'Verified Certificate', tint: 'bg-emerald-50 text-emerald-600 border-emerald-200/80' },
+  ];
 
   return (
-    <section className="relative pt-10 pb-16 md:pt-16 md:pb-24 light-hero-backdrop text-[#0F172A] overflow-hidden border-b border-slate-200/80">
-      {/* Subtle Top & Side Glows */}
+    <section className="relative pt-10 pb-16 md:pt-16 md:pb-24 bg-[#F4F7FE] text-[#0F172A] overflow-hidden border-b border-slate-200/80">
+      {/* Layered Architectural Mesh + Dot Grid Backdrop */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -top-32 left-1/4 w-[28rem] h-[28rem] rounded-full bg-blue-100/50 blur-3xl" />
-        <div className="absolute top-12 right-10 w-[24rem] h-[24rem] rounded-full bg-indigo-100/50 blur-3xl" />
+        <div className="absolute inset-0 ui-canvas-gradient" />
+        <div className="absolute inset-0 cyber-dots-pattern opacity-45" />
+        <div className="absolute -top-24 left-1/4 w-[28rem] h-[28rem] rounded-full bg-blue-300/20 blur-3xl" />
+        <div className="absolute top-12 right-10 w-[24rem] h-[24rem] rounded-full bg-sky-300/20 blur-3xl" />
       </div>
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Main 2-Column Hero Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
-          {/* Left Column: Crisp Typography, 2x2 Feature Grid & Clear CTAs */}
-          <div className="lg:col-span-6 space-y-6 text-center lg:text-left">
-            {/* 1. Status Pill Badge */}
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50/90 border border-blue-200 text-xs font-bold text-blue-700 shadow-2xs">
-              <Sparkles className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+          {/* Left Column */}
+          <motion.div
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+            className="lg:col-span-6 space-y-6 text-center lg:text-left"
+          >
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/95 border border-blue-200/90 text-xs font-bold shadow-xs">
+              <Sparkles className="w-3.5 h-3.5 text-[#1D4ED8] shrink-0" />
               <span className="text-[#0F172A]">2-Day Hands-On AI Bootcamp</span>
-              <span className="text-blue-300">•</span>
-              <span className="text-blue-700">Live Mentorship</span>
+              <span className="text-slate-300">•</span>
+              <span className="text-[#1D4ED8]">Live Mentorship</span>
             </div>
 
-            {/* 2. Executive Headline */}
             <h1 className="text-3xl sm:text-5xl lg:text-[3.25rem] font-black tracking-tight text-[#0F172A] leading-[1.12]">
               Master Practical AI &amp; Build Real Workflows in{' '}
-              <span className="text-blue-600">
+              <span className="bg-gradient-to-r from-[#0A2558] via-[#1D4ED8] to-[#0EA5E9] bg-clip-text text-transparent">
                 One Weekend
               </span>
             </h1>
 
-            {/* 3. Clean Subtitle */}
             <p className="text-sm sm:text-base lg:text-lg text-slate-600 leading-relaxed max-w-xl mx-auto lg:mx-0">
               Go from zero AI background to building custom AI assistants, multi-step automations, and functional web prototypes with live step-by-step mentorship.
             </p>
 
-            {/* 4. Balanced 2x2 Key Pillars Grid */}
+            {/* Bento Pillars 2x2 */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-w-xl mx-auto lg:mx-0 pt-1">
-              <div className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl bg-white border border-slate-200/90 shadow-2xs text-xs font-bold text-[#0F172A]">
-                <div className="w-7 h-7 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
-                  <Calendar className="w-4 h-4" />
-                </div>
-                <span>Saturday &amp; Sunday Live</span>
-              </div>
-
-              <div className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl bg-white border border-slate-200/90 shadow-2xs text-xs font-bold text-[#0F172A]">
-                <div className="w-7 h-7 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
-                  <Clock className="w-4 h-4" />
-                </div>
-                <span>10 Hours of Guided Labs</span>
-              </div>
-
-              <div className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl bg-white border border-slate-200/90 shadow-2xs text-xs font-bold text-[#0F172A]">
-                <div className="w-7 h-7 rounded-lg bg-sky-50 text-sky-600 flex items-center justify-center shrink-0">
-                  <Terminal className="w-4 h-4" />
-                </div>
-                <span>No Coding Required</span>
-              </div>
-
-              <div className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl bg-white border border-slate-200/90 shadow-2xs text-xs font-bold text-[#0F172A]">
-                <div className="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
-                  <Award className="w-4 h-4" />
-                </div>
-                <span>Verified Certificate</span>
-              </div>
+              {pillars.map((pillar) => {
+                const Icon = pillar.icon;
+                return (
+                  <div
+                    key={pillar.label}
+                    className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-2xl bg-white/95 border border-slate-200/90 shadow-2xs text-xs font-bold text-[#0F172A]"
+                  >
+                    <div className={`w-7 h-7 rounded-xl border flex items-center justify-center shrink-0 ${pillar.tint}`}>
+                      <Icon className="w-4 h-4" />
+                    </div>
+                    <span>{pillar.label}</span>
+                  </div>
+                );
+              })}
             </div>
 
-            {/* 5. Clean Primary & Secondary Action Buttons */}
+            {/* CTAs */}
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center lg:justify-start gap-3 pt-2">
-              <button
+              <Button
+                variant="gradient"
+                size="lg"
                 onClick={onRegisterClick}
-                className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold shadow-md transition-all cursor-pointer"
+                className="rounded-2xl shadow-lg shadow-blue-900/20"
+                rightIcon={<ArrowRight className="w-4 h-4" />}
               >
-                <span>Register Now</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
+                Register Now
+              </Button>
 
-              <button
+              <Button
+                variant="outline"
+                size="lg"
                 onClick={onExploreCurriculum}
-                className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-white hover:bg-slate-50 border border-slate-200 text-[#0F172A] text-sm font-bold shadow-2xs transition-colors cursor-pointer"
+                className="rounded-2xl"
+                leftIcon={<BookOpen className="w-4 h-4 text-[#1D4ED8]" />}
               >
-                <BookOpen className="w-4 h-4 text-blue-600" />
-                <span>Explore Curriculum</span>
-              </button>
+                Explore Curriculum
+              </Button>
 
               <Link
                 to="/signin"
-                className="inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-2xl bg-white hover:bg-slate-50 border border-slate-200 text-[#0F172A] text-sm font-bold shadow-2xs transition-colors"
+                className="inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-2xl bg-white/95 hover:bg-slate-50 border border-slate-200 hover:border-blue-300 text-[#0A2558] text-sm font-bold shadow-2xs transition-colors"
               >
-                <LayoutDashboard className="w-4 h-4 text-blue-600" />
+                <LayoutDashboard className="w-4 h-4 text-[#1D4ED8]" />
                 <span>Sign In</span>
               </Link>
             </div>
-          </div>
+          </motion.div>
 
-          {/* Right Column: Minimal, Clean Cohort Card */}
-          <div className="lg:col-span-6">
-            <div className="rounded-3xl bg-white border border-slate-200/90 shadow-xl overflow-hidden max-w-lg mx-auto lg:ml-auto">
-              {/* Clean Visual + Essential Info Only */}
-              <div className="p-5 sm:p-6 space-y-5">
+          {/* Right Column: Elevated Bento Cohort Showcase Card (Clean top image without macOS bar) */}
+          <motion.div
+            initial={{ opacity: 0, y: 22 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+            className="lg:col-span-6"
+          >
+            <div className="rounded-3xl bg-white/95 backdrop-blur-xl border border-slate-200/90 shadow-2xl shadow-blue-950/10 overflow-hidden max-w-lg mx-auto lg:ml-auto">
+              <div className="p-4 sm:p-6 space-y-5">
                 <div className="group relative rounded-2xl overflow-hidden aspect-[16/9] bg-[#081E4A] border border-slate-200 shadow-inner">
                   <img
                     src="/assets/hero-cohort-showcase.jpg"
                     alt="AI Launchpad Live Bootcamp"
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/20 to-transparent flex items-end p-4">
-                    <div className="text-white">
-                      <span className="inline-block text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-md bg-blue-600 text-white mb-1">
-                        Batch {currentBatch.batchCode}
-                      </span>
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/25 to-transparent flex items-end p-4 sm:p-5">
+                    <div className="text-white w-full flex flex-col gap-1">
+                      <div className="flex items-center justify-between gap-2 flex-wrap">
+                        <span className="inline-block text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-md bg-gradient-to-r from-[#1D4ED8] to-[#0EA5E9] text-white">
+                          Batch {currentBatch.batchCode}
+                        </span>
+                        <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-200 border border-emerald-400/30 backdrop-blur-xs">
+                          <Users className="w-3 h-3" />
+                          {currentBatch.availableSeats} Seats Open
+                        </span>
+                      </div>
                       <h3 className="text-base sm:text-lg font-extrabold">
                         {currentBatch.dateRange}
                       </h3>
@@ -145,7 +158,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                   </div>
                 </div>
 
-                {/* Compact Bottom Bar */}
+                {/* Bottom Action Strip */}
                 <div className="flex items-center justify-between gap-4 pt-1">
                   <div>
                     <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
@@ -154,22 +167,24 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                     <div className="text-2xl font-black text-[#0F172A]">
                       ₹{currentBatch.pricing.basePrice.toLocaleString('en-IN')}
                       <span className="text-xs font-semibold text-slate-500 ml-1">
-                        + GST
+                        + 18% GST
                       </span>
                     </div>
                   </div>
 
-                  <button
+                  <Button
+                    variant="gradient"
+                    size="md"
                     onClick={onRegisterClick}
-                    className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-bold shadow-sm cursor-pointer transition-all"
+                    className="rounded-xl px-5 py-3 shadow-md shadow-blue-900/20"
+                    rightIcon={<ArrowRight className="w-4 h-4" />}
                   >
-                    <span>Reserve Seat</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </button>
+                    Reserve Seat
+                  </Button>
                 </div>
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
     </section>

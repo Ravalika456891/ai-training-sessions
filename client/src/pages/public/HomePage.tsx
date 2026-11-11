@@ -232,23 +232,23 @@ export const HomePage: React.FC = () => {
 
       {/* Mobile Sticky Register Pill for Guests */}
       {!user && (
-        <div className="sm:hidden fixed bottom-4 left-4 right-4 z-40">
-          <div className="p-3 rounded-2xl bg-white/95 backdrop-blur-md border border-slate-200 shadow-2xl flex items-center justify-between gap-3">
-            <div>
-              <div className="text-[11px] text-slate-500 font-medium">
+        <div className="sm:hidden fixed bottom-3 left-3 right-3 z-40">
+          <div className="p-3 rounded-2xl bg-white/95 backdrop-blur-xl border border-blue-200/80 shadow-2xl shadow-blue-950/15 flex items-center justify-between gap-3">
+            <div className="min-w-0">
+              <div className="text-[11px] text-slate-500 font-semibold truncate">
                 {currentNextBatch.batchCode}:{' '}
-                <span className="text-[#0F172A] font-bold">
+                <span className="text-[#0A2558] font-bold">
                   {currentNextBatch.dateRange.split('–')[0]}
                 </span>
               </div>
-              <div className="text-sm font-black text-blue-600">
+              <div className="text-sm font-black text-[#1D4ED8]">
                 ₹{currentNextBatch.pricing.basePrice.toLocaleString('en-IN')}{' '}
-                <span className="text-[10px] text-slate-500 font-normal">+ 18% GST</span>
+                <span className="text-[10px] text-slate-500 font-medium">+ 18% GST</span>
               </div>
             </div>
             <button
               onClick={scrollToRegister}
-              className="inline-flex items-center gap-1.5 py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-sm cursor-pointer"
+              className="inline-flex items-center gap-1.5 py-2.5 px-4 rounded-xl bg-gradient-to-r from-[#0A2558] via-[#133B8A] to-[#1D4ED8] text-white text-xs font-bold shadow-md shadow-blue-900/20 cursor-pointer shrink-0 active:scale-[0.98]"
             >
               <span>Register Now</span>
               <ArrowRight className="w-3.5 h-3.5" />

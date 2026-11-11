@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { motion } from 'framer-motion';
 import {
   Brain,
   MessageSquare,
@@ -8,48 +9,61 @@ import {
   Search,
   Sparkles,
   Info,
-  CheckCircle2
+  CheckCircle2,
+  Cpu,
 } from 'lucide-react';
 import { Badge } from '../common/Badge';
+import { SegmentedTabs, type SegmentedTabItem } from '../ui/SegmentedTabs';
+import { MotionReveal, MotionBentoCard } from '../ui/MotionPrimitives';
 import { AI_TOOLS_DATA } from '../../data/workshopData';
 import type { AITool } from '../../types/workshop';
 
 export const AIToolsSection: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
 
-  const categories = ['All', 'LLMs & Reasoning', 'Creative & Media', 'Code & Prototype', 'Workflow & Automation'];
+  const categories = [
+    'All',
+    'LLMs & Reasoning',
+    'Creative & Media',
+    'Code & Prototype',
+    'Workflow & Automation',
+  ];
 
-  const filteredTools = selectedCategory === 'All'
-    ? AI_TOOLS_DATA
-    : AI_TOOLS_DATA.filter(t => t.category === selectedCategory);
+  const categoryTabs: SegmentedTabItem[] = categories.map((category) => ({
+    value: category,
+    label: category,
+  }));
+
+  const filteredTools =
+    selectedCategory === 'All'
+      ? AI_TOOLS_DATA
+      : AI_TOOLS_DATA.filter((t) => t.category === selectedCategory);
 
   const getToolIcon = (iconName: string) => {
     switch (iconName) {
       case 'Brain':
-        return <Brain className="w-5 h-5 text-blue-600" />;
+        return <Brain className="w-5 h-5 text-[#1D4ED8]" />;
       case 'MessageSquare':
-        return <MessageSquare className="w-5 h-5 text-blue-600" />;
+        return <MessageSquare className="w-5 h-5 text-[#1D4ED8]" />;
       case 'Code':
-        return <Code className="w-5 h-5 text-blue-600" />;
+        return <Code className="w-5 h-5 text-[#1D4ED8]" />;
       case 'Image':
-        return <ImageIcon className="w-5 h-5 text-blue-600" />;
+        return <ImageIcon className="w-5 h-5 text-[#1D4ED8]" />;
       case 'Workflow':
-        return <Workflow className="w-5 h-5 text-blue-600" />;
+        return <Workflow className="w-5 h-5 text-[#1D4ED8]" />;
       case 'Search':
-        return <Search className="w-5 h-5 text-blue-600" />;
+        return <Search className="w-5 h-5 text-[#1D4ED8]" />;
       default:
-        return <Sparkles className="w-5 h-5 text-blue-600" />;
+        return <Sparkles className="w-5 h-5 text-[#1D4ED8]" />;
     }
   };
 
   const getTierBadgeVariant = (tier: AITool['accessTier']) => {
     switch (tier) {
       case 'Free Available':
-        return 'primary';
+        return 'success';
       case 'Freemium / Free Trial':
         return 'primary';
-      case 'Subscription Optional':
-        return 'outline';
       default:
         return 'outline';
     }
@@ -58,65 +72,53 @@ export const AIToolsSection: React.FC = () => {
   return (
     <section
       id="tools"
-      className="py-24 stylish-3d-view-backdrop relative scroll-mt-20 overflow-hidden border-b border-slate-200/80"
+      className="py-20 sm:py-24 stylish-3d-view-backdrop relative scroll-mt-20 overflow-hidden border-b border-slate-200/80"
     >
-      {/* Modern 3D Architectural Backdrop */}
       <div className="stylish-3d-bg-layer" />
-
-      {/* Dynamic Luminous Ambient Glows & Cyber Dot Matrix */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 overflow-hidden select-none"
-      >
-        <div className="absolute -top-32 -left-20 w-[24rem] sm:w-[36rem] h-[24rem] sm:h-[36rem] rounded-full bg-blue-400/15 blur-3xl animate-ambient-pulse-slow" />
-        <div className="absolute top-1/2 -right-20 w-[22rem] sm:w-[32rem] h-[22rem] sm:h-[32rem] rounded-full bg-indigo-400/15 blur-3xl animate-ambient-pulse-delayed" />
-        <div className="absolute -bottom-24 left-1/3 w-[24rem] sm:w-[36rem] h-[24rem] sm:h-[36rem] rounded-full bg-cyan-400/15 blur-3xl" />
-        <div className="absolute inset-0 cyber-dots-pattern opacity-30" />
-        <div className="absolute top-0 left-0 right-0 h-16 bg-gradient-to-b from-white to-transparent" />
-        <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-white to-transparent" />
-      </div>
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 cyber-dots-pattern opacity-35" />
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto space-y-4">
-          <Badge variant="primary" size="md">
-            Ecosystem & Tooling
+        <MotionReveal className="text-center max-w-3xl mx-auto space-y-4">
+          <Badge variant="primary" size="md" icon={<Cpu className="w-3.5 h-3.5 text-[#1D4ED8]" />}>
+            Ecosystem &amp; Tooling
           </Badge>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-[#0F172A] tracking-tight">
-            Industry-Standard AI Tools You Will Master
+            Industry-Standard{' '}
+            <span className="bg-gradient-to-r from-[#0A2558] via-[#1D4ED8] to-[#0EA5E9] bg-clip-text text-transparent">
+              AI Tools
+            </span>{' '}
+            You Will Master
           </h2>
-          <p className="text-[#475569] text-sm sm:text-base leading-relaxed">
-            We curate the most reliable and productive tools in the current ecosystem. Complete transparency regarding tiers and free alternatives.
+          <p className="text-slate-600 text-sm sm:text-base leading-relaxed">
+            Filter the stack by capability below. Every exercise works with complimentary plans or free trial tiers.
           </p>
+        </MotionReveal>
+
+        {/* Radix UI Category Switcher Tabs */}
+        <div className="mt-8">
+          <SegmentedTabs
+            value={selectedCategory}
+            onValueChange={setSelectedCategory}
+            items={categoryTabs}
+            layoutId="aiToolFilterTabs"
+          />
         </div>
 
-        {/* Category Filter Pills */}
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-2">
-          {categories.map((category) => (
-            <button
-              key={category}
-              onClick={() => setSelectedCategory(category)}
-              className={`px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-medium transition-all ${
-                selectedCategory === category
-                  ? 'bg-blue-600 text-white shadow-sm'
-                  : 'bg-white/90 border border-slate-200 text-[#475569] hover:text-[#0F172A] hover:bg-white'
-              }`}
-            >
-              {category}
-            </button>
-          ))}
-        </div>
-
-        {/* Tools Cards Grid */}
-        <div className="mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7">
-          {filteredTools.map((tool) => (
-            <div
+        {/* Tools Bento Grid */}
+        <motion.div
+          layout
+          className="mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+        >
+          {filteredTools.map((tool, idx) => (
+            <MotionBentoCard
               key={tool.name}
-              className="stylish-glass-card group p-6 sm:p-7 flex flex-col justify-between rounded-2xl transition-all"
+              delay={idx * 0.03}
+              className="group p-6 flex flex-col justify-between relative overflow-hidden"
             >
+              <div className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-[#0A2558] via-[#1D4ED8] to-[#0EA5E9] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               <div>
-                <div className="flex items-center justify-between">
-                  <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-center group-hover:scale-105 transition-transform">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-blue-50 to-sky-50 border border-blue-200/80 flex items-center justify-center group-hover:scale-105 transition-transform">
                     {getToolIcon(tool.icon)}
                   </div>
                   <Badge variant={getTierBadgeVariant(tool.accessTier)} size="sm">
@@ -124,33 +126,34 @@ export const AIToolsSection: React.FC = () => {
                   </Badge>
                 </div>
 
-                <h3 className="text-lg font-bold text-[#0F172A] mt-4">
+                <h3 className="text-lg font-extrabold text-[#0F172A] mt-4 group-hover:text-[#1D4ED8] transition-colors">
                   {tool.name}
                 </h3>
-                <span className="text-xs text-blue-600 font-medium">
+                <span className="text-xs text-[#1D4ED8] font-semibold">
                   {tool.category}
                 </span>
 
-                <p className="text-[#475569] text-sm mt-2 leading-relaxed">
+                <p className="text-slate-600 text-sm mt-2 leading-relaxed">
                   {tool.description}
                 </p>
               </div>
 
-              <div className="mt-6 pt-4 border-t border-slate-100 flex items-center gap-1.5 text-xs text-slate-500">
-                <CheckCircle2 className="w-3.5 h-3.5 text-blue-600" />
+              <div className="mt-6 pt-4 border-t border-slate-100 flex items-center gap-1.5 text-xs text-slate-600 font-medium">
+                <CheckCircle2 className="w-3.5 h-3.5 text-[#1D4ED8]" />
                 <span>Guided interactive lab included</span>
               </div>
-            </div>
+            </MotionBentoCard>
           ))}
-        </div>
+        </motion.div>
 
-        {/* PRD Disclosed Access Caveat Note */}
-        <div className="mt-10 max-w-3xl mx-auto p-4 sm:p-5 rounded-2xl stylish-glass-card text-xs text-[#475569] flex items-start gap-3 shadow-sm">
-          <Info className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
-          <p className="leading-relaxed">
-            <strong className="text-[#0F172A]">Transparent Access Policy:</strong> All required workshop exercises can be performed using completely free plans or complimentary trials. We demonstrate optional premium features for reference but will never require paid tool subscriptions to complete the bootcamp or earn your certificate.
-          </p>
-        </div>
+        <MotionReveal delay={0.1} className="mt-10 max-w-3xl mx-auto">
+          <div className="p-4 sm:p-5 rounded-2xl bg-white/95 backdrop-blur-md border border-slate-200/90 text-xs text-slate-600 flex items-start gap-3 shadow-sm">
+            <Info className="w-4 h-4 text-[#1D4ED8] shrink-0 mt-0.5" />
+            <p className="leading-relaxed">
+              <strong className="text-[#0F172A]">Transparent Access Policy:</strong> All required workshop exercises can be performed using completely free plans or complimentary trials. We never require paid tool subscriptions to finish labs or earn your certificate.
+            </p>
+          </div>
+        </MotionReveal>
       </div>
     </section>
   );
