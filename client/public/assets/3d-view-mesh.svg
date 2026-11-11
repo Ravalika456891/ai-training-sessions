@@ -1,0 +1,167 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" width="100%" height="100%">
+  <defs>
+    <!-- Background Gradient -->
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="25%" stop-color="#F8FAFC" />
+      <stop offset="65%" stop-color="#EEF2FF" />
+      <stop offset="100%" stop-color="#E0E7FF" />
+    </linearGradient>
+
+    <!-- Horizon 3D Glow -->
+    <radialGradient id="horizonGlow" cx="50%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#38BDF8" stop-opacity="0.35" />
+      <stop offset="35%" stop-color="#6366F1" stop-opacity="0.22" />
+      <stop offset="70%" stop-color="#3B82F6" stop-opacity="0.08" />
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0" />
+    </radialGradient>
+
+    <!-- 3D Perspective Grid Gradient -->
+    <linearGradient id="gridLineFade" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#3B82F6" stop-opacity="0.05" />
+      <stop offset="35%" stop-color="#6366F1" stop-opacity="0.25" />
+      <stop offset="80%" stop-color="#2563EB" stop-opacity="0.5" />
+      <stop offset="100%" stop-color="#1D4ED8" stop-opacity="0.65" />
+    </linearGradient>
+
+    <!-- 3D Cube Top Face -->
+    <linearGradient id="cubeTop" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.95" />
+      <stop offset="100%" stop-color="#DBEAFE" stop-opacity="0.8" />
+    </linearGradient>
+
+    <!-- 3D Cube Left Face -->
+    <linearGradient id="cubeLeft" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#93C5FD" stop-opacity="0.75" />
+      <stop offset="100%" stop-color="#3B82F6" stop-opacity="0.85" />
+    </linearGradient>
+
+    <!-- 3D Cube Right Face -->
+    <linearGradient id="cubeRight" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#818CF8" stop-opacity="0.75" />
+      <stop offset="100%" stop-color="#4F46E5" stop-opacity="0.85" />
+    </linearGradient>
+
+    <!-- Glowing Node -->
+    <radialGradient id="cyanNode" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#38BDF8" stop-opacity="1" />
+      <stop offset="40%" stop-color="#0284C7" stop-opacity="0.8" />
+      <stop offset="100%" stop-color="#0284C7" stop-opacity="0" />
+    </radialGradient>
+
+    <radialGradient id="purpleNode" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#A855F7" stop-opacity="1" />
+      <stop offset="40%" stop-color="#7C3AED" stop-opacity="0.8" />
+      <stop offset="100%" stop-color="#7C3AED" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+
+  <!-- Ambient Sky/Canvas -->
+  <rect width="1920" height="1080" fill="url(#bgGradient)" />
+
+  <!-- 3D Perspective Glowing Horizon -->
+  <ellipse cx="960" cy="420" rx="900" ry="240" fill="url(#horizonGlow)" />
+
+  <!-- 3D Perspective Mesh Floor -->
+  <g stroke="url(#gridLineFade)" stroke-width="1.2">
+    <!-- Longitudinal Perspective Rays converging to horizon vanishing point (960, 380) -->
+    <line x1="960" y1="380" x2="-200" y2="1080" />
+    <line x1="960" y1="380" x2="-80" y2="1080" />
+    <line x1="960" y1="380" x2="40" y2="1080" />
+    <line x1="960" y1="380" x2="160" y2="1080" />
+    <line x1="960" y1="380" x2="280" y2="1080" />
+    <line x1="960" y1="380" x2="400" y2="1080" />
+    <line x1="960" y1="380" x2="520" y2="1080" />
+    <line x1="960" y1="380" x2="640" y2="1080" />
+    <line x1="960" y1="380" x2="760" y2="1080" />
+    <line x1="960" y1="380" x2="880" y2="1080" />
+    <line x1="960" y1="380" x2="960" y2="1080" stroke-width="1.8" stroke="#3B82F6" stroke-opacity="0.7" />
+    <line x1="960" y1="380" x2="1040" y2="1080" />
+    <line x1="960" y1="380" x2="1160" y2="1080" />
+    <line x1="960" y1="380" x2="1280" y2="1080" />
+    <line x1="960" y1="380" x2="1400" y2="1080" />
+    <line x1="960" y1="380" x2="1520" y2="1080" />
+    <line x1="960" y1="380" x2="1640" y2="1080" />
+    <line x1="960" y1="380" x2="1760" y2="1080" />
+    <line x1="960" y1="380" x2="1880" y2="1080" />
+    <line x1="960" y1="380" x2="2000" y2="1080" />
+    <line x1="960" y1="380" x2="2120" y2="1080" />
+
+    <!-- Latitudinal Perspective Transverse Lines (Foreshortened) -->
+    <line x1="0" y1="410" x2="1920" y2="410" stroke-opacity="0.12" stroke-width="0.8" />
+    <line x1="0" y1="428" x2="1920" y2="428" stroke-opacity="0.16" stroke-width="0.8" />
+    <line x1="0" y1="452" x2="1920" y2="452" stroke-opacity="0.22" stroke-width="0.9" />
+    <line x1="0" y1="482" x2="1920" y2="482" stroke-opacity="0.28" stroke-width="1.0" />
+    <line x1="0" y1="520" x2="1920" y2="520" stroke-opacity="0.35" stroke-width="1.1" />
+    <line x1="0" y1="568" x2="1920" y2="568" stroke-opacity="0.42" stroke-width="1.2" />
+    <line x1="0" y1="628" x2="1920" y2="628" stroke-opacity="0.5" stroke-width="1.3" />
+    <line x1="0" y1="702" x2="1920" y2="702" stroke-opacity="0.6" stroke-width="1.4" />
+    <line x1="0" y1="795" x2="1920" y2="795" stroke-opacity="0.7" stroke-width="1.5" />
+    <line x1="0" y1="915" x2="1920" y2="915" stroke-opacity="0.8" stroke-width="1.6" />
+    <line x1="0" y1="1065" x2="1920" y2="1065" stroke-opacity="0.9" stroke-width="1.8" />
+  </g>
+
+  <!-- 3D Perspective Floating Crystal Cubes & Polyhedrons -->
+  <!-- Left 3D Floating Cube (Large) -->
+  <g transform="translate(140, 220) scale(1.1)">
+    <!-- Top Face -->
+    <polygon points="50,0 100,25 50,50 0,25" fill="url(#cubeTop)" stroke="#93C5FD" stroke-width="1" />
+    <!-- Left Face -->
+    <polygon points="0,25 50,50 50,110 0,85" fill="url(#cubeLeft)" stroke="#60A5FA" stroke-width="1" />
+    <!-- Right Face -->
+    <polygon points="50,50 100,25 100,85 50,110" fill="url(#cubeRight)" stroke="#818CF8" stroke-width="1" />
+    <!-- Glow Outline -->
+    <polygon points="50,0 100,25 100,85 50,110 0,85 0,25" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-opacity="0.6" />
+  </g>
+
+  <!-- Left Secondary 3D Floating Cube (Small, further back) -->
+  <g transform="translate(60, 140) scale(0.65) opacity(0.75)">
+    <polygon points="50,0 100,25 50,50 0,25" fill="url(#cubeTop)" stroke="#93C5FD" stroke-width="1" />
+    <polygon points="0,25 50,50 50,110 0,85" fill="url(#cubeLeft)" stroke="#60A5FA" stroke-width="1" />
+    <polygon points="50,50 100,25 100,85 50,110" fill="url(#cubeRight)" stroke="#818CF8" stroke-width="1" />
+  </g>
+
+  <!-- Right 3D Floating Cube (Medium) -->
+  <g transform="translate(1700, 260) scale(1.05)">
+    <polygon points="50,0 100,25 50,50 0,25" fill="url(#cubeTop)" stroke="#93C5FD" stroke-width="1" />
+    <polygon points="0,25 50,50 50,110 0,85" fill="url(#cubeLeft)" stroke="#60A5FA" stroke-width="1" />
+    <polygon points="50,50 100,25 100,85 50,110" fill="url(#cubeRight)" stroke="#818CF8" stroke-width="1" />
+    <polygon points="50,0 100,25 100,85 50,110 0,85 0,25" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-opacity="0.6" />
+  </g>
+
+  <!-- Right Secondary 3D Floating Cube -->
+  <g transform="translate(1780, 160) scale(0.6) opacity(0.7)">
+    <polygon points="50,0 100,25 50,50 0,25" fill="url(#cubeTop)" stroke="#93C5FD" stroke-width="1" />
+    <polygon points="0,25 50,50 50,110 0,85" fill="url(#cubeLeft)" stroke="#60A5FA" stroke-width="1" />
+    <polygon points="50,50 100,25 100,85 50,110" fill="url(#cubeRight)" stroke="#818CF8" stroke-width="1" />
+  </g>
+
+  <!-- Center Floating Isometric Wireframe Diamond Prism -->
+  <g transform="translate(920, 180) scale(0.85)">
+    <polygon points="50,0 100,25 50,50 0,25" fill="none" stroke="#38BDF8" stroke-width="1.8" />
+    <polygon points="0,25 50,50 50,100 0,75" fill="none" stroke="#818CF8" stroke-width="1.5" />
+    <polygon points="50,50 100,25 100,75 50,100" fill="none" stroke="#6366F1" stroke-width="1.5" />
+    <circle cx="50" cy="50" r="6" fill="#38BDF8" />
+  </g>
+
+  <!-- 3D Perspective Glowing Neural Node Clusters on Grid Intersections -->
+  <circle cx="960" cy="702" r="7" fill="url(#cyanNode)" />
+  <circle cx="960" cy="702" r="3" fill="#FFFFFF" />
+
+  <circle cx="760" cy="702" r="6" fill="url(#purpleNode)" />
+  <circle cx="1160" cy="702" r="6" fill="url(#purpleNode)" />
+
+  <circle cx="640" cy="795" r="8" fill="url(#cyanNode)" />
+  <circle cx="1280" cy="795" r="8" fill="url(#cyanNode)" />
+
+  <circle cx="880" cy="915" r="9" fill="url(#cyanNode)" />
+  <circle cx="1040" cy="915" r="9" fill="url(#purpleNode)" />
+
+  <!-- 3D Neural Link Arcs above the floor -->
+  <path d="M 640 795 Q 960 580 1280 795" fill="none" stroke="#38BDF8" stroke-width="2" stroke-dasharray="4 4" stroke-opacity="0.8" />
+  <path d="M 760 702 Q 960 520 1160 702" fill="none" stroke="#818CF8" stroke-width="1.8" stroke-dasharray="3 3" stroke-opacity="0.7" />
+
+  <!-- Subtle Horizon Tech Reticles & Depth Coordinates -->
+  <text x="960" y="360" text-anchor="middle" fill="#64748B" font-size="12" font-family="monospace" letter-spacing="4">3D PERSPECTIVE ENVIRONMENT // HORIZON 0.0</text>
+  <line x1="860" y1="375" x2="1060" y2="375" stroke="#38BDF8" stroke-width="1.5" stroke-opacity="0.8" />
+</svg>

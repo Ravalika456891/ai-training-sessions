@@ -61,8 +61,12 @@ export const BenefitsSection: React.FC<BenefitsSectionProps> = ({ onRegisterClic
   return (
     <section
       id="outcomes"
-      className="py-24 stylish-outcomes-backdrop relative scroll-mt-20 overflow-hidden border-b border-slate-200/80"
+      className="py-24 stylish-3d-view-backdrop relative scroll-mt-20 overflow-hidden border-b border-slate-200/80"
     >
+      {/* 3D Photorealistic Landscape & Vector Mesh Backdrop */}
+      <div className="stylish-3d-bg-layer" />
+      <div className="stylish-3d-vector-mesh" />
+
       {/* Dynamic & Responsive High-Tech SVG Background Artwork & Light Glows */}
       <div
         aria-hidden="true"
