@@ -185,3 +185,4 @@ export const WelcomeSection: React.FC<WelcomeSectionProps> = ({
     </section>
   );
 };
+
