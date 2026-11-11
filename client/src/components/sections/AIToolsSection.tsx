@@ -78,21 +78,23 @@ export const AIToolsSection: React.FC = () => {
       </div>
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto space-y-4">
-          <Badge variant="primary" size="md">
-            Ecosystem & Tooling
-          </Badge>
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-[#0F172A] tracking-tight">
+        {/* Section Header with Frosted Glass Backdrop for Perfect Legibility */}
+        <div className="text-center max-w-3xl mx-auto space-y-4 p-6 sm:p-8 rounded-3xl bg-white/80 backdrop-blur-xl border border-white/90 shadow-sm relative z-10">
+          <div>
+            <Badge variant="primary" size="md">
+              Ecosystem & Tooling
+            </Badge>
+          </div>
+          <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
             Industry-Standard AI Tools You Will Master
           </h2>
-          <p className="text-[#475569] text-sm sm:text-base leading-relaxed">
+          <p className="text-slate-700 font-medium text-sm sm:text-base leading-relaxed max-w-2xl mx-auto">
             We curate the most reliable and productive tools in the current ecosystem. Complete transparency regarding tiers and free alternatives.
           </p>
         </div>
 
         {/* Category Filter Pills */}
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-2">
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-2 relative z-10">
           {categories.map((category) => (
             <button
               key={category}
@@ -100,7 +102,7 @@ export const AIToolsSection: React.FC = () => {
               className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all ${
                 selectedCategory === category
                   ? 'bg-blue-600 text-white shadow-md shadow-blue-500/25 scale-105'
-                  : 'bg-white/85 backdrop-blur-md border border-slate-200/90 text-[#475569] hover:text-[#0F172A] hover:bg-white shadow-sm'
+                  : 'bg-white/90 backdrop-blur-md border border-slate-200/90 text-slate-700 hover:text-slate-900 hover:bg-white shadow-xs'
               }`}
             >
               {category}

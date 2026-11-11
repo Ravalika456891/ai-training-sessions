@@ -141,18 +141,20 @@ export const BenefitsSection: React.FC<BenefitsSectionProps> = ({ onRegisterClic
       </div>
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto space-y-4">
-          <Badge variant="primary" size="md">
-            Tangible Capabilities
-          </Badge>
-          <h2 className="text-3xl sm:text-4xl lg:text-[2.65rem] font-extrabold text-[#0F172A] tracking-tight">
+        {/* Section Header with Frosted Glass Backdrop for Perfect Legibility */}
+        <div className="text-center max-w-3xl mx-auto space-y-4 p-6 sm:p-8 rounded-3xl bg-white/80 backdrop-blur-xl border border-white/90 shadow-sm relative z-10">
+          <div>
+            <Badge variant="primary" size="md">
+              Tangible Capabilities
+            </Badge>
+          </div>
+          <h2 className="text-3xl sm:text-4xl lg:text-[2.65rem] font-extrabold text-slate-900 tracking-tight">
             What You Will Build & Master in{' '}
             <span className="text-blue-600 drop-shadow-2xs">
               2 Days
             </span>
           </h2>
-          <p className="text-[#475569] text-sm sm:text-base leading-relaxed">
+          <p className="text-slate-700 font-medium text-sm sm:text-base leading-relaxed max-w-2xl mx-auto">
             Move beyond superficial chat prompts. You will walk away with concrete, deployable assets and automation pipelines designed for real-world productivity.
           </p>
         </div>
