@@ -154,18 +154,18 @@ export const CurriculumSection: React.FC<CurriculumSectionProps> = ({ onRegister
                         </ul>
                       </div>
 
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50/90 p-3.5 rounded-xl border border-slate-200/80">
+                      <div className="flex flex-col gap-2.5 bg-slate-50/90 p-3.5 rounded-xl border border-slate-200/80">
                         <div className="flex items-center gap-2 text-xs sm:text-sm font-semibold text-[#0A2558]">
                           <CheckCircle2 className="w-4 h-4 text-[#1D4ED8] shrink-0" />
                           <span>{module.handsOnOutput}</span>
                         </div>
 
-                        <div className="flex items-center gap-1.5 flex-wrap">
-                          <span className="text-[11px] text-slate-500 font-medium">Tools:</span>
+                        <div className="flex items-center gap-1.5 pt-2 border-t border-slate-200/70 flex-nowrap whitespace-nowrap overflow-x-auto no-scrollbar">
+                          <span className="text-[11px] text-slate-500 font-semibold shrink-0">Tools:</span>
                           {module.toolsUsed.map((tool) => (
                             <span
                               key={tool}
-                              className="text-[11px] px-2 py-0.5 rounded-md bg-white text-slate-700 border border-slate-200 font-semibold"
+                              className="text-[11px] px-2 py-0.5 rounded-md bg-white text-slate-700 border border-slate-200 font-semibold shrink-0 whitespace-nowrap"
                             >
                               {tool}
                             </span>
