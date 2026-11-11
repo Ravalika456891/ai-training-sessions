@@ -17,6 +17,11 @@ import {
   Users,
   ShieldCheck,
   Loader2,
+  ExternalLink,
+  FileText,
+  Code2,
+  Cpu,
+  Presentation,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useDashboard } from './DashboardLayout';
@@ -35,6 +40,7 @@ export const DashboardOverview: React.FC = () => {
 
   const workshops = dashboardData?.workshops || [];
   const availableWorkshops = dashboardData?.availableWorkshops || [];
+  const assignments = dashboardData?.assignments || [];
   const submissions = dashboardData?.submissions || [];
   const certificates = dashboardData?.certificates || [];
   const hasConfirmedEnrollment = Boolean(
@@ -378,78 +384,204 @@ export const DashboardOverview: React.FC = () => {
     }
 
     // Case B: User has NOT selected or reserved any batch yet
+    const onboardingSteps = [
+      {
+        num: 1,
+        title: 'Confirm Your Cohort',
+        desc: 'Review and select the upcoming workshop cohort (max 60 learners).',
+        icon: ClipboardCheck,
+        badgeClass: 'bg-[#EBF2FF] text-[#1D4ED8]',
+        iconClass: 'bg-blue-50 text-blue-600 border-blue-100',
+      },
+      {
+        num: 2,
+        title: 'Complete Verified Payment',
+        desc: 'Pay securely via Razorpay (UPI, Cards, NetBanking) with instant GST receipt.',
+        icon: CreditCard,
+        badgeClass: 'bg-purple-50 text-purple-600',
+        iconClass: 'bg-purple-50 text-purple-600 border-purple-100',
+      },
+      {
+        num: 3,
+        title: 'Start Learning Immediately',
+        desc: 'Get access to live classes, slides, prompt templates, and assignments.',
+        icon: GraduationCap,
+        badgeClass: 'bg-emerald-50 text-emerald-700',
+        iconClass: 'bg-emerald-50 text-emerald-600 border-emerald-100',
+      },
+    ];
+
     return (
       <div className="space-y-4 sm:space-y-5">
-        {/* 1. Compact Welcome Banner (Responsive: Phone & Desktop) */}
-        <div className="p-4 sm:p-6 rounded-2xl bg-gradient-to-r from-blue-50/80 via-white to-indigo-50/40 text-[#0F172A] border border-blue-200 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="space-y-1">
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-100/80 border border-blue-200 text-blue-700 text-[11px] font-semibold">
-              <Sparkles className="w-3.5 h-3.5 text-blue-600" />
-              <span>Welcome to AI Launchpad</span>
-            </div>
-            <h2 className="text-lg sm:text-2xl font-black tracking-tight text-[#0F172A]">
-              Hello, {user?.name || 'Learner'}!
-            </h2>
-            <p className="text-xs sm:text-sm text-slate-600 max-w-2xl leading-relaxed">
-              Your learner account is ready. Enroll in the upcoming 2-Day Hands-On AI Bootcamp cohort below to unlock live classes, prompt libraries, assignments, and your verified certificate.
-            </p>
-          </div>
+        {/* 1. Sky-Blue Executive Welcome Hero Banner */}
+        <div className="relative overflow-hidden p-5 sm:p-7 rounded-3xl bg-gradient-to-r from-[#EEF4FF] via-[#DCEAFE] to-[#C8DDFD] text-[#0F172A] border border-[#CFE0FF] shadow-[0_8px_28px_-10px_rgba(37,99,235,0.2)]">
+          {/* Subtle Sweeping Wave Backdrop */}
+          <svg
+            aria-hidden="true"
+            viewBox="0 0 600 220"
+            className="pointer-events-none absolute right-0 top-0 h-full w-2/3 opacity-45"
+            preserveAspectRatio="none"
+          >
+            <path
+              d="M120 220 C220 120 340 40 600 10 L600 220 Z"
+              fill="url(#welcomeWaveGrad)"
+            />
+            <defs>
+              <linearGradient id="welcomeWaveGrad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.65" />
+                <stop offset="100%" stopColor="#93C5FD" stopOpacity="0.35" />
+              </linearGradient>
+            </defs>
+          </svg>
 
-          <div className="flex flex-wrap items-center gap-2.5 shrink-0">
-            <button
-              onClick={scrollToBatches}
-              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-sm transition-all cursor-pointer"
-            >
-              <span>Enroll Now</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
-            <Link
-              to="/dashboard/profile"
-              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-[#0F172A] text-xs font-semibold shadow-2xs transition-colors"
-            >
-              <User className="w-4 h-4 text-blue-600" />
-              <span>Profile</span>
-            </Link>
+          <div className="relative flex flex-col lg:flex-row lg:items-center justify-between gap-5">
+            <div className="space-y-2.5 max-w-xl">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/95 border border-blue-200/80 text-[#1D4ED8] text-[11px] font-bold shadow-2xs">
+                <Sparkles className="w-3.5 h-3.5 text-[#1D4ED8]" />
+                <span>Welcome to AI Launchpad</span>
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-[#0B1F44]">
+                Hello, {user?.name || 'Learner'}!
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-700 leading-relaxed">
+                Your learning journey is ready! Enroll in the upcoming 2-Day Hands-On AI Bootcamp cohort below to unlock live classes, prompt libraries, assignments, and your verified certificate.
+              </p>
+            </div>
+
+            <div className="flex items-center justify-between lg:justify-end gap-5 shrink-0">
+              {/* Crisp 3D Glassmorphic AI Laptop & Pedestal Vector Visual */}
+              <div className="hidden md:flex items-center justify-center w-44 h-28 shrink-0">
+                <svg
+                  viewBox="0 0 220 140"
+                  className="w-full h-full drop-shadow-[0_12px_20px_rgba(37,99,235,0.22)]"
+                  aria-hidden="true"
+                >
+                  <defs>
+                    <linearGradient id="laptopScreenGrad" x1="0" y1="0" x2="1" y2="1">
+                      <stop offset="0%" stopColor="#60A5FA" />
+                      <stop offset="55%" stopColor="#2563EB" />
+                      <stop offset="100%" stopColor="#1E3A8A" />
+                    </linearGradient>
+                    <linearGradient id="podiumGrad" x1="0" y1="0" x2="1" y2="0">
+                      <stop offset="0%" stopColor="#E0ECFF" />
+                      <stop offset="50%" stopColor="#FFFFFF" />
+                      <stop offset="100%" stopColor="#BFDBFE" />
+                    </linearGradient>
+                  </defs>
+                  {/* Soft Glowing Aura */}
+                  <ellipse cx="110" cy="112" rx="76" ry="18" fill="#93C5FD" opacity="0.35" />
+                  {/* Circular Frosted Podium */}
+                  <ellipse cx="110" cy="108" rx="64" ry="15" fill="url(#podiumGrad)" stroke="#93C5FD" strokeWidth="1.5" />
+                  <ellipse cx="110" cy="105" rx="54" ry="11" fill="#F8FAFF" opacity="0.9" />
+                  {/* Laptop Display Shell */}
+                  <g transform="translate(52, 20)">
+                    <rect
+                      x="18"
+                      y="2"
+                      width="84"
+                      height="56"
+                      rx="8"
+                      transform="skewY(-5)"
+                      fill="#FFFFFF"
+                      stroke="#BFDBFE"
+                      strokeWidth="2"
+                    />
+                    <rect
+                      x="23"
+                      y="7"
+                      width="74"
+                      height="46"
+                      rx="5"
+                      transform="skewY(-5)"
+                      fill="url(#laptopScreenGrad)"
+                    />
+                    <text
+                      x="60"
+                      y="36"
+                      textAnchor="middle"
+                      fill="#FFFFFF"
+                      fontSize="21"
+                      fontWeight="900"
+                      fontFamily="sans-serif"
+                      transform="skewY(-5)"
+                      letterSpacing="1"
+                    >
+                      AI
+                    </text>
+                    {/* Laptop Base Deck */}
+                    <polygon
+                      points="12,56 96,49 112,67 26,75"
+                      fill="#F8FAFF"
+                      stroke="#BFDBFE"
+                      strokeWidth="1.8"
+                    />
+                    <polygon
+                      points="46,61 78,58 84,65 52,68"
+                      fill="#DBEAFE"
+                    />
+                  </g>
+                  {/* Orbiting Star Sparkles */}
+                  <path d="M40 36 L43 44 L51 47 L43 50 L40 58 L37 50 L29 47 L37 44 Z" fill="#FFFFFF" opacity="0.95" />
+                  <path d="M174 28 L176 34 L182 36 L176 38 L174 44 L172 38 L166 36 L172 34 Z" fill="#FFFFFF" opacity="0.9" />
+                  <circle cx="182" cy="76" r="3" fill="#60A5FA" opacity="0.7" />
+                  <circle cx="34" cy="84" r="2.5" fill="#FFFFFF" opacity="0.8" />
+                </svg>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex flex-wrap items-center gap-2.5">
+                <button
+                  onClick={scrollToBatches}
+                  className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-[#0A2558] hover:bg-[#081E4A] text-white text-xs sm:text-sm font-bold shadow-sm transition-all cursor-pointer"
+                >
+                  <span>Enroll Now</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+                <Link
+                  to="/dashboard/profile"
+                  className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200/90 text-[#0F172A] text-xs sm:text-sm font-semibold shadow-2xs transition-colors"
+                >
+                  <User className="w-4 h-4 text-[#0A2558]" />
+                  <span>Profile</span>
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* 2. Compact 3-Step Enrollment Guide (Responsive 1-col mobile, 3-col desktop) */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
-          <div className="p-3.5 sm:p-4 rounded-xl bg-white border border-slate-200 shadow-2xs flex items-start gap-3">
-            <div className="w-7 h-7 rounded-lg bg-indigo-50 text-indigo-600 font-black text-xs flex items-center justify-center shrink-0 border border-indigo-200">
-              1
-            </div>
-            <div>
-              <h3 className="text-xs font-bold text-[#0F172A]">Confirm Your Cohort</h3>
-              <p className="text-[11px] text-slate-500 mt-0.5 leading-relaxed">
-                Reserve your seat in the upcoming weekend live bootcamp (max 60 learners).
-              </p>
-            </div>
-          </div>
-
-          <div className="p-3.5 sm:p-4 rounded-xl bg-white border border-slate-200 shadow-2xs flex items-start gap-3">
-            <div className="w-7 h-7 rounded-lg bg-purple-50 text-purple-600 font-black text-xs flex items-center justify-center shrink-0 border border-purple-200">
-              2
-            </div>
-            <div>
-              <h3 className="text-xs font-bold text-[#0F172A]">Complete Verified Payment</h3>
-              <p className="text-[11px] text-slate-500 mt-0.5 leading-relaxed">
-                Pay securely via Razorpay (UPI, Cards, NetBanking) with instant GST receipt.
-              </p>
-            </div>
-          </div>
-
-          <div className="p-3.5 sm:p-4 rounded-xl bg-white border border-slate-200 shadow-2xs flex items-start gap-3">
-            <div className="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 font-black text-xs flex items-center justify-center shrink-0 border border-emerald-200">
-              3
-            </div>
-            <div>
-              <h3 className="text-xs font-bold text-[#0F172A]">Start Learning Immediately</h3>
-              <p className="text-[11px] text-slate-500 mt-0.5 leading-relaxed">
-                Dashboard unlocks Live Classes, Slides, Prompt Templates, and Assignments.
-              </p>
-            </div>
-          </div>
+        {/* 2. Connected 3-Step Onboarding Strip With Directional Arrows */}
+        <div className="flex flex-col lg:flex-row items-stretch lg:items-center gap-2.5 lg:gap-2">
+          {onboardingSteps.map((step, idx) => {
+            const StepIcon = step.icon;
+            return (
+              <React.Fragment key={step.num}>
+                <div className="relative flex-1 p-4 rounded-2xl bg-white border border-slate-200/90 shadow-[0_4px_16px_-6px_rgba(15,23,42,0.06)] flex items-center gap-3.5">
+                  <span
+                    className={`w-6 h-6 rounded-md text-[11px] font-extrabold flex items-center justify-center shrink-0 self-start ${step.badgeClass}`}
+                  >
+                    {step.num}
+                  </span>
+                  <div
+                    className={`w-10 h-10 rounded-xl border flex items-center justify-center shrink-0 ${step.iconClass}`}
+                  >
+                    <StepIcon className="w-5 h-5" />
+                  </div>
+                  <div className="min-w-0">
+                    <h3 className="text-xs sm:text-sm font-bold text-[#0F172A]">{step.title}</h3>
+                    <p className="text-[11px] text-slate-500 mt-0.5 leading-relaxed">
+                      {step.desc}
+                    </p>
+                  </div>
+                </div>
+                {idx < onboardingSteps.length - 1 && (
+                  <ArrowRight
+                    aria-hidden="true"
+                    className="hidden lg:block w-4 h-4 text-slate-400 shrink-0 mx-0.5"
+                  />
+                )}
+              </React.Fragment>
+            );
+          })}
         </div>
 
         {/* 3. Preserved Workshop Selection (Only shown if multiple cohorts exist) */}
@@ -480,7 +612,7 @@ export const DashboardOverview: React.FC = () => {
             <button
               disabled={isEnrolling}
               onClick={() => enrollInBatch(highlightedBatch._id)}
-              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-sm transition-all cursor-pointer shrink-0 disabled:opacity-60"
+              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-[#0A2558] hover:bg-[#081E4A] text-white text-xs font-bold shadow-sm transition-all cursor-pointer shrink-0 disabled:opacity-60"
             >
               <span>{isEnrolling ? 'Reserving...' : 'Continue to Payment'}</span>
               <ArrowRight className="w-4 h-4" />
@@ -490,20 +622,22 @@ export const DashboardOverview: React.FC = () => {
 
         {/* 4. Available Training Session(s) — Full-Width Responsive Showcase */}
         {!hasConfirmedEnrollment && !pendingWorkshop && workshops.length === 0 && availableWorkshops.length > 0 && (
-          <div id="available-batches" className="space-y-3 scroll-mt-20">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+          <div id="available-batches" className="space-y-3.5 scroll-mt-20">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-white border border-slate-200/90 shadow-2xs flex items-center justify-center text-[#0A2558] shrink-0">
+                <Calendar className="w-4 h-4" />
+              </div>
               <div>
-                <h3 className="text-base sm:text-lg font-extrabold text-[#0F172A]">
+                <h3 className="text-base sm:text-lg font-black text-[#0B1F44]">
                   Upcoming Workshop Cohort
                 </h3>
                 <p className="text-xs text-slate-500">
-                  Review the full 2-day bootcamp details and confirm your enrollment seat below.
+                  Review the full 2-day bootcamp details and confirm your enrollment.
                 </p>
               </div>
             </div>
 
             {availableWorkshops.length === 1 ? (
-              // Full-width 12-column layout for single active cohort (zero empty gaps on desktop & clean stack on phone)
               (() => {
                 const batch = availableWorkshops[0];
                 const basePrice = batch.price?.basePrice ?? 1999;
@@ -520,80 +654,87 @@ export const DashboardOverview: React.FC = () => {
                 })}`;
 
                 return (
-                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-5 items-stretch">
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
                     {/* Left 8 Columns: Complete Workshop Details & 2-Day Curriculum Preview */}
-                    <div className="lg:col-span-8 p-4 sm:p-6 rounded-2xl bg-white border border-slate-200 shadow-2xs flex flex-col justify-between space-y-4">
+                    <div className="lg:col-span-8 p-5 sm:p-6 rounded-3xl bg-white border border-slate-200/90 shadow-[0_6px_24px_-8px_rgba(15,23,42,0.06)] flex flex-col justify-between space-y-4">
                       <div className="space-y-4">
-                        {/* Batch Header */}
+                        {/* Batch Header Pills */}
                         <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-100">
                           <div className="flex flex-wrap items-center gap-2">
-                            <span className="font-mono text-xs font-bold text-blue-700 bg-blue-50 px-2.5 py-1 rounded-lg border border-blue-200">
+                            <span className="inline-flex items-center gap-1.5 font-mono text-xs font-bold text-[#0B1F44] bg-[#F7F9FD] px-3 py-1 rounded-full border border-slate-200">
+                              <Calendar className="w-3.5 h-3.5 text-blue-600" />
                               {batch.batchCode}
                             </span>
-                            <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
+                            <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
+                              <Users className="w-3.5 h-3.5 text-emerald-600" />
                               {batch.availableSeats} of {batch.capacity} seats open
                             </span>
                           </div>
-                          <span className="text-[11px] font-semibold text-slate-500">
+                          <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-700 bg-[#F7F9FD] px-3 py-1 rounded-full border border-slate-200">
+                            <Video className="w-3.5 h-3.5 text-blue-600" />
                             Live Online Bootcamp
                           </span>
                         </div>
 
                         {/* Title & Description */}
                         <div>
-                          <h4 className="text-base sm:text-xl font-black text-[#0F172A]">
+                          <h4 className="text-lg sm:text-2xl font-black text-[#0B1F44] tracking-tight">
                             {batch.title}
                           </h4>
-                          <p className="text-xs sm:text-sm text-slate-600 mt-1 leading-relaxed">
+                          <p className="text-xs sm:text-sm text-slate-600 mt-1.5 leading-relaxed">
                             {batch.description}
                           </p>
                         </div>
 
                         {/* Dates & Timings Row */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                          <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-lg bg-blue-100/70 text-blue-600 flex items-center justify-center shrink-0">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 text-xs">
+                          <div className="p-3.5 rounded-2xl bg-[#F7F9FD] border border-slate-200/80 flex items-center gap-3">
+                            <div className="w-9 h-9 rounded-xl bg-white border border-blue-100 text-blue-600 flex items-center justify-center shrink-0 shadow-2xs">
                               <Calendar className="w-4 h-4" />
                             </div>
                             <div>
-                              <div className="text-[10px] font-bold text-slate-400 uppercase">Dates</div>
-                              <div className="font-bold text-[#0F172A]">{dateRange} (Sat & Sun)</div>
+                              <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                                Dates
+                              </div>
+                              <div className="font-bold text-[#0F172A]">{dateRange} (Sat &amp; Sun)</div>
                             </div>
                           </div>
 
-                          <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-lg bg-purple-100/70 text-purple-600 flex items-center justify-center shrink-0">
+                          <div className="p-3.5 rounded-2xl bg-[#F7F9FD] border border-slate-200/80 flex items-center gap-3">
+                            <div className="w-9 h-9 rounded-xl bg-white border border-purple-100 text-purple-600 flex items-center justify-center shrink-0 shadow-2xs">
                               <Clock className="w-4 h-4" />
                             </div>
                             <div>
-                              <div className="text-[10px] font-bold text-slate-400 uppercase">Schedule</div>
+                              <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                                Schedule
+                              </div>
                               <div className="font-bold text-[#0F172A]">{batch.timings} • 10 Hrs Live</div>
                             </div>
                           </div>
                         </div>
 
-                        {/* Instructor & Curriculum Grid */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
-                          <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 space-y-1.5">
-                            <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded bg-blue-100 text-blue-800 inline-block">
+                        {/* Curriculum Grid */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+                          <div className="p-4 rounded-2xl bg-[#F7F9FD] border border-slate-200/80 space-y-2">
+                            <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-md bg-blue-100/80 text-blue-700 inline-block">
                               Day 1 • Saturday
                             </span>
-                            <div className="text-xs font-bold text-[#0F172A]">
-                              Prompt Architecture & AI Workflows
+                            <div className="text-xs sm:text-sm font-bold text-[#0F172A]">
+                              Prompt Architecture &amp; AI Workflows
                             </div>
-                            <p className="text-[11px] text-slate-600 leading-relaxed">
-                              Master system prompting, JSON schemas, multi-modal models (ChatGPT & Claude), and build a live research agent.
+                            <p className="text-[11px] sm:text-xs text-slate-600 leading-relaxed">
+                              Master system prompting, JSON schemas, multi-modal models (ChatGPT &amp; Claude), and build a live research agent.
                             </p>
                           </div>
 
-                          <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 space-y-1.5">
-                            <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded bg-purple-100 text-purple-800 inline-block">
+                          <div className="p-4 rounded-2xl bg-[#F7F9FD] border border-slate-200/80 space-y-2">
+                            <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-md bg-purple-100/80 text-purple-700 inline-block">
                               Day 2 • Sunday
                             </span>
-                            <div className="text-xs font-bold text-[#0F172A]">
-                              Full-Stack AI Apps & Deployment
+                            <div className="text-xs sm:text-sm font-bold text-[#0F172A]">
+                              Full-Stack AI Apps &amp; Deployment
                             </div>
-                            <p className="text-[11px] text-slate-600 leading-relaxed">
+                            <p className="text-[11px] sm:text-xs text-slate-600 leading-relaxed">
                               Build RAG pipelines with Pinecone, connect APIs via function calling, automate with n8n, and deploy to web.
                             </p>
                           </div>
@@ -601,20 +742,20 @@ export const DashboardOverview: React.FC = () => {
                       </div>
 
                       {/* Mentor Strip */}
-                      <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center gap-3">
+                      <div className="p-3.5 sm:p-4 rounded-2xl bg-[#F7F9FD] border border-slate-200/80 flex items-center gap-3.5">
                         <img
                           src={
                             batch.instructor?.avatarUrl ||
                             'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80'
                           }
                           alt="Instructor"
-                          className="w-10 h-10 rounded-lg object-cover border border-slate-200 shrink-0"
+                          className="w-11 h-11 rounded-xl object-cover border border-slate-200 shrink-0"
                         />
                         <div className="min-w-0">
-                          <div className="text-xs font-bold text-[#0F172A] truncate">
+                          <div className="text-xs sm:text-sm font-bold text-[#0F172A] truncate">
                             Lead Instructor: {batch.instructor?.name || 'Vikram Malhotra'}
                           </div>
-                          <div className="text-[11px] text-blue-600 font-medium truncate">
+                          <div className="text-[11px] sm:text-xs text-blue-600 font-medium truncate">
                             {batch.instructor?.role || 'Staff AI Engineer & Former ML Lead'}
                           </div>
                         </div>
@@ -622,65 +763,70 @@ export const DashboardOverview: React.FC = () => {
                     </div>
 
                     {/* Right 4 Columns: Enrollment Action & Price Summary */}
-                    <div className="lg:col-span-4 p-4 sm:p-6 rounded-2xl bg-white border border-slate-200 shadow-2xs flex flex-col justify-between space-y-4">
+                    <div className="lg:col-span-4 p-5 sm:p-6 rounded-3xl bg-white border border-slate-200/90 shadow-[0_6px_24px_-8px_rgba(15,23,42,0.06)] flex flex-col justify-between space-y-5">
                       <div className="space-y-4">
-                        <div className="border-b border-slate-100 pb-3">
-                          <span className="text-[10px] font-bold uppercase tracking-wider text-blue-600">
-                            Cohort Enrollment
-                          </span>
-                          <h4 className="text-base font-black text-[#0F172A] mt-0.5">
-                            Reserve Your Seat
-                          </h4>
+                        <div className="flex items-start justify-between gap-3 border-b border-slate-100 pb-3.5">
+                          <div>
+                            <span className="text-[10px] font-extrabold uppercase tracking-wider text-blue-600">
+                              Bootcamp Enrollment
+                            </span>
+                            <h4 className="text-lg font-black text-[#0B1F44] mt-0.5">
+                              Reserve Your Seat
+                            </h4>
+                          </div>
+                          <div className="w-9 h-9 rounded-xl bg-[#EDF4FF] text-[#1D4ED8] border border-blue-200/70 flex items-center justify-center shrink-0">
+                            <GraduationCap className="w-4 h-4" />
+                          </div>
                         </div>
 
-                        <div className="space-y-2 text-xs text-slate-600">
+                        <div className="space-y-2.5 text-xs sm:text-sm text-slate-600">
                           <div className="flex items-center justify-between">
                             <span>Bootcamp Tuition</span>
-                            <span className="font-semibold text-[#0F172A]">
+                            <span className="font-bold text-[#0F172A]">
                               {isFree ? 'Free' : `₹${basePrice.toLocaleString('en-IN')}`}
                             </span>
                           </div>
                           {!isFree && (
                             <div className="flex items-center justify-between">
                               <span>GST (18%)</span>
-                              <span className="font-semibold text-[#0F172A]">
+                              <span className="font-bold text-[#0F172A]">
                                 ₹{gstAmount.toLocaleString('en-IN')}
                               </span>
                             </div>
                           )}
-                          <div className="pt-2.5 border-t border-slate-100 flex items-center justify-between text-sm font-black text-[#0F172A]">
-                            <span>Total Payable</span>
-                            <span className="text-lg text-blue-600">
+                          <div className="pt-3 border-t border-slate-100 flex items-center justify-between font-black text-[#0F172A]">
+                            <span className="text-sm">Total Payable</span>
+                            <span className="text-2xl text-blue-600">
                               {isFree ? 'Free' : `₹${totalAmount.toLocaleString('en-IN')}`}
                             </span>
                           </div>
                         </div>
 
-                        <div className="space-y-2 pt-2 border-t border-slate-100 text-xs text-slate-700">
-                          <div className="flex items-center gap-2">
-                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                        <div className="space-y-2.5 pt-3 border-t border-slate-100 text-xs text-slate-700">
+                          <div className="flex items-center gap-2.5">
+                            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
                             <span>10 Hours of Live HD Training</span>
                           </div>
-                          <div className="flex items-center gap-2">
-                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                            <span>100+ Prompt & Workflow Templates</span>
+                          <div className="flex items-center gap-2.5">
+                            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                            <span>100+ Prompt &amp; Workflow Templates</span>
                           </div>
-                          <div className="flex items-center gap-2">
-                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                            <span>Lifetime Recordings & Code Repos</span>
+                          <div className="flex items-center gap-2.5">
+                            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                            <span>Lifetime Recordings &amp; Code Repos</span>
                           </div>
-                          <div className="flex items-center gap-2">
-                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                          <div className="flex items-center gap-2.5">
+                            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
                             <span>Verified Certificate of Completion</span>
                           </div>
                         </div>
                       </div>
 
-                      <div className="space-y-2.5 pt-2">
+                      <div className="space-y-3 pt-2">
                         <button
                           disabled={isEnrolling}
                           onClick={() => enrollInBatch(batch._id)}
-                          className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-bold shadow-sm transition-all cursor-pointer disabled:opacity-60"
+                          className="w-full inline-flex items-center justify-center gap-2 py-3.5 px-5 rounded-xl bg-[#0A2558] hover:bg-[#081E4A] text-white text-xs sm:text-sm font-bold shadow-sm transition-all cursor-pointer disabled:opacity-60"
                         >
                           <span>
                             {isEnrolling
@@ -798,227 +944,562 @@ export const DashboardOverview: React.FC = () => {
     projectSubmitted: submissions.length > 0,
     certificateEarned: certificates.length > 0,
   };
-  const nextSession = confirmedWorkshop?.sessions?.[0] || dashboardData?.upcomingClass;
+  const sessions = confirmedWorkshop?.sessions || [];
+  const resources = confirmedWorkshop?.resources || [];
+  const nextSession = sessions[0] || dashboardData?.upcomingClass;
+  const workshopInfo = confirmedWorkshop?.workshop || {};
+  const batchCode = workshopInfo.batchCode || 'AILP-2026-NOV-14';
+  const instructorName = workshopInfo.instructor?.name || 'Vikram Malhotra';
+  const instructorRole = workshopInfo.instructor?.role || 'Staff AI Engineer & Former ML Lead';
+  const meetingPasscode = confirmedWorkshop?.sessionAccess?.meetingPasscode || 'AILP2026';
+  const joinUrl = confirmedWorkshop?.sessionAccess?.joinUrl || nextSession?.liveSessionUrl;
+  const dateRange = workshopInfo.startDate
+    ? `${new Date(workshopInfo.startDate).toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+      })} – ${new Date(workshopInfo.endDate || workshopInfo.startDate).toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+      })}`
+    : 'Nov 14 – Nov 15, 2026';
+
+  const resourceIconMap: Record<string, { icon: React.ComponentType<any>; color: string }> = {
+    slides: { icon: Presentation, color: 'bg-blue-50 text-blue-600 border-blue-200' },
+    prompts: { icon: Cpu, color: 'bg-purple-50 text-purple-600 border-purple-200' },
+    projects: { icon: Code2, color: 'bg-emerald-50 text-emerald-600 border-emerald-200' },
+    notes: { icon: FileText, color: 'bg-indigo-50 text-indigo-600 border-indigo-200' },
+  };
+
+  const displayTasks =
+    assignments.length > 0
+      ? assignments.slice(0, 3)
+      : [
+          {
+            _id: 'task-day1',
+            dayNumber: 1,
+            title: 'Build a Structured Prompt & Custom AI Assistant',
+            description:
+              'Design a domain-specific system prompt using JSON output schemas and multi-modal grounding.',
+            maxScore: 50,
+          },
+          {
+            _id: 'task-day2',
+            dayNumber: 2,
+            title: 'Deploy an Automated RAG Workflow Prototype',
+            description:
+              'Connect a vector store, configure tool calling, and publish your capstone workflow repository.',
+            maxScore: 100,
+          },
+        ];
 
   return (
-    <div className="space-y-6">
-      {/* 1. Enrolled Student Welcome Banner & Continue Learning Button */}
-      <div className="p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-blue-50/80 via-white to-indigo-50/40 text-[#0F172A] border border-blue-200 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div className="space-y-2">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-semibold">
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-            <span>Confirmed Student • {confirmedWorkshop.workshop?.batchCode}</span>
-          </div>
-          <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-[#0F172A]">
-            Welcome back, {user?.name || 'Student'}!
-          </h2>
-          <p className="text-xs sm:text-sm text-slate-600 max-w-xl leading-relaxed">
-            You are enrolled in <strong className="text-[#0F172A]">{confirmedWorkshop.workshop?.title}</strong>. Pick up right where you left off with your live sessions, learning materials, and capstone assignment.
-          </p>
-        </div>
+    <div className="space-y-5">
+      {/* 1. Executive Student Welcome Hero Banner */}
+      <div className="relative overflow-hidden p-5 sm:p-7 rounded-3xl bg-gradient-to-br from-[#081E4A] via-[#0F2A6B] to-[#1D4ED8] text-white border border-blue-900/40 shadow-md">
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -top-20 -right-16 w-72 h-72 rounded-full bg-cyan-400/20 blur-3xl"
+        />
+        <div className="relative grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+          <div className="lg:col-span-8 space-y-3">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-200 text-xs font-bold">
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-300" />
+                <span>Enrolled Student • {batchCode}</span>
+              </span>
+              <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-white/10 border border-white/15 text-[11px] font-mono text-blue-100">
+                ID: {confirmedWorkshop?.enrollmentId || 'AILP-PASS'}
+              </span>
+            </div>
 
-        <div className="flex flex-wrap items-center gap-3 shrink-0">
-          <Link
-            to="/dashboard/materials"
-            className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-sm transition-all"
-          >
-            <span>Continue Learning</span>
-            <ArrowRight className="w-4 h-4" />
-          </Link>
-          <Link
-            to="/dashboard/live-classes"
-            className="inline-flex items-center gap-2 px-4 py-3 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-[#0F172A] text-xs font-semibold shadow-2xs transition-colors"
-          >
-            <Video className="w-4 h-4 text-blue-600" />
-            <span>Live Classes</span>
-          </Link>
+            <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
+              Welcome back, {user?.name || 'Student'}!
+            </h2>
+            <p className="text-xs sm:text-sm text-blue-100/90 max-w-2xl leading-relaxed">
+              Your learning workspace for <strong className="text-white">{workshopInfo.title || 'AI Launchpad Bootcamp'}</strong> is unlocked. Join live interactive sessions, explore study materials, submit your assignments, and track your completion progress below.
+            </p>
+
+            <div className="flex flex-wrap items-center gap-3 pt-1">
+              <Link
+                to="/dashboard/live-classes"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white hover:bg-blue-50 text-[#081E4A] text-xs font-extrabold shadow-sm transition-all"
+              >
+                <Video className="w-4 h-4 text-blue-600" />
+                <span>Open Live Classroom</span>
+              </Link>
+              <Link
+                to="/dashboard/materials"
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600/40 hover:bg-blue-600/60 border border-white/25 text-white text-xs font-bold transition-colors"
+              >
+                <BookOpen className="w-4 h-4" />
+                <span>Learning Materials</span>
+              </Link>
+              <Link
+                to="/dashboard/assignments"
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs font-semibold transition-colors"
+              >
+                <ClipboardCheck className="w-4 h-4" />
+                <span>Assignments</span>
+              </Link>
+            </div>
+          </div>
+
+          <div className="hidden lg:block lg:col-span-4">
+            <div className="relative rounded-2xl overflow-hidden aspect-[16/9] border border-white/20 shadow-lg bg-[#081E4A]">
+              <img
+                src="/assets/hero-cohort-showcase.jpg"
+                alt="AI Launchpad Cohort"
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/30 to-transparent flex items-end p-3.5">
+                <div>
+                  <div className="text-[10px] font-bold uppercase tracking-wider text-cyan-300">
+                    Active Weekend Cohort
+                  </div>
+                  <div className="text-sm font-extrabold text-white">{dateRange}</div>
+                  <div className="text-[11px] text-slate-200">
+                    {workshopInfo.timings || '10:00 AM – 3:00 PM IST'}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* 2. Core Student Overview Cards: Current Workshop, Upcoming Class, Overall Progress */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-        {/* Card A: Current Workshop */}
-        <div className="p-6 rounded-3xl bg-white border border-slate-200 shadow-xs flex flex-col justify-between space-y-4">
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-indigo-600 bg-indigo-50 px-2.5 py-0.5 rounded-md border border-indigo-200">
-                Current Workshop
-              </span>
-              <GraduationCap className="w-5 h-5 text-indigo-600" />
+      {/* 2. Live Dashboard KPI Row */}
+      <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4">
+        <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-2xs flex items-center gap-3.5">
+          <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 border border-blue-100 flex items-center justify-center shrink-0">
+            <GraduationCap className="w-5 h-5" />
+          </div>
+          <div className="min-w-0">
+            <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+              Active Cohort
             </div>
-            <div>
-              <h3 className="text-base font-extrabold text-[#0F172A]">
-                {confirmedWorkshop.workshop?.title}
-              </h3>
-              <p className="text-xs text-slate-500 font-mono mt-0.5">
-                Batch: {confirmedWorkshop.workshop?.batchCode}
-              </p>
+            <div className="text-sm font-black text-[#0F172A] truncate">{batchCode}</div>
+            <div className="text-[11px] text-slate-500 truncate">{dateRange}</div>
+          </div>
+        </div>
+
+        <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-2xs flex items-center gap-3.5">
+          <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 border border-purple-100 flex items-center justify-center shrink-0">
+            <Video className="w-5 h-5" />
+          </div>
+          <div className="min-w-0">
+            <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+              Live Classes
             </div>
-            <div className="space-y-1.5 text-xs text-slate-600 pt-1">
-              <div className="flex items-center gap-2">
-                <Calendar className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
-                <span>
-                  {new Date(confirmedWorkshop.workshop?.startDate).toLocaleDateString('en-US', {
-                    month: 'short',
-                    day: 'numeric',
-                  })}{' '}
-                  –{' '}
-                  {new Date(confirmedWorkshop.workshop?.endDate).toLocaleDateString('en-US', {
-                    month: 'short',
-                    day: 'numeric',
-                    year: 'numeric',
-                  })}
-                </span>
+            <div className="text-sm font-black text-[#0F172A] truncate">
+              {sessions.length || 2} Live Sessions
+            </div>
+            <div className="text-[11px] font-mono text-purple-600 font-semibold truncate">
+              Passcode: {meetingPasscode}
+            </div>
+          </div>
+        </div>
+
+        <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-2xs flex items-center gap-3.5">
+          <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 border border-indigo-100 flex items-center justify-center shrink-0">
+            <BookOpen className="w-5 h-5" />
+          </div>
+          <div className="min-w-0">
+            <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+              Learning Materials
+            </div>
+            <div className="text-sm font-black text-[#0F172A] truncate">
+              {resources.length} Resources Unlocked
+            </div>
+            <div className="text-[11px] text-slate-500 truncate">Slides, Prompts & Code</div>
+          </div>
+        </div>
+
+        <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-2xs flex items-center gap-3.5">
+          <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100 flex items-center justify-center shrink-0">
+            <TrendingUp className="w-5 h-5" />
+          </div>
+          <div className="min-w-0">
+            <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+              Overall Progress
+            </div>
+            <div className="text-sm font-black text-[#0F172A] truncate">
+              {currentProgress.percentage}% Complete
+            </div>
+            <div className="text-[11px] text-emerald-700 font-medium truncate">
+              {submissions.length}/{Math.max(1, displayTasks.length)} Tasks Submitted
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 3. Main Interactive Learning Widgets Grid */}
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-5 items-stretch">
+        {/* Left Column: Live Classes + Assignments */}
+        <div className="xl:col-span-7 flex flex-col gap-5">
+          {/* Widget A: Live Classes */}
+          <div className="p-5 sm:p-6 rounded-3xl bg-white border border-slate-200 shadow-2xs space-y-4">
+            <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-100">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-purple-50 text-purple-600 border border-purple-200 flex items-center justify-center">
+                  <Video className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="text-sm sm:text-base font-extrabold text-[#0F172A]">
+                    Live Classes & Classroom Schedule
+                  </h3>
+                  <p className="text-[11px] text-slate-500">
+                    Attend interactive Zoom / Google Meet sessions led by {instructorName}
+                  </p>
+                </div>
               </div>
-              <div className="flex items-center gap-2">
-                <User className="w-3.5 h-3.5 text-purple-600 shrink-0" />
-                <span>Instructor: {confirmedWorkshop.workshop?.instructor?.name || 'Vikram Malhotra'}</span>
+
+              <Link
+                to="/dashboard/live-classes"
+                className="inline-flex items-center gap-1 text-xs font-bold text-blue-600 hover:text-blue-700"
+              >
+                <span>All Sessions</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {(sessions.length > 0 ? sessions.slice(0, 2) : [nextSession].filter(Boolean)).map(
+                (session: any, idx: number) => (
+                  <div
+                    key={session._id || idx}
+                    className="p-4 rounded-2xl bg-slate-50 border border-slate-200/90 space-y-2 flex flex-col justify-between"
+                  >
+                    <div className="space-y-1.5">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded bg-blue-100 text-blue-800">
+                          Day {session.dayNumber || idx + 1} Live
+                        </span>
+                        <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 capitalize">
+                          {session.status || 'Scheduled'}
+                        </span>
+                      </div>
+                      <h4 className="text-xs sm:text-sm font-bold text-[#0F172A] leading-snug">
+                        {session.title}
+                      </h4>
+                    </div>
+
+                    <div className="pt-2 border-t border-slate-200/70 flex items-center justify-between text-[11px] text-slate-600">
+                      <span className="flex items-center gap-1 font-medium">
+                        <Clock className="w-3 h-3 text-purple-600" />
+                        {session.startTime || '10:00 AM'} – {session.endTime || '3:00 PM'}
+                      </span>
+                      <span className="font-mono font-bold text-indigo-600">{meetingPasscode}</span>
+                    </div>
+                  </div>
+                )
+              )}
+            </div>
+
+            <div className="p-3.5 rounded-2xl bg-blue-50/70 border border-blue-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="flex items-center gap-2.5 text-xs">
+                <Calendar className="w-4 h-4 text-blue-600 shrink-0" />
+                <div>
+                  <span className="font-bold text-[#0F172A] block">
+                    Virtual Classroom Ready
+                  </span>
+                  <span className="text-[11px] text-slate-600">
+                    Passcode: <strong className="font-mono text-blue-700">{meetingPasscode}</strong>
+                  </span>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 shrink-0">
+                {joinUrl && joinUrl.startsWith('http') ? (
+                  <a
+                    href={joinUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-xs transition-all"
+                  >
+                    <span>Join Live Room</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
+                ) : (
+                  <Link
+                    to="/dashboard/live-classes"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-xs transition-all"
+                  >
+                    <span>Open Classroom</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </Link>
+                )}
               </div>
             </div>
           </div>
 
-          <Link
-            to="/dashboard/workshops"
-            className="inline-flex items-center justify-between pt-3 border-t border-slate-100 text-xs font-bold text-indigo-600 hover:text-indigo-700"
-          >
-            <span>View Curriculum & Schedule</span>
-            <ArrowRight className="w-3.5 h-3.5" />
-          </Link>
-        </div>
+          {/* Widget B: Assignments & Capstone */}
+          <div className="p-5 sm:p-6 rounded-3xl bg-white border border-slate-200 shadow-2xs space-y-4 flex-1 flex flex-col justify-between">
+            <div className="space-y-4">
+              <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-100">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 border border-amber-200 flex items-center justify-center">
+                    <ClipboardCheck className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm sm:text-base font-extrabold text-[#0F172A]">
+                      Assignments &amp; Capstone Deliverables
+                    </h3>
+                    <p className="text-[11px] text-slate-500">
+                      Complete hands-on labs and submit your capstone project for mentor review
+                    </p>
+                  </div>
+                </div>
 
-        {/* Card B: Upcoming Class */}
-        <div className="p-6 rounded-3xl bg-white border border-slate-200 shadow-xs flex flex-col justify-between space-y-4">
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-purple-600 bg-purple-50 px-2.5 py-0.5 rounded-md border border-purple-200">
-                Upcoming Class
-              </span>
-              <Video className="w-5 h-5 text-purple-600" />
+                <Link
+                  to="/dashboard/assignments"
+                  className="inline-flex items-center gap-1 text-xs font-bold text-blue-600 hover:text-blue-700"
+                >
+                  <span>Open Submissions</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
+              </div>
+
+              <div className="space-y-2.5">
+                {displayTasks.map((task: any, idx: number) => {
+                  const isSubmitted = submissions.length > idx;
+                  return (
+                    <div
+                      key={task._id || task.title}
+                      className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                    >
+                      <div className="space-y-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-indigo-100 text-indigo-700">
+                            Day {task.dayNumber || idx + 1} Lab
+                          </span>
+                          <span className="text-[10px] font-semibold text-slate-500">
+                            {task.maxScore || 100} pts
+                          </span>
+                        </div>
+                        <h4 className="text-xs sm:text-sm font-bold text-[#0F172A] truncate">
+                          {task.title}
+                        </h4>
+                        <p className="text-[11px] text-slate-600 line-clamp-1">
+                          {task.description}
+                        </p>
+                      </div>
+
+                      <span
+                        className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold border shrink-0 self-start sm:self-center ${
+                          isSubmitted
+                            ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                            : 'bg-amber-50 text-amber-800 border-amber-200'
+                        }`}
+                      >
+                        {isSubmitted ? 'Submitted' : 'Pending Submission'}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
-            <div>
-              <h3 className="text-base font-extrabold text-[#0F172A]">
-                {nextSession?.title || 'Day 1: LLM Foundations & Prompt Engineering'}
-              </h3>
-              <p className="text-xs text-slate-500 mt-0.5">
-                {confirmedWorkshop.workshop?.timings || '10:00 AM – 3:00 PM IST'}
-              </p>
-            </div>
-            <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/80 text-xs flex items-center justify-between">
-              <span className="text-slate-500">Meeting Passcode:</span>
-              <span className="font-mono font-bold text-indigo-600">
-                {confirmedWorkshop.sessionAccess?.meetingPasscode || 'AILP2026'}
+
+            <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+              <span className="text-slate-500">
+                {submissions.length > 0
+                  ? `${submissions.length} project deliverable(s) uploaded`
+                  : 'Submit your project repo or prototype link to unlock certification'}
               </span>
+              <Link
+                to="/dashboard/assignments"
+                className="inline-flex items-center gap-1.5 font-bold text-indigo-600 hover:text-indigo-700 shrink-0"
+              >
+                <span>{submissions.length > 0 ? 'View Feedback' : 'Submit Project'}</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
             </div>
           </div>
-
-          <Link
-            to="/dashboard/live-classes"
-            className="inline-flex items-center justify-between pt-3 border-t border-slate-100 text-xs font-bold text-purple-600 hover:text-purple-700"
-          >
-            <span>Open Live Classroom</span>
-            <ArrowRight className="w-3.5 h-3.5" />
-          </Link>
         </div>
 
-        {/* Card C: Overall Progress */}
-        <div className="p-6 rounded-3xl bg-white border border-slate-200 shadow-xs flex flex-col justify-between space-y-4">
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-md border border-emerald-200">
-                Overall Progress
-              </span>
-              <TrendingUp className="w-5 h-5 text-emerald-600" />
-            </div>
-
-            <div className="flex items-baseline justify-between">
-              <span className="text-3xl font-black text-[#0F172A]">
+        {/* Right Column: Overall Progress + Learning Materials */}
+        <div className="xl:col-span-5 flex flex-col gap-5">
+          {/* Widget C: Progress & Certificate Milestones */}
+          <div className="p-5 sm:p-6 rounded-3xl bg-white border border-slate-200 shadow-2xs space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 border border-emerald-200 flex items-center justify-center">
+                  <TrendingUp className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="text-sm sm:text-base font-extrabold text-[#0F172A]">
+                    Overall Progress
+                  </h3>
+                  <p className="text-[11px] text-slate-500">Bootcamp completion &amp; milestones</p>
+                </div>
+              </div>
+              <span className="text-2xl font-black text-blue-600">
                 {currentProgress.percentage}%
               </span>
-              <span className="text-xs text-slate-500 font-medium">Bootcamp Completion</span>
             </div>
 
-            <div className="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
+            <div className="w-full bg-slate-100 h-3 rounded-full overflow-hidden">
               <div
-                className="bg-blue-600 h-2.5 rounded-full transition-all"
+                className="bg-gradient-to-r from-blue-600 to-indigo-600 h-3 rounded-full transition-all"
                 style={{ width: `${Math.max(15, currentProgress.percentage)}%` }}
               />
             </div>
 
-            <div className="space-y-1.5 pt-1 text-xs">
-              <div className="flex items-center gap-2 text-emerald-700 font-semibold">
-                <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
-                <span>Workshop Seat Confirmed</span>
+            <div className="space-y-2 text-xs">
+              {[
+                { label: `Confirmed Seat (${batchCode})`, done: true },
+                { label: 'Day 1: Prompt Engineering Live Lab', done: Boolean(currentProgress.day1Attended) },
+                { label: 'Day 2: RAG & Agent Workflows Lab', done: Boolean(currentProgress.day2Attended) },
+                {
+                  label: 'Capstone Project & Certificate',
+                  done: submissions.length > 0 || certificates.length > 0,
+                },
+              ].map((step) => (
+                <div
+                  key={step.label}
+                  className={`p-2.5 rounded-xl border flex items-center justify-between gap-2 ${
+                    step.done
+                      ? 'bg-emerald-50/70 border-emerald-200 text-emerald-800 font-semibold'
+                      : 'bg-slate-50 border-slate-200/80 text-slate-600'
+                  }`}
+                >
+                  <span className="flex items-center gap-2 min-w-0 truncate">
+                    <CheckCircle2
+                      className={`w-4 h-4 shrink-0 ${
+                        step.done ? 'text-emerald-600' : 'text-slate-300'
+                      }`}
+                    />
+                    <span className="truncate">{step.label}</span>
+                  </span>
+                  <span className="text-[10px] font-bold uppercase shrink-0">
+                    {step.done ? 'Done' : 'Upcoming'}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            <Link
+              to="/dashboard/certificates"
+              className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-slate-900 hover:bg-blue-700 text-white text-xs font-bold transition-colors"
+            >
+              <Award className="w-4 h-4" />
+              <span>View Certificate Eligibility</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+
+          {/* Widget D: Learning Materials */}
+          <div className="p-5 sm:p-6 rounded-3xl bg-white border border-slate-200 shadow-2xs space-y-4 flex-1 flex flex-col justify-between">
+            <div className="space-y-3">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 border border-blue-200 flex items-center justify-center">
+                    <BookOpen className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm sm:text-base font-extrabold text-[#0F172A]">
+                      Learning Materials
+                    </h3>
+                    <p className="text-[11px] text-slate-500">
+                      Unlocked slides, prompts, PDFs &amp; code repos
+                    </p>
+                  </div>
+                </div>
+                <Link
+                  to="/dashboard/materials"
+                  className="text-xs font-bold text-blue-600 hover:text-blue-700 shrink-0"
+                >
+                  View All →
+                </Link>
               </div>
-              <div
-                className={`flex items-center gap-2 ${
-                  submissions.length > 0 ? 'text-emerald-700 font-semibold' : 'text-slate-500'
-                }`}
-              >
-                <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
-                <span>
-                  {submissions.length > 0
-                    ? 'Capstone Assignment Submitted'
-                    : 'Submit Capstone Assignment'}
-                </span>
+
+              <div className="space-y-2">
+                {resources.slice(0, 4).map((res: any) => {
+                  const meta = resourceIconMap[res.section] || resourceIconMap.notes;
+                  const Icon = meta.icon;
+                  return (
+                    <Link
+                      key={res.id || res.title}
+                      to="/dashboard/materials"
+                      className="p-3 rounded-2xl bg-slate-50 hover:bg-blue-50/50 border border-slate-200/80 hover:border-blue-300 flex items-center justify-between gap-3 transition-all group"
+                    >
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div
+                          className={`w-8 h-8 rounded-lg border flex items-center justify-center shrink-0 ${meta.color}`}
+                        >
+                          <Icon className="w-4 h-4" />
+                        </div>
+                        <div className="min-w-0">
+                          <div className="text-xs font-bold text-[#0F172A] group-hover:text-blue-700 truncate">
+                            {res.title}
+                          </div>
+                          <div className="text-[10px] text-slate-500 truncate">{res.type}</div>
+                        </div>
+                      </div>
+                      <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200 shrink-0">
+                        Open
+                      </span>
+                    </Link>
+                  );
+                })}
               </div>
             </div>
           </div>
-
-          <Link
-            to="/dashboard/certificates"
-            className="inline-flex items-center justify-between pt-3 border-t border-slate-100 text-xs font-bold text-emerald-700 hover:text-emerald-800"
-          >
-            <span>Check Certificate Eligibility</span>
-            <ArrowRight className="w-3.5 h-3.5" />
-          </Link>
         </div>
       </div>
 
-      {/* 3. Quick Navigation Cards to Learning Modules */}
+      {/* 4. Bottom Cohort & Quick Links Strip */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Link
-          to="/dashboard/materials"
-          className="p-5 rounded-2xl bg-white border border-slate-200 hover:border-indigo-500 transition-all shadow-xs group"
+          to="/dashboard/workshops"
+          className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200 hover:border-blue-400 transition-all shadow-2xs flex items-center gap-3.5 group"
         >
-          <div className="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center mb-3">
-            <BookOpen className="w-4 h-4" />
+          <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
+            <GraduationCap className="w-5 h-5" />
           </div>
-          <h4 className="font-bold text-sm text-[#0F172A] group-hover:text-indigo-600 transition-colors">
-            Learning Materials
-          </h4>
-          <p className="text-[11px] text-slate-500 mt-1">
-            Access slides, notes, prompt templates, and starter project repositories.
-          </p>
+          <div className="min-w-0">
+            <h4 className="font-bold text-sm text-[#0F172A] group-hover:text-blue-600 truncate">
+              My Workshops &amp; Syllabus
+            </h4>
+            <p className="text-[11px] text-slate-500 truncate">
+              Full Day 1 &amp; Day 2 curriculum breakdown
+            </p>
+          </div>
         </Link>
 
-        <Link
-          to="/dashboard/assignments"
-          className="p-5 rounded-2xl bg-white border border-slate-200 hover:border-purple-500 transition-all shadow-xs group"
-        >
-          <div className="w-9 h-9 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center mb-3">
-            <ClipboardCheck className="w-4 h-4" />
+        <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200 shadow-2xs flex items-center gap-3.5">
+          <img
+            src={
+              workshopInfo.instructor?.avatarUrl ||
+              'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80'
+            }
+            alt={instructorName}
+            className="w-10 h-10 rounded-xl object-cover border border-slate-200 shrink-0"
+          />
+          <div className="min-w-0">
+            <div className="text-xs font-bold text-[#0F172A] truncate">
+              Mentor: {instructorName}
+            </div>
+            <div className="text-[11px] text-blue-600 font-medium truncate">
+              {instructorRole}
+            </div>
           </div>
-          <h4 className="font-bold text-sm text-[#0F172A] group-hover:text-purple-600 transition-colors">
-            Assignments & Feedback
-          </h4>
-          <p className="text-[11px] text-slate-500 mt-1">
-            View assigned tasks, submit your capstone project, and read instructor feedback.
-          </p>
-        </Link>
+        </div>
 
         <Link
-          to="/dashboard/certificates"
-          className="p-5 rounded-2xl bg-white border border-slate-200 hover:border-indigo-500 transition-all shadow-xs group"
+          to="/dashboard/profile"
+          className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200 hover:border-blue-400 transition-all shadow-2xs flex items-center gap-3.5 group"
         >
-          <div className="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center mb-3">
-            <Award className="w-4 h-4" />
+          <div className="w-10 h-10 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center shrink-0">
+            <User className="w-5 h-5" />
           </div>
-          <h4 className="font-bold text-sm text-[#0F172A] group-hover:text-indigo-600 transition-colors">
-            Certificates
-          </h4>
-          <p className="text-[11px] text-slate-500 mt-1">
-            Track completion eligibility, download your certificate, and verify credentials.
-          </p>
+          <div className="min-w-0">
+            <h4 className="font-bold text-sm text-[#0F172A] group-hover:text-blue-600 truncate">
+              Student Profile &amp; Support
+            </h4>
+            <p className="text-[11px] text-slate-500 truncate">
+              Update account details &amp; preferences
+            </p>
+          </div>
         </Link>
       </div>
     </div>
