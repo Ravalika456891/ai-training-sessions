@@ -55,6 +55,13 @@ export default {
         'hero-glow': 'radial-gradient(circle at 50% 20%, rgba(139, 92, 246, 0.15), rgba(59, 130, 246, 0.08) 40%, transparent 70%)',
         'card-glow': 'linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%)',
       },
+      boxShadow: {
+        '2xs': '0 1px 2px 0 rgba(8, 30, 74, 0.04)',
+        'xs': '0 1px 3px 0 rgba(8, 30, 74, 0.06), 0 1px 2px -1px rgba(8, 30, 74, 0.04)',
+      },
+      backdropBlur: {
+        'xs': '2px',
+      },
       animation: {
         'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
         'float': 'float 6s ease-in-out infinite',

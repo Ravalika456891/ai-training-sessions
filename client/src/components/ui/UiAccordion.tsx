@@ -93,8 +93,8 @@ export const UiAccordionContent: React.FC<{
   children: React.ReactNode;
   className?: string;
 }> = ({ children, className }) => (
-  <Accordion.Content className="overflow-hidden data-[state=open]:animate-accordion-down data-[state=closed]:animate-accordion-up">
-    <div className={cn('px-4 pb-5 sm:px-5 pt-1 border-t border-slate-100', className)}>
+  <Accordion.Content className="overflow-hidden min-w-0 max-w-full data-[state=open]:animate-accordion-down data-[state=closed]:animate-accordion-up">
+    <div className={cn('px-4 pb-5 sm:px-5 pt-1 border-t border-slate-100 min-w-0 max-w-full', className)}>
       {children}
     </div>
   </Accordion.Content>

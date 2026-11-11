@@ -13,7 +13,7 @@ export const MentorSection: React.FC<MentorSectionProps> = ({ onRegisterClick })
   return (
     <section
       id="mentors"
-      className="py-20 sm:py-24 bg-white relative scroll-mt-20 border-b border-slate-200/80"
+      className="py-16 sm:py-24 bg-[#F4F7FE] relative scroll-mt-20 border-b border-slate-200/80"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <MotionReveal className="text-center max-w-3xl mx-auto space-y-4">

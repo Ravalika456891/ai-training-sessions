@@ -8,23 +8,15 @@ interface MotionRevealProps {
   className?: string;
 }
 
-/**Viewport-triggered Framer Motion reveal wrapper configured for fast mobile & desktop rendering.*/
+/**
+ * Reliable reveal wrapper that never locks below-the-fold sections at opacity 0
+ * during fast scrolling, tall viewports, or hash-link jumps.
+ */
 export const MotionReveal: React.FC<MotionRevealProps> = ({
   children,
-  delay = 0,
   className,
 }) => {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 16 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.08 }}
-      transition={{ duration: 0.4, delay, ease: [0.22, 1, 0.36, 1] }}
-      className={className}
-    >
-      {children}
-    </motion.div>
-  );
+  return <div className={className}>{children}</div>;
 };
 
 interface MotionBentoCardProps {
@@ -33,23 +25,19 @@ interface MotionBentoCardProps {
   className?: string;
 }
 
-/** Interactive elevated SaaS bento card with subtle GPU lift and ambient border shine. */
+/** Interactive elevated SaaS bento card with crisp #081e4a elevation on hover. */
 export const MotionBentoCard: React.FC<MotionBentoCardProps> = ({
   children,
-  delay = 0,
   className,
 }) => {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 14 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.06 }}
-      transition={{ duration: 0.36, delay, ease: [0.22, 1, 0.36, 1] }}
       whileHover={{ y: -3 }}
+      transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
       className={cn(
-        'rounded-2xl bg-white/95 backdrop-blur-sm border border-slate-200/90',
-        'shadow-[0_4px_20px_-6px_rgba(15,23,42,0.06)] hover:shadow-[0_14px_30px_-10px_rgba(8,30,74,0.16)]',
-        'hover:border-[#081e4a]/40 transition-colors duration-200',
+        'rounded-2xl bg-white border border-slate-200/90',
+        'shadow-[0_4px_20px_-8px_rgba(8,30,74,0.08)] hover:shadow-[0_18px_36px_-12px_rgba(8,30,74,0.16)]',
+        'hover:border-[#081e4a]/40 transition-all duration-200',
         className
       )}
     >
@@ -57,4 +45,3 @@ export const MotionBentoCard: React.FC<MotionBentoCardProps> = ({
     </motion.div>
   );
 };
-

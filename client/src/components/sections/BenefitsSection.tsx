@@ -71,10 +71,9 @@ export const BenefitsSection: React.FC<BenefitsSectionProps> = ({ onRegisterClic
   return (
     <section
       id="outcomes"
-      className="py-20 sm:py-24 stylish-3d-view-backdrop relative scroll-mt-20 overflow-hidden border-b border-slate-200/80"
+      className="py-16 sm:py-24 bg-white relative scroll-mt-20 overflow-hidden border-b border-slate-200/80"
     >
-      <div className="stylish-3d-bg-layer" />
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0 cyber-dots-pattern opacity-35" />
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 cyber-dots-pattern opacity-25" />
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <MotionReveal className="text-center max-w-3xl mx-auto space-y-4">

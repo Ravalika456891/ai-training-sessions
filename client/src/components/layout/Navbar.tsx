@@ -67,6 +67,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   const navLinks = [
     { label: 'Outcomes', href: '#outcomes' },
     { label: 'Curriculum', href: '#curriculum' },
+    { label: 'AI Tools', href: '#tools' },
     { label: 'Instructor', href: '#mentors' },
     { label: 'Pricing', href: '#pricing' },
     { label: 'FAQ', href: '#faq' },
@@ -135,7 +136,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <span className="font-extrabold text-base sm:text-lg tracking-tight text-[#0F172A] whitespace-nowrap">
                   AI Launchpad
                 </span>
-                <span className="hidden xs:inline-block text-[10px] uppercase font-extrabold tracking-wider px-2 py-0.5 rounded-md bg-blue-50 text-[#081e4a] border border-[#081e4a]/20 shrink-0">
+                <span className="hidden sm:inline-block text-[10px] uppercase font-extrabold tracking-wider px-2 py-0.5 rounded-md bg-blue-50 text-[#081e4a] border border-[#081e4a]/20 shrink-0">
                   2-DAY BOOTCAMP
                 </span>
               </div>
@@ -166,9 +167,9 @@ export const Navbar: React.FC<NavbarProps> = ({
                 {user.role === 'admin' && (
                   <button
                     onClick={() => navigate('/admin')}
-                    className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-indigo-200 bg-indigo-50 hover:bg-indigo-100 text-xs font-semibold text-indigo-700 transition-all cursor-pointer whitespace-nowrap shrink-0"
+                    className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-[#081e4a]/25 bg-blue-50 hover:bg-blue-100 text-xs font-semibold text-[#081e4a] transition-all cursor-pointer whitespace-nowrap shrink-0"
                   >
-                    <ShieldAlert className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+                    <ShieldAlert className="w-3.5 h-3.5 text-[#081e4a] shrink-0" />
                     <span>Admin Ops</span>
                   </button>
                 )}

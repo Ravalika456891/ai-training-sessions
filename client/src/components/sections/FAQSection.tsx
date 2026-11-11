@@ -27,7 +27,7 @@ export const FAQSection: React.FC = () => {
       : FAQ_DATA.filter((faq) => faq.category === selectedCategory);
 
   return (
-    <section id="faq" className="py-20 sm:py-24 bg-[#F4F7FE] relative scroll-mt-20">
+    <section id="faq" className="py-16 sm:py-24 bg-[#F4F7FE] relative scroll-mt-20 border-b border-slate-200/80">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <MotionReveal className="text-center max-w-3xl mx-auto space-y-4">
           <Badge variant="primary" size="md" icon={<HelpCircle className="w-3.5 h-3.5 text-[#081e4a]" />}>

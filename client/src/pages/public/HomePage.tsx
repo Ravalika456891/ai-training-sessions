@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Navbar } from '../../components/layout/Navbar';
+import { Footer } from '../../components/layout/Footer';
 import { HeroSection } from '../../components/sections/HeroSection';
 import { BenefitsSection } from '../../components/sections/BenefitsSection';
 import { CurriculumSection } from '../../components/sections/CurriculumSection';
 import { AIToolsSection } from '../../components/sections/AIToolsSection';
 import { MentorSection } from '../../components/sections/MentorSection';
+import { TestimonialsSection } from '../../components/sections/TestimonialsSection';
 import { PricingSection } from '../../components/sections/PricingSection';
 import { RegistrationSection } from '../../components/sections/RegistrationSection';
 import { FAQSection } from '../../components/sections/FAQSection';
@@ -14,7 +16,6 @@ import { AdminConsoleModal } from '../../components/admin/AdminConsoleModal';
 import { CertificateVerifyModal } from '../../components/certificate/CertificateVerifyModal';
 import { BATCH_OPTIONS } from '../../data/workshopData';
 import { ArrowRight, X } from 'lucide-react';
-import '../../styles/3dBackground.css';
 import { useAuth } from '../../context/AuthContext';
 import { api, type ApiWorkshop } from '../../services/api';
 import type { BatchOption } from '../../types/workshop';
@@ -113,30 +114,38 @@ export const HomePage: React.FC = () => {
     batches.find((b) => b.id === selectedBatchId) || batches[0] || BATCH_OPTIONS[0];
 
   return (
-    <div className="min-h-screen bg-white text-[#0F172A] flex flex-col font-sans selection:bg-blue-600 selection:text-white relative body-3d">
+    <div className="min-h-screen bg-white text-[#0F172A] flex flex-col font-sans selection:bg-[#081e4a] selection:text-white relative">
       {/* Top Cohort & Signed-In Status Bar */}
       {showSampleBanner && (
         <aside
           aria-label="Upcoming Cohort Announcement"
-          className="bg-blue-50/80 border-b border-blue-100 py-2 px-4 text-xs text-slate-700 relative z-50"
+          className="bg-[#081e4a] border-b border-white/10 py-2 px-4 text-xs text-blue-100 relative z-50"
         >
           <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
-            <div className="flex items-center gap-2.5 overflow-hidden text-ellipsis whitespace-nowrap">
-              <span className="inline-block w-2 h-2 rounded-full bg-blue-600 shrink-0" />
-              <p className="font-medium text-slate-700 truncate">
+            <div className="flex items-center gap-2.5 overflow-hidden text-ellipsis whitespace-nowrap min-w-0">
+              <span className="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+              <p className="font-medium text-blue-100 truncate">
                 Next Live Cohort:{' '}
-                <span className="font-bold text-blue-700">{currentNextBatch.dateRange}</span> • Limited to{' '}
-                {currentNextBatch.totalSeats} Seats
+                <span className="font-extrabold text-white">{currentNextBatch.dateRange}</span>
+                <span className="hidden sm:inline"> • Limited to {currentNextBatch.totalSeats} Seats</span>
               </p>
+              <button
+                type="button"
+                onClick={scrollToRegister}
+                className="hidden sm:inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-white/15 hover:bg-white/25 text-white font-bold text-[11px] border border-white/20 transition-colors shrink-0 cursor-pointer"
+              >
+                <span>Reserve Seat</span>
+                <ArrowRight className="w-3 h-3" />
+              </button>
               {user && (
-                <span className="hidden md:inline-flex px-2.5 py-0.5 rounded-md bg-white text-blue-700 font-semibold text-[11px] border border-blue-200">
+                <span className="hidden md:inline-flex px-2.5 py-0.5 rounded-md bg-white text-[#081e4a] font-bold text-[11px] shrink-0">
                   Signed in: {user.name} ({user.role})
                 </span>
               )}
             </div>
             <button
               onClick={() => setShowSampleBanner(false)}
-              className="text-slate-400 hover:text-slate-700 p-1 rounded transition-colors shrink-0 cursor-pointer"
+              className="text-blue-200 hover:text-white p-1 rounded transition-colors shrink-0 cursor-pointer"
               aria-label="Dismiss banner"
             >
               <X className="w-3.5 h-3.5" />
@@ -154,8 +163,8 @@ export const HomePage: React.FC = () => {
       />
 
       {/* Main Public Page Content */}
-      <main className="flex-1">
-        {/* 2. Hero Section (Dark Navy & Purple) */}
+      <main className="flex-1 min-w-0">
+        {/* 2. Hero Section */}
         <HeroSection
           onRegisterClick={scrollToRegister}
           onExploreCurriculum={scrollToCurriculum}
@@ -174,7 +183,10 @@ export const HomePage: React.FC = () => {
         {/* 6. Instructor Details */}
         <MentorSection onRegisterClick={scrollToRegister} />
 
-        {/* 7. Transparent Pricing & Batch Selector */}
+        {/* 7. Alumni Outcomes & Reviews */}
+        <TestimonialsSection />
+
+        {/* 8. Transparent Pricing & Batch Selector */}
         <PricingSection
           batches={batches}
           selectedBatchId={selectedBatchId}
@@ -182,7 +194,7 @@ export const HomePage: React.FC = () => {
           onProceedToRegister={scrollToRegister}
         />
 
-        {/* 8. Smart Workshop Registration & Account Continuation */}
+        {/* 9. Smart Workshop Registration & Account Continuation */}
         <RegistrationSection
           batches={batches}
           selectedBatchId={selectedBatchId}
@@ -192,9 +204,15 @@ export const HomePage: React.FC = () => {
           }}
         />
 
-        {/* 9. Frequently Asked Questions */}
+        {/* 10. Frequently Asked Questions */}
         <FAQSection />
       </main>
+
+      {/* 11. Site Footer */}
+      <Footer
+        onRegisterClick={scrollToRegister}
+        onOpenVerifyModal={() => setIsVerifyModalOpen(true)}
+      />
 
       {/* 11. Checkout & Payment Modal */}
       {activeCheckoutEnrollmentId && (
