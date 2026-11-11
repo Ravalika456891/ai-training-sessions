@@ -149,3 +149,4 @@
   <!-- Subtle 3D Energy Link Arc between nodes -->
   <path d="M 680 820 Q 960 660 1240 820" fill="none" stroke="#0D6EFD" stroke-width="1.5" stroke-dasharray="4 4" stroke-opacity="0.6" />
 </svg>
+

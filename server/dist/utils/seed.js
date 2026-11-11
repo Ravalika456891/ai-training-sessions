@@ -56,8 +56,15 @@ const seedDatabase = async () => {
       });
       console.log(`[Database Seed] Default Admin created: ${adminEmail}`);
     }
-    const cohortsToSeed = [
-      {
+    await import_Workshop.Workshop.deleteMany({
+      batchCode: { $in: ["AILP-2026-NOV-28", "AILP-2026-DEC-12"] }
+    });
+    await import_WorkshopSession.WorkshopSession.deleteMany({
+      batchCode: { $in: ["AILP-2026-NOV-28", "AILP-2026-DEC-12"] }
+    });
+    let primaryWorkshop = await import_Workshop.Workshop.findOne({ batchCode: "AILP-2026-NOV-14" });
+    if (!primaryWorkshop) {
+      primaryWorkshop = await import_Workshop.Workshop.create({
         title: "AI Launchpad \u2014 2-Day Hands-On AI Bootcamp",
         slug: "ai-launchpad-nov-14-2026",
         batchCode: "AILP-2026-NOV-14",
@@ -82,67 +89,9 @@ const seedDatabase = async () => {
           isFree: false
         },
         status: "published"
-      },
-      {
-        title: "AI Launchpad \u2014 2-Day Hands-On AI Bootcamp",
-        slug: "ai-launchpad-nov-28-2026",
-        batchCode: "AILP-2026-NOV-28",
-        description: "Master practical Generative AI in one weekend. Build custom AI assistants, workflows, and functional prototypes with live mentorship.",
-        instructor: {
-          name: "Ananya Sharma",
-          role: "Senior Applied AI Researcher",
-          bio: "Former AI Architect at DeepScale AI. Specialized in agent architectures, multi-agent frameworks, and vector search.",
-          avatarUrl: "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=400&q=80"
-        },
-        startDate: /* @__PURE__ */ new Date("2026-11-28T10:00:00+05:30"),
-        endDate: /* @__PURE__ */ new Date("2026-11-29T15:00:00+05:30"),
-        timings: "10:00 AM \u2013 3:00 PM IST",
-        timezone: "Asia/Kolkata (IST)",
-        capacity: 60,
-        enrolledCount: 12,
-        reservedCount: 0,
-        price: {
-          basePrice: 1999,
-          currency: "INR",
-          taxPercentage: 18,
-          isFree: false
-        },
-        status: "published"
-      },
-      {
-        title: "AI Launchpad \u2014 2-Day Hands-On AI Bootcamp",
-        slug: "ai-launchpad-dec-12-2026",
-        batchCode: "AILP-2026-DEC-12",
-        description: "Master practical Generative AI in one weekend. Build custom AI assistants, workflows, and functional prototypes with live mentorship.",
-        instructor: {
-          name: "Vikram Malhotra",
-          role: "Staff AI Engineer & Former ML Lead",
-          bio: "Over 12 years building production software and 4 years leading enterprise LLM integrations. Mentored over 1,500 professionals in practical AI adoption.",
-          avatarUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80"
-        },
-        startDate: /* @__PURE__ */ new Date("2026-12-12T10:00:00+05:30"),
-        endDate: /* @__PURE__ */ new Date("2026-12-13T15:00:00+05:30"),
-        timings: "10:00 AM \u2013 3:00 PM IST",
-        timezone: "Asia/Kolkata (IST)",
-        capacity: 60,
-        enrolledCount: 2,
-        reservedCount: 0,
-        price: {
-          basePrice: 1999,
-          currency: "INR",
-          taxPercentage: 18,
-          isFree: false
-        },
-        status: "published"
-      }
-    ];
-    for (const c of cohortsToSeed) {
-      let existing = await import_Workshop.Workshop.findOne({ batchCode: c.batchCode });
-      if (!existing) {
-        await import_Workshop.Workshop.create(c);
-      }
+      });
+      console.log("[Database Seed] Primary workshop cohort AILP-2026-NOV-14 seeded.");
     }
-    const primaryWorkshop = await import_Workshop.Workshop.findOne({ batchCode: "AILP-2026-NOV-14" });
     const existingSessionsCount = await import_WorkshopSession.WorkshopSession.countDocuments({
       batchCode: "AILP-2026-NOV-14"
     });
