@@ -48,8 +48,8 @@ export const MotionBentoCard: React.FC<MotionBentoCardProps> = ({
       whileHover={{ y: -3 }}
       className={cn(
         'rounded-2xl bg-white/95 backdrop-blur-sm border border-slate-200/90',
-        'shadow-[0_4px_20px_-6px_rgba(15,23,42,0.06)] hover:shadow-[0_14px_30px_-10px_rgba(37,99,235,0.16)]',
-        'hover:border-blue-300/80 transition-colors duration-200',
+        'shadow-[0_4px_20px_-6px_rgba(15,23,42,0.06)] hover:shadow-[0_14px_30px_-10px_rgba(8,30,74,0.16)]',
+        'hover:border-[#081e4a]/40 transition-colors duration-200',
         className
       )}
     >
@@ -57,3 +57,4 @@ export const MotionBentoCard: React.FC<MotionBentoCardProps> = ({
     </motion.div>
   );
 };
+

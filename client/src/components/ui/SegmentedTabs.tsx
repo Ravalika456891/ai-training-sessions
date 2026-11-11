@@ -56,14 +56,14 @@ export const SegmentedTabs: React.FC<SegmentedTabsProps> = ({
                   fullWidth && 'flex-1',
                   isActive
                     ? 'text-white'
-                    : 'text-slate-600 hover:text-[#0A2558]'
+                    : 'text-slate-600 hover:text-[#081e4a]'
                 )}
               >
                 {isActive && (
                   <motion.span
                     layoutId={layoutId}
                     transition={{ type: 'spring', bounce: 0.2, duration: 0.4 }}
-                    className="absolute inset-0 -z-10 rounded-xl bg-gradient-to-r from-[#0A2558] to-[#1D4ED8] shadow-md shadow-blue-900/15"
+                    className="absolute inset-0 -z-10 rounded-xl bg-[#081e4a] shadow-md shadow-[#081e4a]/20"
                   />
                 )}
                 {item.icon && <span className="shrink-0">{item.icon}</span>}
@@ -94,3 +94,4 @@ export const SegmentedTabs: React.FC<SegmentedTabsProps> = ({
 };
 
 export const SegmentedTabContent = Tabs.Content;
+

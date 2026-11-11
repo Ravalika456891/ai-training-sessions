@@ -179,12 +179,12 @@ export const RegistrationSection: React.FC<RegistrationSectionProps> = ({
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <MotionReveal className="text-center max-w-3xl mx-auto space-y-4">
-          <Badge variant="primary" size="md" icon={<Sparkles className="w-3.5 h-3.5 text-[#1D4ED8]" />}>
+          <Badge variant="primary" size="md" icon={<Sparkles className="w-3.5 h-3.5 text-[#081e4a]" />}>
             Workshop Enrollment
           </Badge>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-[#0F172A] tracking-tight">
             Reserve Your Seat in{' '}
-            <span className="bg-gradient-to-r from-[#0A2558] via-[#1D4ED8] to-[#0EA5E9] bg-clip-text text-transparent">
+            <span className="text-[#081e4a]">
               AI Launchpad
             </span>
           </h2>
@@ -194,15 +194,15 @@ export const RegistrationSection: React.FC<RegistrationSectionProps> = ({
         </MotionReveal>
 
         <MotionReveal delay={0.08} className="mt-10 max-w-5xl mx-auto">
-          <Card className="p-0 border-slate-200/90 bg-white shadow-2xl shadow-blue-950/8 rounded-3xl overflow-hidden">
+          <Card className="p-0 border-slate-200/90 bg-white shadow-2xl shadow-[#081e4a]/8 rounded-3xl overflow-hidden">
             {!user && (
-              <div className="px-5 sm:px-9 py-4 sm:py-5 bg-gradient-to-r from-[#081E4A] via-[#0F3175] to-[#1D4ED8] text-white flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="px-5 sm:px-9 py-4 sm:py-5 bg-[#081e4a] text-white flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="flex items-start sm:items-center gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-white/15 border border-white/20 text-sky-200 flex items-center justify-center shrink-0">
+                  <div className="w-9 h-9 rounded-xl bg-white/15 border border-white/20 text-blue-100 flex items-center justify-center shrink-0">
                     <Sparkles className="w-4 h-4" />
                   </div>
                   <div>
-                    <div className="text-[11px] font-extrabold text-sky-200 uppercase tracking-wider">
+                    <div className="text-[11px] font-extrabold text-blue-100 uppercase tracking-wider">
                       Smart Workshop Preservation
                     </div>
                     <p className="text-xs text-blue-100/95 mt-0.5">
@@ -216,13 +216,13 @@ export const RegistrationSection: React.FC<RegistrationSectionProps> = ({
                     onClick={() => sessionStorage.setItem('ailp_selected_batch', selectedBatch.id)}
                     className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-xs font-bold text-white transition-colors"
                   >
-                    <LogIn className="w-3.5 h-3.5 text-sky-200" />
+                    <LogIn className="w-3.5 h-3.5 text-blue-100" />
                     <span>Sign In</span>
                   </Link>
                   <Link
                     to={`/signup?redirect=${encodeURIComponent(`/dashboard?batch=${selectedBatch.id}`)}`}
                     onClick={() => sessionStorage.setItem('ailp_selected_batch', selectedBatch.id)}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white hover:bg-blue-50 text-xs font-extrabold text-[#0A2558] shadow-sm transition-all"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white hover:bg-blue-50 text-xs font-extrabold text-[#081e4a] shadow-sm transition-all"
                   >
                     <span>Create Account</span>
                     <ArrowRight className="w-3.5 h-3.5" />
@@ -258,7 +258,7 @@ export const RegistrationSection: React.FC<RegistrationSectionProps> = ({
                     <div className="flex items-center justify-between pb-3 border-b border-slate-200">
                       <div>
                         <span className="text-[11px] uppercase font-bold text-slate-500">Enrollment ID</span>
-                        <div className="text-base sm:text-lg font-mono font-bold text-[#1D4ED8]">
+                        <div className="text-base sm:text-lg font-mono font-bold text-[#081e4a]">
                           {enrollmentSummary.enrollment?.enrollmentId}
                         </div>
                       </div>
@@ -335,7 +335,7 @@ export const RegistrationSection: React.FC<RegistrationSectionProps> = ({
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     <div className="space-y-1.5">
                       <label className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-                        <UserIcon className="w-3.5 h-3.5 text-[#1D4ED8]" />
+                        <UserIcon className="w-3.5 h-3.5 text-[#081e4a]" />
                         <span>Full Name</span>
                         <span className="text-rose-500">*</span>
                       </label>
@@ -346,7 +346,7 @@ export const RegistrationSection: React.FC<RegistrationSectionProps> = ({
                         onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                         className={`w-full h-[46px] bg-white border ${
                           errors.fullName ? 'border-rose-400' : 'border-slate-200'
-                        } rounded-xl px-4 text-sm font-medium text-[#0F172A] placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-blue-500/15 focus:border-[#2563EB] shadow-sm transition-all`}
+                        } rounded-xl px-4 text-sm font-medium text-[#0F172A] placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-[#081e4a]/15 focus:border-[#081e4a] shadow-sm transition-all`}
                       />
                       {errors.fullName && (
                         <p className="text-xs text-rose-600 flex items-center gap-1 mt-1">
@@ -358,7 +358,7 @@ export const RegistrationSection: React.FC<RegistrationSectionProps> = ({
 
                     <div className="space-y-1.5">
                       <label className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-                        <Mail className="w-3.5 h-3.5 text-[#1D4ED8]" />
+                        <Mail className="w-3.5 h-3.5 text-[#081e4a]" />
                         <span>Email Address</span>
                         <span className="text-rose-500">*</span>
                       </label>
@@ -369,7 +369,7 @@ export const RegistrationSection: React.FC<RegistrationSectionProps> = ({
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                         className={`w-full h-[46px] bg-white border ${
                           errors.email ? 'border-rose-400' : 'border-slate-200'
-                        } rounded-xl px-4 text-sm font-medium text-[#0F172A] placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-blue-500/15 focus:border-[#2563EB] shadow-sm transition-all`}
+                        } rounded-xl px-4 text-sm font-medium text-[#0F172A] placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-[#081e4a]/15 focus:border-[#081e4a] shadow-sm transition-all`}
                       />
                       {errors.email && (
                         <p className="text-xs text-rose-600 flex items-center gap-1 mt-1">
@@ -382,7 +382,7 @@ export const RegistrationSection: React.FC<RegistrationSectionProps> = ({
                     {/* Unified Phone Row with Radix Dial Code Dropdown */}
                     <div className="space-y-1.5">
                       <label className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-                        <Phone className="w-3.5 h-3.5 text-[#1D4ED8]" />
+                        <Phone className="w-3.5 h-3.5 text-[#081e4a]" />
                         <span>Mobile Number</span>
                         <span className="text-rose-500">*</span>
                       </label>
@@ -414,7 +414,7 @@ export const RegistrationSection: React.FC<RegistrationSectionProps> = ({
                           }
                           className={`flex-1 min-w-0 h-[46px] bg-white border ${
                             errors.phoneNumber ? 'border-rose-400' : 'border-slate-200'
-                          } rounded-xl px-3.5 text-sm font-medium text-[#0F172A] placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-blue-500/15 focus:border-[#2563EB] shadow-sm transition-all`}
+                          } rounded-xl px-3.5 text-sm font-medium text-[#0F172A] placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-[#081e4a]/15 focus:border-[#081e4a] shadow-sm transition-all`}
                         />
                       </div>
                       {errors.phoneNumber && (
@@ -447,7 +447,7 @@ export const RegistrationSection: React.FC<RegistrationSectionProps> = ({
                       triggerClassName="h-[46px] min-h-[46px]"
                     />
 
-                    <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-[#F4F7FE] to-white border border-blue-200/80 shadow-xs space-y-2">
+                    <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-[#F4F7FE] to-white border border-[#081e4a]/20 shadow-xs space-y-2">
                       <div className="flex items-center justify-between text-xs text-slate-600">
                         <span>Workshop Tuition ({selectedBatch.batchCode})</span>
                         <span className="font-bold text-[#0F172A]">₹{basePrice.toLocaleString('en-IN')}</span>
@@ -456,9 +456,9 @@ export const RegistrationSection: React.FC<RegistrationSectionProps> = ({
                         <span>GST ({selectedBatch.pricing.taxPercentage || 18}%)</span>
                         <span className="font-bold text-[#0F172A]">₹{gstAmount.toLocaleString('en-IN')}</span>
                       </div>
-                      <div className="flex items-center justify-between text-sm font-extrabold text-[#0A2558] pt-2 border-t border-blue-200/70">
+                      <div className="flex items-center justify-between text-sm font-extrabold text-[#081e4a] pt-2 border-t border-[#081e4a]/15">
                         <span>Total Payable</span>
-                        <span className="text-lg font-black text-[#1D4ED8]">
+                        <span className="text-lg font-black text-[#081e4a]">
                           ₹{totalPayable.toLocaleString('en-IN')}
                         </span>
                       </div>
@@ -472,7 +472,7 @@ export const RegistrationSection: React.FC<RegistrationSectionProps> = ({
                         type="checkbox"
                         checked={formData.acceptTerms}
                         onChange={(e) => setFormData({ ...formData, acceptTerms: e.target.checked })}
-                        className="mt-0.5 w-4 h-4 rounded bg-white border-slate-300 text-[#0A2558] focus:ring-blue-600 cursor-pointer"
+                        className="mt-0.5 w-4 h-4 rounded bg-white border-slate-300 text-[#081e4a] focus:ring-[#081e4a] cursor-pointer"
                       />
                       <span className="text-xs text-slate-600 leading-relaxed">
                         I agree to the Terms of Service, Privacy Policy, and 100% Refund Guarantee.{' '}
@@ -502,7 +502,7 @@ export const RegistrationSection: React.FC<RegistrationSectionProps> = ({
                         : 'Continue to Enrollment & Payment'}
                     </Button>
                     <div className="flex items-center justify-center gap-2 text-xs text-slate-500 mt-3">
-                      <ShieldCheck className="w-4 h-4 text-[#1D4ED8]" />
+                      <ShieldCheck className="w-4 h-4 text-[#081e4a]" />
                       <span>256-Bit Encrypted Razorpay Checkout • Instant Dashboard Access</span>
                     </div>
                   </div>

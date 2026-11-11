@@ -22,10 +22,10 @@ export const Card: React.FC<CardProps> = ({
       className={cn(
         'rounded-2xl transition-all duration-200 relative overflow-hidden bg-white border',
         glow
-          ? 'border-[#1D4ED8]/50 shadow-lg shadow-blue-900/10'
+          ? 'border-[#081e4a]/50 shadow-lg shadow-[#081e4a]/10'
           : 'border-slate-200/90 shadow-[0_4px_18px_-6px_rgba(15,23,42,0.06)]',
         hoverable &&
-          'hover:border-blue-300 hover:-translate-y-0.5 hover:shadow-[0_14px_28px_-10px_rgba(37,99,235,0.14)]',
+          'hover:border-[#081e4a]/50 hover:-translate-y-0.5 hover:shadow-[0_14px_28px_-10px_rgba(8,30,74,0.14)]',
         className
       )}
     >

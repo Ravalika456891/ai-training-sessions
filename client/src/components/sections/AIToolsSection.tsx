@@ -42,19 +42,19 @@ export const AIToolsSection: React.FC = () => {
   const getToolIcon = (iconName: string) => {
     switch (iconName) {
       case 'Brain':
-        return <Brain className="w-5 h-5 text-[#1D4ED8]" />;
+        return <Brain className="w-5 h-5 text-[#081e4a]" />;
       case 'MessageSquare':
-        return <MessageSquare className="w-5 h-5 text-[#1D4ED8]" />;
+        return <MessageSquare className="w-5 h-5 text-[#081e4a]" />;
       case 'Code':
-        return <Code className="w-5 h-5 text-[#1D4ED8]" />;
+        return <Code className="w-5 h-5 text-[#081e4a]" />;
       case 'Image':
-        return <ImageIcon className="w-5 h-5 text-[#1D4ED8]" />;
+        return <ImageIcon className="w-5 h-5 text-[#081e4a]" />;
       case 'Workflow':
-        return <Workflow className="w-5 h-5 text-[#1D4ED8]" />;
+        return <Workflow className="w-5 h-5 text-[#081e4a]" />;
       case 'Search':
-        return <Search className="w-5 h-5 text-[#1D4ED8]" />;
+        return <Search className="w-5 h-5 text-[#081e4a]" />;
       default:
-        return <Sparkles className="w-5 h-5 text-[#1D4ED8]" />;
+        return <Sparkles className="w-5 h-5 text-[#081e4a]" />;
     }
   };
 
@@ -79,12 +79,12 @@ export const AIToolsSection: React.FC = () => {
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <MotionReveal className="text-center max-w-3xl mx-auto space-y-4">
-          <Badge variant="primary" size="md" icon={<Cpu className="w-3.5 h-3.5 text-[#1D4ED8]" />}>
+          <Badge variant="primary" size="md" icon={<Cpu className="w-3.5 h-3.5 text-[#081e4a]" />}>
             Ecosystem &amp; Tooling
           </Badge>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-[#0F172A] tracking-tight">
             Industry-Standard{' '}
-            <span className="bg-gradient-to-r from-[#0A2558] via-[#1D4ED8] to-[#0EA5E9] bg-clip-text text-transparent">
+            <span className="text-[#081e4a]">
               AI Tools
             </span>{' '}
             You Will Master
@@ -115,10 +115,10 @@ export const AIToolsSection: React.FC = () => {
               delay={idx * 0.03}
               className="group p-6 flex flex-col justify-between relative overflow-hidden"
             >
-              <div className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-[#0A2558] via-[#1D4ED8] to-[#0EA5E9] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <div className="absolute top-0 left-0 right-0 h-[3px] bg-[#081e4a] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               <div>
                 <div className="flex items-center justify-between gap-2">
-                  <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-blue-50 to-sky-50 border border-blue-200/80 flex items-center justify-center group-hover:scale-105 transition-transform">
+                  <div className="w-11 h-11 rounded-2xl bg-blue-50/90 border border-[#081e4a]/20 flex items-center justify-center group-hover:scale-105 transition-transform">
                     {getToolIcon(tool.icon)}
                   </div>
                   <Badge variant={getTierBadgeVariant(tool.accessTier)} size="sm">
@@ -126,10 +126,10 @@ export const AIToolsSection: React.FC = () => {
                   </Badge>
                 </div>
 
-                <h3 className="text-lg font-extrabold text-[#0F172A] mt-4 group-hover:text-[#1D4ED8] transition-colors">
+                <h3 className="text-lg font-extrabold text-[#0F172A] mt-4 group-hover:text-[#081e4a] transition-colors">
                   {tool.name}
                 </h3>
-                <span className="text-xs text-[#1D4ED8] font-semibold">
+                <span className="text-xs text-[#081e4a] font-semibold">
                   {tool.category}
                 </span>
 
@@ -139,7 +139,7 @@ export const AIToolsSection: React.FC = () => {
               </div>
 
               <div className="mt-6 pt-4 border-t border-slate-100 flex items-center gap-1.5 text-xs text-slate-600 font-medium">
-                <CheckCircle2 className="w-3.5 h-3.5 text-[#1D4ED8]" />
+                <CheckCircle2 className="w-3.5 h-3.5 text-[#081e4a]" />
                 <span>Guided interactive lab included</span>
               </div>
             </MotionBentoCard>
@@ -148,7 +148,7 @@ export const AIToolsSection: React.FC = () => {
 
         <MotionReveal delay={0.1} className="mt-10 max-w-3xl mx-auto">
           <div className="p-4 sm:p-5 rounded-2xl bg-white/95 backdrop-blur-md border border-slate-200/90 text-xs text-slate-600 flex items-start gap-3 shadow-sm">
-            <Info className="w-4 h-4 text-[#1D4ED8] shrink-0 mt-0.5" />
+            <Info className="w-4 h-4 text-[#081e4a] shrink-0 mt-0.5" />
             <p className="leading-relaxed">
               <strong className="text-[#0F172A]">Transparent Access Policy:</strong> All required workshop exercises can be performed using completely free plans or complimentary trials. We never require paid tool subscriptions to finish labs or earn your certificate.
             </p>

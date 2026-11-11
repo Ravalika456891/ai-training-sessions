@@ -237,18 +237,18 @@ export const HomePage: React.FC = () => {
             <div className="min-w-0">
               <div className="text-[11px] text-slate-500 font-semibold truncate">
                 {currentNextBatch.batchCode}:{' '}
-                <span className="text-[#0A2558] font-bold">
+                <span className="text-[#081e4a] font-bold">
                   {currentNextBatch.dateRange.split('–')[0]}
                 </span>
               </div>
-              <div className="text-sm font-black text-[#1D4ED8]">
+              <div className="text-sm font-black text-[#081e4a]">
                 ₹{currentNextBatch.pricing.basePrice.toLocaleString('en-IN')}{' '}
                 <span className="text-[10px] text-slate-500 font-medium">+ 18% GST</span>
               </div>
             </div>
             <button
               onClick={scrollToRegister}
-              className="inline-flex items-center gap-1.5 py-2.5 px-4 rounded-xl bg-gradient-to-r from-[#0A2558] via-[#133B8A] to-[#1D4ED8] text-white text-xs font-bold shadow-md shadow-blue-900/20 cursor-pointer shrink-0 active:scale-[0.98]"
+              className="inline-flex items-center gap-1.5 py-2.5 px-4 rounded-xl bg-[#081e4a] hover:bg-[#0c2d6e] text-white text-xs font-bold shadow-md shadow-[#081e4a]/20 cursor-pointer shrink-0 active:scale-[0.98]"
             >
               <span>Register Now</span>
               <ArrowRight className="w-3.5 h-3.5" />

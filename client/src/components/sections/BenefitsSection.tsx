@@ -30,19 +30,19 @@ export const BenefitsSection: React.FC<BenefitsSectionProps> = ({ onRegisterClic
   const getOutcomeIcon = (iconName: string) => {
     switch (iconName) {
       case 'Cpu':
-        return <Cpu className="w-6 h-6 text-[#1D4ED8]" />;
+        return <Cpu className="w-6 h-6 text-[#081e4a]" />;
       case 'Terminal':
-        return <Terminal className="w-6 h-6 text-[#1D4ED8]" />;
+        return <Terminal className="w-6 h-6 text-[#081e4a]" />;
       case 'Bot':
-        return <Bot className="w-6 h-6 text-[#1D4ED8]" />;
+        return <Bot className="w-6 h-6 text-[#081e4a]" />;
       case 'Palette':
-        return <Palette className="w-6 h-6 text-[#1D4ED8]" />;
+        return <Palette className="w-6 h-6 text-[#081e4a]" />;
       case 'Layers':
-        return <Layers className="w-6 h-6 text-[#1D4ED8]" />;
+        return <Layers className="w-6 h-6 text-[#081e4a]" />;
       case 'Zap':
-        return <Zap className="w-6 h-6 text-[#1D4ED8]" />;
+        return <Zap className="w-6 h-6 text-[#081e4a]" />;
       default:
-        return <Sparkles className="w-6 h-6 text-[#1D4ED8]" />;
+        return <Sparkles className="w-6 h-6 text-[#081e4a]" />;
     }
   };
 
@@ -83,7 +83,7 @@ export const BenefitsSection: React.FC<BenefitsSectionProps> = ({ onRegisterClic
           </Badge>
           <h2 className="text-3xl sm:text-4xl lg:text-[2.65rem] font-extrabold text-[#0F172A] tracking-tight">
             What You Will Build &amp; Master in{' '}
-            <span className="bg-gradient-to-r from-[#0A2558] via-[#1D4ED8] to-[#0EA5E9] bg-clip-text text-transparent">
+            <span className="text-[#081e4a]">
               2 Days
             </span>
           </h2>
@@ -100,19 +100,19 @@ export const BenefitsSection: React.FC<BenefitsSectionProps> = ({ onRegisterClic
               delay={idx * 0.04}
               className="group relative p-6 flex flex-col justify-between overflow-hidden"
             >
-              <div className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-[#0A2558] via-[#1D4ED8] to-[#0EA5E9] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <div className="absolute top-0 left-0 right-0 h-[3px] bg-[#081e4a] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-50 to-sky-50 border border-blue-200/80 flex items-center justify-center group-hover:scale-105 transition-transform">
+                  <div className="w-12 h-12 rounded-2xl bg-blue-50/90 border border-[#081e4a]/20 flex items-center justify-center group-hover:scale-105 transition-transform">
                     {getOutcomeIcon(outcome.iconName)}
                   </div>
-                  <span className="text-[11px] font-mono font-bold text-[#0A2558] bg-slate-100 border border-slate-200 px-2.5 py-1 rounded-lg">
+                  <span className="text-[11px] font-mono font-bold text-[#081e4a] bg-slate-100 border border-slate-200 px-2.5 py-1 rounded-lg">
                     0{idx + 1}
                   </span>
                 </div>
 
-                <h3 className="text-lg font-bold text-[#0F172A] group-hover:text-[#1D4ED8] transition-colors">
+                <h3 className="text-lg font-bold text-[#0F172A] group-hover:text-[#081e4a] transition-colors">
                   {outcome.title}
                 </h3>
 
@@ -122,7 +122,7 @@ export const BenefitsSection: React.FC<BenefitsSectionProps> = ({ onRegisterClic
               </div>
 
               <div className="mt-6 pt-4 border-t border-slate-100 bg-slate-50/80 -mx-6 -mb-6 px-6 py-4 rounded-b-2xl">
-                <div className="text-[11px] font-bold uppercase tracking-wider text-[#1D4ED8] flex items-center gap-1.5">
+                <div className="text-[11px] font-bold uppercase tracking-wider text-[#081e4a] flex items-center gap-1.5">
                   <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
                   <span>Deliverable</span>
                 </div>
@@ -171,7 +171,7 @@ export const BenefitsSection: React.FC<BenefitsSectionProps> = ({ onRegisterClic
                       <h4 className="text-xl font-extrabold text-[#0F172A]">
                         {currentPersona.persona}
                       </h4>
-                      <p className="text-sm text-[#1D4ED8] font-semibold">
+                      <p className="text-sm text-[#081e4a] font-semibold">
                         {currentPersona.tagline}
                       </p>
                     </div>
@@ -195,8 +195,8 @@ export const BenefitsSection: React.FC<BenefitsSectionProps> = ({ onRegisterClic
                       </p>
                     </div>
 
-                    <div className="space-y-2 bg-gradient-to-br from-blue-50 to-sky-50/70 p-4 rounded-2xl border border-blue-200/80">
-                      <span className="text-[11px] uppercase font-extrabold text-[#1D4ED8] tracking-wider block">
+                    <div className="space-y-2 bg-blue-50/70 p-4 rounded-2xl border border-[#081e4a]/20">
+                      <span className="text-[11px] uppercase font-extrabold text-[#081e4a] tracking-wider block">
                         Your Bootcamp Transformation
                       </span>
                       <p className="text-sm text-[#0F172A] leading-relaxed font-semibold">

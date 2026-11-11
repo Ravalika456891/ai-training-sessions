@@ -82,12 +82,12 @@ export const PricingSection: React.FC<PricingSectionProps> = ({
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <MotionReveal className="text-center max-w-3xl mx-auto space-y-4">
-          <Badge variant="primary" size="md" icon={<Layers className="w-3.5 h-3.5 text-[#1D4ED8]" />}>
+          <Badge variant="primary" size="md" icon={<Layers className="w-3.5 h-3.5 text-[#081e4a]" />}>
             Transparent Pricing
           </Badge>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-[#0F172A] tracking-tight">
             Invest in High-Leverage{' '}
-            <span className="bg-gradient-to-r from-[#0A2558] via-[#1D4ED8] to-[#0EA5E9] bg-clip-text text-transparent">
+            <span className="text-[#081e4a]">
               AI Skills
             </span>
           </h2>
@@ -100,7 +100,7 @@ export const PricingSection: React.FC<PricingSectionProps> = ({
           {/* Left Column: Everything Included Bento */}
           <MotionBentoCard className="lg:col-span-5 p-6 sm:p-7 space-y-6">
             <div className="space-y-2.5">
-              <div className="inline-flex items-center gap-2 text-xs font-extrabold uppercase tracking-wider text-[#1D4ED8]">
+              <div className="inline-flex items-center gap-2 text-xs font-extrabold uppercase tracking-wider text-[#081e4a]">
                 <Sparkles className="w-4 h-4" />
                 <span>Full Bootcamp Pass</span>
               </div>
@@ -115,15 +115,15 @@ export const PricingSection: React.FC<PricingSectionProps> = ({
             <ul className="space-y-2.5">
               {inclusions.map((item, idx) => (
                 <li key={idx} className="flex items-start gap-2.5 text-sm text-slate-700">
-                  <div className="w-5 h-5 rounded-full bg-blue-50 border border-blue-200 flex items-center justify-center shrink-0 mt-0.5">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-[#1D4ED8]" />
+                  <div className="w-5 h-5 rounded-full bg-blue-50 border border-[#081e4a]/20 flex items-center justify-center shrink-0 mt-0.5">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-[#081e4a]" />
                   </div>
                   <span className="leading-snug">{item}</span>
                 </li>
               ))}
             </ul>
 
-            <div className="p-4 rounded-2xl bg-gradient-to-br from-[#081E4A] to-[#0F3175] text-white text-xs flex items-start gap-3 shadow-md shadow-blue-950/15">
+            <div className="p-4 rounded-2xl bg-[#081e4a] text-white text-xs flex items-start gap-3 shadow-md shadow-[#081e4a]/15">
               <div className="w-8 h-8 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center shrink-0">
                 <ShieldCheck className="w-4 h-4 text-sky-300" />
               </div>
@@ -155,7 +155,7 @@ export const PricingSection: React.FC<PricingSectionProps> = ({
             <div className="rounded-2xl bg-gradient-to-br from-slate-50 via-blue-50/40 to-white border border-slate-200/90 p-5 sm:p-6 space-y-5">
               <div className="flex flex-wrap items-center justify-between gap-2 pb-4 border-b border-slate-200/80">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="font-mono text-xs font-extrabold px-2.5 py-1 rounded-lg bg-[#0A2558] text-white tracking-wide">
+                  <span className="font-mono text-xs font-extrabold px-2.5 py-1 rounded-lg bg-[#081e4a] text-white tracking-wide">
                     {selectedBatch.batchCode}
                   </span>
                   <Badge variant="success" size="sm">
@@ -163,8 +163,8 @@ export const PricingSection: React.FC<PricingSectionProps> = ({
                   </Badge>
                 </div>
 
-                <div className="flex items-center gap-1.5 text-xs font-bold text-[#0A2558]">
-                  <Users className="w-4 h-4 text-[#1D4ED8]" />
+                <div className="flex items-center gap-1.5 text-xs font-bold text-[#081e4a]">
+                  <Users className="w-4 h-4 text-[#081e4a]" />
                   <span>
                     {selectedBatch.availableSeats} of {selectedBatch.totalSeats} seats open
                   </span>
@@ -179,7 +179,7 @@ export const PricingSection: React.FC<PricingSectionProps> = ({
                 </div>
                 <div className="h-2 w-full rounded-full bg-slate-200/90 overflow-hidden">
                   <div
-                    className="h-full rounded-full bg-gradient-to-r from-[#0A2558] via-[#1D4ED8] to-[#0EA5E9] transition-all duration-500"
+                    className="h-full rounded-full bg-[#081e4a] transition-all duration-500"
                     style={{ width: `${Math.max(fillPercent, 18)}%` }}
                   />
                 </div>
@@ -189,7 +189,7 @@ export const PricingSection: React.FC<PricingSectionProps> = ({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="p-3.5 rounded-xl bg-white border border-slate-200/90 shadow-2xs">
                   <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-                    <Calendar className="w-3.5 h-3.5 text-[#1D4ED8]" />
+                    <Calendar className="w-3.5 h-3.5 text-[#081e4a]" />
                     <span>Cohort Dates</span>
                   </div>
                   <div className="text-sm font-extrabold text-[#0F172A] mt-1">
@@ -202,7 +202,7 @@ export const PricingSection: React.FC<PricingSectionProps> = ({
 
                 <div className="p-3.5 rounded-xl bg-white border border-slate-200/90 shadow-2xs">
                   <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-                    <Clock className="w-3.5 h-3.5 text-[#1D4ED8]" />
+                    <Clock className="w-3.5 h-3.5 text-[#081e4a]" />
                     <span>Live Session Timings</span>
                   </div>
                   <div className="text-sm font-extrabold text-[#0F172A] mt-1">
@@ -225,7 +225,7 @@ export const PricingSection: React.FC<PricingSectionProps> = ({
                       + ₹{taxAmount} ({selectedBatch.pricing.taxPercentage}% GST)
                     </span>
                   </div>
-                  <div className="text-xs font-bold text-[#1D4ED8] mt-0.5">
+                  <div className="text-xs font-bold text-[#081e4a] mt-0.5">
                     Total Payable: ₹{totalAmount.toLocaleString('en-IN')} INR
                   </div>
                 </div>

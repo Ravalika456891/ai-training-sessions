@@ -30,12 +30,12 @@ export const FAQSection: React.FC = () => {
     <section id="faq" className="py-20 sm:py-24 bg-[#F4F7FE] relative scroll-mt-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <MotionReveal className="text-center max-w-3xl mx-auto space-y-4">
-          <Badge variant="primary" size="md" icon={<HelpCircle className="w-3.5 h-3.5 text-[#1D4ED8]" />}>
+          <Badge variant="primary" size="md" icon={<HelpCircle className="w-3.5 h-3.5 text-[#081e4a]" />}>
             Clear Answers
           </Badge>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-[#0F172A] tracking-tight">
             Frequently Asked{' '}
-            <span className="bg-gradient-to-r from-[#0A2558] via-[#1D4ED8] to-[#0EA5E9] bg-clip-text text-transparent">
+            <span className="text-[#081e4a]">
               Questions
             </span>
           </h2>
@@ -65,7 +65,7 @@ export const FAQSection: React.FC = () => {
               <UiAccordionItem key={faq.id} value={faq.id}>
                 <UiAccordionTrigger>
                   <div className="flex items-start sm:items-center gap-3 pr-2">
-                    <div className="w-8 h-8 rounded-xl bg-blue-50 border border-blue-200/80 text-[#1D4ED8] flex items-center justify-center shrink-0 mt-0.5 sm:mt-0">
+                    <div className="w-8 h-8 rounded-xl bg-blue-50 border border-[#081e4a]/20 text-[#081e4a] flex items-center justify-center shrink-0 mt-0.5 sm:mt-0">
                       <HelpCircle className="w-4 h-4" />
                     </div>
                     <span className="text-sm sm:text-base font-bold text-[#0F172A] leading-snug">
@@ -77,7 +77,7 @@ export const FAQSection: React.FC = () => {
                 <UiAccordionContent className="text-slate-600 text-sm sm:text-base leading-relaxed">
                   <p className="mt-2">{faq.answer}</p>
                   <div className="mt-3 flex items-center gap-2">
-                    <span className="text-[11px] font-mono px-2.5 py-0.5 rounded-md bg-blue-50 text-[#0A2558] border border-blue-200/80 font-semibold">
+                    <span className="text-[11px] font-mono px-2.5 py-0.5 rounded-md bg-blue-50 text-[#081e4a] border border-[#081e4a]/20 font-semibold">
                       Category: {faq.category}
                     </span>
                   </div>
@@ -91,7 +91,7 @@ export const FAQSection: React.FC = () => {
           <span>Have an unanswered question? Email our lead academic advisor at </span>
           <a
             href={`mailto:${WORKSHOP_CONFIG.supportEmail}`}
-            className="text-[#1D4ED8] font-bold hover:underline inline-flex items-center gap-1 ml-1"
+            className="text-[#081e4a] font-bold hover:underline inline-flex items-center gap-1 ml-1"
           >
             <Mail className="w-3.5 h-3.5" />
             {WORKSHOP_CONFIG.supportEmail}

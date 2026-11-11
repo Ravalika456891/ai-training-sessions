@@ -54,13 +54,13 @@ export const SelectDropdown: React.FC<SelectDropdownProps> = ({
         <div className="flex items-center justify-between gap-2 mb-1.5">
           {label && (
             <label className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-              {icon && <span className="text-[#1D4ED8] shrink-0">{icon}</span>}
+              {icon && <span className="text-[#081e4a] shrink-0">{icon}</span>}
               <span>{label}</span>
               {required && <span className="text-rose-500">*</span>}
             </label>
           )}
           {hintRight && (
-            <span className="text-[11px] font-semibold text-[#1D4ED8] bg-blue-50/90 border border-blue-200/80 px-2 py-0.5 rounded-full whitespace-nowrap">
+            <span className="text-[11px] font-semibold text-[#081e4a] bg-blue-50/90 border border-[#081e4a]/20 px-2 py-0.5 rounded-full whitespace-nowrap">
               {hintRight}
             </span>
           )}
@@ -73,9 +73,9 @@ export const SelectDropdown: React.FC<SelectDropdownProps> = ({
           className={cn(
             'group w-full flex items-center justify-between gap-2.5 text-left transition-all duration-150 outline-none cursor-pointer',
             'bg-white border rounded-xl shadow-sm',
-            'hover:border-[#2563EB]/60 hover:bg-slate-50/50',
-            'focus:border-[#2563EB] focus:ring-4 focus:ring-blue-500/15',
-            'data-[state=open]:border-[#1D4ED8] data-[state=open]:ring-4 data-[state=open]:ring-blue-500/15',
+            'hover:border-[#081e4a]/60 hover:bg-slate-50/50',
+            'focus:border-[#081e4a] focus:ring-4 focus:ring-[#081e4a]/15',
+            'data-[state=open]:border-[#081e4a] data-[state=open]:ring-4 data-[state=open]:ring-[#081e4a]/15',
             error ? 'border-rose-400 focus:ring-rose-500/15' : 'border-slate-200',
             variant === 'compact' && 'px-3 py-2.5 text-sm rounded-xl min-h-[44px]',
             variant === 'default' && 'px-3.5 py-2.5 text-sm rounded-xl min-h-[46px]',
@@ -85,13 +85,13 @@ export const SelectDropdown: React.FC<SelectDropdownProps> = ({
         >
           <div className="flex items-center gap-3 min-w-0 flex-1">
             {selectedOption?.icon && (
-              <span className="shrink-0 text-[#1D4ED8]">{selectedOption.icon}</span>
+              <span className="shrink-0 text-[#081e4a]">{selectedOption.icon}</span>
             )}
             {variant === 'rich' && selectedOption ? (
               <div className="min-w-0 flex-1 flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-3">
                 <div className="min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-sm font-extrabold text-[#0A2558] tracking-tight truncate">
+                    <span className="text-sm font-extrabold text-[#081e4a] tracking-tight truncate">
                       {selectedOption.label}
                     </span>
                     {selectedOption.badge && (
@@ -136,7 +136,7 @@ export const SelectDropdown: React.FC<SelectDropdownProps> = ({
                 'shrink-0 flex items-center justify-center rounded-lg transition-all duration-200',
                 variant === 'compact'
                   ? 'w-5 h-5 text-slate-500'
-                  : 'w-7 h-7 bg-slate-100/90 group-hover:bg-blue-50 text-slate-600 group-hover:text-[#1D4ED8] group-data-[state=open]:bg-[#0A2558] group-data-[state=open]:text-white'
+                  : 'w-7 h-7 bg-slate-100/90 group-hover:bg-blue-50 text-slate-600 group-hover:text-[#081e4a] group-data-[state=open]:bg-[#081e4a] group-data-[state=open]:text-white'
               )}
             >
               <ChevronDown className="w-4 h-4 transition-transform duration-200 group-data-[state=open]:rotate-180" />
@@ -159,13 +159,13 @@ export const SelectDropdown: React.FC<SelectDropdownProps> = ({
                   disabled={opt.disabled}
                   className={cn(
                     'relative flex items-center justify-between gap-3 rounded-xl px-3 py-2.5 text-sm outline-none select-none transition-colors cursor-pointer',
-                    'text-[#0F172A] data-[highlighted]:bg-blue-50/90 data-[highlighted]:text-[#0A2558]',
+                    'text-[#0F172A] data-[highlighted]:bg-blue-50/90 data-[highlighted]:text-[#081e4a]',
                     'data-[state=checked]:bg-[#EFF6FF] data-[state=checked]:font-semibold',
                     'data-[disabled]:opacity-45 data-[disabled]:pointer-events-none'
                   )}
                 >
                   <div className="flex items-center gap-2.5 min-w-0 flex-1 pr-6">
-                    {opt.icon && <span className="shrink-0 text-[#1D4ED8]">{opt.icon}</span>}
+                    {opt.icon && <span className="shrink-0 text-[#081e4a]">{opt.icon}</span>}
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2 flex-wrap">
                         <Select.ItemText>{opt.label}</Select.ItemText>
@@ -181,7 +181,7 @@ export const SelectDropdown: React.FC<SelectDropdownProps> = ({
                     </div>
                     {opt.rightPrimary && (
                       <div className="text-right shrink-0">
-                        <div className="text-xs font-extrabold text-[#0A2558]">
+                        <div className="text-xs font-extrabold text-[#081e4a]">
                           {opt.rightPrimary}
                         </div>
                         {opt.rightSecondary && (
@@ -191,7 +191,7 @@ export const SelectDropdown: React.FC<SelectDropdownProps> = ({
                     )}
                   </div>
 
-                  <Select.ItemIndicator className="absolute right-3 flex items-center justify-center w-5 h-5 rounded-full bg-[#0A2558] text-white">
+                  <Select.ItemIndicator className="absolute right-3 flex items-center justify-center w-5 h-5 rounded-full bg-[#081e4a] text-white">
                     <Check className="w-3 h-3" />
                   </Select.ItemIndicator>
                 </Select.Item>
@@ -207,3 +207,4 @@ export const SelectDropdown: React.FC<SelectDropdownProps> = ({
     </div>
   );
 };
+

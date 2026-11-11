@@ -29,10 +29,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 }) => {
   const currentBatch = batch || BATCH_OPTIONS[0];
   const pillars = [
-    { icon: Calendar, label: 'Saturday & Sunday Live', tint: 'bg-blue-50 text-[#1D4ED8] border-blue-200/80' },
-    { icon: Clock, label: '10 Hours of Guided Labs', tint: 'bg-indigo-50 text-indigo-600 border-indigo-200/80' },
-    { icon: Terminal, label: 'No Coding Required', tint: 'bg-sky-50 text-sky-600 border-sky-200/80' },
-    { icon: Award, label: 'Verified Certificate', tint: 'bg-emerald-50 text-emerald-600 border-emerald-200/80' },
+    { icon: Calendar, label: 'Saturday & Sunday Live', tint: 'bg-blue-50 text-[#081e4a] border-[#081e4a]/20' },
+    { icon: Clock, label: '10 Hours of Guided Labs', tint: 'bg-blue-50 text-[#081e4a] border-[#081e4a]/20' },
+    { icon: Terminal, label: 'No Coding Required', tint: 'bg-blue-50 text-[#081e4a] border-[#081e4a]/20' },
+    { icon: Award, label: 'Verified Certificate', tint: 'bg-blue-50 text-[#081e4a] border-[#081e4a]/20' },
   ];
 
   return (
@@ -54,16 +54,16 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
             className="lg:col-span-6 space-y-6 text-center lg:text-left"
           >
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/95 border border-blue-200/90 text-xs font-bold shadow-xs">
-              <Sparkles className="w-3.5 h-3.5 text-[#1D4ED8] shrink-0" />
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/95 border border-[#081e4a]/20 text-xs font-bold shadow-xs">
+              <Sparkles className="w-3.5 h-3.5 text-[#081e4a] shrink-0" />
               <span className="text-[#0F172A]">2-Day Hands-On AI Bootcamp</span>
               <span className="text-slate-300">•</span>
-              <span className="text-[#1D4ED8]">Live Mentorship</span>
+              <span className="text-[#081e4a]">Live Mentorship</span>
             </div>
 
             <h1 className="text-3xl sm:text-5xl lg:text-[3.25rem] font-black tracking-tight text-[#0F172A] leading-[1.12]">
               Master Practical AI &amp; Build Real Workflows in{' '}
-              <span className="bg-gradient-to-r from-[#0A2558] via-[#1D4ED8] to-[#0EA5E9] bg-clip-text text-transparent">
+              <span className="text-[#081e4a]">
                 One Weekend
               </span>
             </h1>
@@ -107,16 +107,16 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 size="lg"
                 onClick={onExploreCurriculum}
                 className="rounded-2xl"
-                leftIcon={<BookOpen className="w-4 h-4 text-[#1D4ED8]" />}
+                leftIcon={<BookOpen className="w-4 h-4 text-[#081e4a]" />}
               >
                 Explore Curriculum
               </Button>
 
               <Link
                 to="/signin"
-                className="inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-2xl bg-white/95 hover:bg-slate-50 border border-slate-200 hover:border-blue-300 text-[#0A2558] text-sm font-bold shadow-2xs transition-colors"
+                className="inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-2xl bg-white/95 hover:bg-slate-50 border border-slate-200 hover:border-[#081e4a]/40 text-[#081e4a] text-sm font-bold shadow-2xs transition-colors"
               >
-                <LayoutDashboard className="w-4 h-4 text-[#1D4ED8]" />
+                <LayoutDashboard className="w-4 h-4 text-[#081e4a]" />
                 <span>Sign In</span>
               </Link>
             </div>
@@ -140,7 +140,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/25 to-transparent flex items-end p-4 sm:p-5">
                     <div className="text-white w-full flex flex-col gap-1">
                       <div className="flex items-center justify-between gap-2 flex-wrap">
-                        <span className="inline-block text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-md bg-gradient-to-r from-[#1D4ED8] to-[#0EA5E9] text-white">
+                        <span className="inline-block text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-md bg-[#081e4a] text-white">
                           Batch {currentBatch.batchCode}
                         </span>
                         <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-200 border border-emerald-400/30 backdrop-blur-xs">

@@ -17,12 +17,12 @@ export const MentorSection: React.FC<MentorSectionProps> = ({ onRegisterClick })
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <MotionReveal className="text-center max-w-3xl mx-auto space-y-4">
-          <Badge variant="primary" size="md" icon={<Sparkles className="w-3.5 h-3.5 text-[#1D4ED8]" />}>
+          <Badge variant="primary" size="md" icon={<Sparkles className="w-3.5 h-3.5 text-[#081e4a]" />}>
             Direct Mentorship
           </Badge>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-[#0F172A] tracking-tight">
             Learn Directly from{' '}
-            <span className="bg-gradient-to-r from-[#0A2558] via-[#1D4ED8] to-[#0EA5E9] bg-clip-text text-transparent">
+            <span className="text-[#081e4a]">
               Active Practitioners
             </span>
           </h2>
@@ -38,7 +38,7 @@ export const MentorSection: React.FC<MentorSectionProps> = ({ onRegisterClick })
               delay={idx * 0.08}
               className="group p-6 sm:p-8 flex flex-col justify-between relative overflow-hidden"
             >
-              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#0A2558] via-[#1D4ED8] to-[#0EA5E9]" />
+              <div className="absolute top-0 left-0 right-0 h-1 bg-[#081e4a]" />
 
               <div className="space-y-4">
                 <div className="flex items-center gap-4">
@@ -46,17 +46,17 @@ export const MentorSection: React.FC<MentorSectionProps> = ({ onRegisterClick })
                     <img
                       src={mentor.avatarUrl}
                       alt={mentor.name}
-                      className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover border-2 border-[#1D4ED8]/80 shadow-sm"
+                      className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover border-2 border-[#081e4a]/80 shadow-sm"
                     />
-                    <div className="absolute -bottom-1 -right-1 bg-white p-1 rounded-full shadow-sm border border-blue-100">
-                      <ShieldCheck className="w-4 h-4 text-[#1D4ED8]" />
+                    <div className="absolute -bottom-1 -right-1 bg-white p-1 rounded-full shadow-sm border border-[#081e4a]/15">
+                      <ShieldCheck className="w-4 h-4 text-[#081e4a]" />
                     </div>
                   </div>
                   <div className="min-w-0">
                     <h3 className="text-lg sm:text-xl font-extrabold text-[#0F172A] truncate">
                       {mentor.name}
                     </h3>
-                    <p className="text-sm font-bold text-[#1D4ED8]">{mentor.role}</p>
+                    <p className="text-sm font-bold text-[#081e4a]">{mentor.role}</p>
                     <p className="text-xs text-slate-500 font-medium">{mentor.company}</p>
                   </div>
                 </div>
@@ -71,7 +71,7 @@ export const MentorSection: React.FC<MentorSectionProps> = ({ onRegisterClick })
                     {mentor.expertise.map((skill) => (
                       <span
                         key={skill}
-                        className="text-xs px-2.5 py-1 rounded-lg bg-blue-50/90 text-[#0A2558] border border-blue-200/80 font-semibold"
+                        className="text-xs px-2.5 py-1 rounded-lg bg-blue-50/90 text-[#081e4a] border border-[#081e4a]/20 font-semibold"
                       >
                         {skill}
                       </span>
@@ -81,7 +81,7 @@ export const MentorSection: React.FC<MentorSectionProps> = ({ onRegisterClick })
               </div>
 
               <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-                <span className="flex items-center gap-1.5 text-[#1D4ED8] font-bold">
+                <span className="flex items-center gap-1.5 text-[#081e4a] font-bold">
                   <Award className="w-4 h-4" />
                   Verified Lead Instructor
                 </span>

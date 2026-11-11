@@ -33,15 +33,15 @@ export const Button: React.FC<ButtonProps> = ({
 
   const variantStyles = {
     primary:
-      'bg-gradient-to-r from-[#0A2558] via-[#133B8A] to-[#1D4ED8] hover:from-[#081E4A] hover:to-[#1E40AF] text-white focus:ring-blue-500 shadow-sm shadow-blue-900/15',
+      'bg-[#081e4a] hover:bg-[#0c2d6e] text-white focus:ring-[#081e4a] shadow-sm shadow-[#081e4a]/15',
     gradient:
-      'bg-gradient-to-r from-[#0A2558] via-[#1D4ED8] to-[#2563EB] hover:brightness-110 text-white focus:ring-blue-500 shadow-md shadow-blue-900/20',
+      'bg-[#081e4a] hover:bg-[#0c2d6e] text-white focus:ring-[#081e4a] shadow-md shadow-[#081e4a]/20',
     secondary:
       'bg-slate-100 hover:bg-slate-200/90 text-[#0F172A] border border-slate-200 focus:ring-slate-400',
     outline:
-      'bg-white hover:bg-blue-50/70 text-[#0A2558] border border-slate-200 hover:border-blue-400 focus:ring-blue-500 shadow-2xs',
+      'bg-white hover:bg-blue-50/70 text-[#081e4a] border border-[#081e4a]/25 hover:border-[#081e4a] focus:ring-[#081e4a] shadow-2xs',
     ghost:
-      'bg-transparent hover:bg-slate-100/80 text-slate-600 hover:text-[#0A2558] focus:ring-blue-500',
+      'bg-transparent hover:bg-slate-100/80 text-slate-600 hover:text-[#081e4a] focus:ring-[#081e4a]',
   };
 
   return (

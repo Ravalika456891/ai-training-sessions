@@ -69,8 +69,8 @@
 /* Modern SaaS UI surface utilities */
 .ui-canvas-gradient {
   background:
-    radial-gradient(circle at 12% 10%, rgba(37, 99, 235, 0.08), transparent 36%),
-    radial-gradient(circle at 88% 18%, rgba(14, 165, 233, 0.08), transparent 34%),
+    radial-gradient(circle at 12% 10%, rgba(8, 30, 74, 0.06), transparent 38%),
+    radial-gradient(circle at 88% 18%, rgba(8, 30, 74, 0.05), transparent 36%),
     linear-gradient(180deg, #F4F7FE 0%, #FFFFFF 45%, #F8FAFC 100%);
 }
 
@@ -82,13 +82,13 @@
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(ellipse 60% 45% at 20% 15%, rgba(37, 99, 235, 0.06), transparent),
-    radial-gradient(ellipse 50% 40% at 85% 80%, rgba(14, 165, 233, 0.06), transparent);
+    radial-gradient(ellipse 60% 45% at 20% 15%, rgba(8, 30, 74, 0.05), transparent),
+    radial-gradient(ellipse 50% 40% at 85% 80%, rgba(8, 30, 74, 0.05), transparent);
   pointer-events: none;
 }
 
 .cyber-dots-pattern {
-  background-image: radial-gradient(rgba(37, 99, 235, 0.14) 1px, transparent 1px);
+  background-image: radial-gradient(rgba(8, 30, 74, 0.12) 1px, transparent 1px);
   background-size: 22px 22px;
 }
 
@@ -97,14 +97,14 @@
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   border: 1px solid rgba(226, 232, 240, 0.95);
-  box-shadow: 0 8px 28px -10px rgba(10, 37, 88, 0.08);
+  box-shadow: 0 8px 28px -10px rgba(8, 30, 74, 0.08);
   transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
 .stylish-glass-card:hover {
   transform: translateY(-2px);
-  border-color: rgba(37, 99, 235, 0.45);
-  box-shadow: 0 16px 36px -12px rgba(37, 99, 235, 0.16);
+  border-color: rgba(8, 30, 74, 0.45);
+  box-shadow: 0 16px 36px -12px rgba(8, 30, 74, 0.16);
 }
 
 @keyframes accordion-down {

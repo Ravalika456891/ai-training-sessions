@@ -60,7 +60,7 @@ export const UiAccordionItem: React.FC<{
     value={value}
     className={cn(
       'group rounded-2xl bg-white border border-slate-200/90 shadow-sm transition-all duration-200 overflow-hidden',
-      'data-[state=open]:border-[#2563EB]/45 data-[state=open]:shadow-md data-[state=open]:shadow-blue-900/5',
+      'data-[state=open]:border-[#081e4a]/45 data-[state=open]:shadow-md data-[state=open]:shadow-[#081e4a]/8',
       'hover:border-slate-300',
       className
     )}
@@ -82,7 +82,7 @@ export const UiAccordionTrigger: React.FC<{
       )}
     >
       <div className="flex-1 min-w-0">{children}</div>
-      <div className="w-8 h-8 rounded-xl bg-slate-100/90 text-slate-600 flex items-center justify-center shrink-0 transition-all duration-200 group-data-[state=open]:bg-[#0A2558] group-data-[state=open]:text-white">
+      <div className="w-8 h-8 rounded-xl bg-slate-100/90 text-slate-600 flex items-center justify-center shrink-0 transition-all duration-200 group-data-[state=open]:bg-[#081e4a] group-data-[state=open]:text-white">
         <ChevronDown className="w-4 h-4 transition-transform duration-200 group-data-[state=open]:rotate-180" />
       </div>
     </Accordion.Trigger>
@@ -99,3 +99,4 @@ export const UiAccordionContent: React.FC<{
     </div>
   </Accordion.Content>
 );
+
