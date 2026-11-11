@@ -29,19 +29,19 @@ export const BenefitsSection: React.FC<BenefitsSectionProps> = ({ onRegisterClic
   const getOutcomeIcon = (iconName: string) => {
     switch (iconName) {
       case 'Cpu':
-        return <Cpu className="w-6 h-6 text-[#E41937]" />;
+        return <Cpu className="w-5 h-5 text-[#E41937]" />;
       case 'Terminal':
-        return <Terminal className="w-6 h-6 text-[#E41937]" />;
+        return <Terminal className="w-5 h-5 text-[#E41937]" />;
       case 'Bot':
-        return <Bot className="w-6 h-6 text-[#E41937]" />;
+        return <Bot className="w-5 h-5 text-[#E41937]" />;
       case 'Palette':
-        return <Palette className="w-6 h-6 text-[#E41937]" />;
+        return <Palette className="w-5 h-5 text-[#E41937]" />;
       case 'Layers':
-        return <Layers className="w-6 h-6 text-[#E41937]" />;
+        return <Layers className="w-5 h-5 text-[#E41937]" />;
       case 'Zap':
-        return <Zap className="w-6 h-6 text-[#E41937]" />;
+        return <Zap className="w-5 h-5 text-[#E41937]" />;
       default:
-        return <Sparkles className="w-6 h-6 text-[#E41937]" />;
+        return <Sparkles className="w-5 h-5 text-[#E41937]" />;
     }
   };
 
@@ -70,9 +70,9 @@ export const BenefitsSection: React.FC<BenefitsSectionProps> = ({ onRegisterClic
   return (
     <section id="outcomes" className="scroll-mt-20 border-b border-slate-200/80 overflow-hidden">
       <div className="grid grid-cols-1 lg:grid-cols-12">
-        {/* Left 6 Columns: Deep IIEM Navy Panel with White Circular Icons ("WHY CHOOSE US?") */}
-        <div className="lg:col-span-6 bg-[#1F386B] text-white py-14 sm:py-16 px-6 sm:px-10 lg:px-14">
-          <div className="max-w-xl lg:ml-auto space-y-8">
+        {/* Left 6 Columns: Deep IIEM Navy Panel with Side-by-Side Outcome Cards ("WHY CHOOSE US?") */}
+        <div className="lg:col-span-6 bg-[#1F386B] text-white py-12 sm:py-14 px-6 sm:px-8 xl:px-12 flex flex-col justify-center">
+          <div className="max-w-2xl lg:ml-auto w-full space-y-6">
             <div>
               <h2 className="text-2xl sm:text-3xl font-black uppercase tracking-tight text-white iiem-line-bottom">
                 WHY CHOOSE <span className="text-[#E41937] bg-white px-2 py-0.5 rounded-xs text-2xl sm:text-[1.7rem]">US?</span>
@@ -82,23 +82,28 @@ export const BenefitsSection: React.FC<BenefitsSectionProps> = ({ onRegisterClic
               </p>
             </div>
 
-            <div className="space-y-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {LEARNING_OUTCOMES.map((outcome) => (
-                <div key={outcome.id} className="flex items-start gap-4 sm:gap-5 group">
-                  <div className="w-13 h-13 sm:w-14 sm:h-14 rounded-full bg-white flex items-center justify-center shrink-0 shadow-lg group-hover:scale-105 transition-transform p-3">
-                    {getOutcomeIcon(outcome.iconName)}
-                  </div>
-                  <div className="min-w-0 flex-1 space-y-1">
-                    <h3 className="text-base font-extrabold uppercase tracking-wide text-white">
-                      {outcome.title}
-                    </h3>
-                    <p className="text-xs sm:text-sm text-blue-100/85 leading-relaxed">
+                <div
+                  key={outcome.id}
+                  className="rounded-lg bg-white/[0.06] border border-white/15 hover:border-[#E41937]/80 p-4 flex flex-col justify-between gap-2.5 transition-colors group"
+                >
+                  <div className="space-y-2.5">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shrink-0 shadow-md group-hover:scale-105 transition-transform">
+                        {getOutcomeIcon(outcome.iconName)}
+                      </div>
+                      <h3 className="text-[13px] font-extrabold uppercase tracking-wide leading-snug text-white">
+                        {outcome.title}
+                      </h3>
+                    </div>
+                    <p className="text-xs text-blue-100/85 leading-relaxed">
                       {outcome.description}
                     </p>
-                    <div className="inline-flex items-center gap-1.5 text-[11px] font-bold text-emerald-300 pt-0.5">
-                      <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
-                      <span>Deliverable: {outcome.deliverable}</span>
-                    </div>
+                  </div>
+                  <div className="inline-flex items-start gap-1.5 text-[11px] font-bold text-emerald-300 pt-2 border-t border-white/10">
+                    <CheckCircle2 className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+                    <span>{outcome.deliverable}</span>
                   </div>
                 </div>
               ))}
@@ -107,8 +112,8 @@ export const BenefitsSection: React.FC<BenefitsSectionProps> = ({ onRegisterClic
         </div>
 
         {/* Right 6 Columns: Crisp Silver-Light Audience Alignment Panel */}
-        <div className="lg:col-span-6 bg-[#F7F8FA] py-14 sm:py-16 px-6 sm:px-10 lg:px-14 flex flex-col justify-center">
-          <div className="max-w-xl space-y-7">
+        <div className="lg:col-span-6 bg-[#F7F8FA] py-12 sm:py-14 px-6 sm:px-8 xl:px-12 flex flex-col justify-center">
+          <div className="max-w-2xl w-full space-y-6">
             <div>
               <span className="text-xs font-extrabold uppercase tracking-wider text-[#E41937] block mb-1">
                 Program Fit &amp; Outcomes
