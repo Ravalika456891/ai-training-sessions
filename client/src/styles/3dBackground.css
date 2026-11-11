@@ -36,12 +36,12 @@
   position: absolute;
   inset: 0;
   background-image: 
-    radial-gradient(ellipse 95% 70% at 50% 20%, rgba(255, 255, 255, 0.48) 0%, rgba(248, 250, 252, 0.78) 55%, rgba(241, 245, 249, 0.94) 100%),
+    radial-gradient(ellipse 95% 70% at 50% 20%, rgba(255, 255, 255, 0.22) 0%, rgba(248, 250, 252, 0.48) 50%, rgba(241, 245, 249, 0.72) 100%),
     url('/assets/3d-view-background.jpg');
   background-size: cover;
   background-position: center 25%;
   background-repeat: no-repeat;
-  opacity: 0.95;
+  opacity: 1;
   transform: scale(1.01);
 }
 
@@ -52,7 +52,7 @@
   background-image: url('/assets/3d-view-mesh.svg');
   background-size: cover;
   background-position: center;
-  opacity: 0.35;
+  opacity: 0.65;
   mix-blend-mode: multiply;
   pointer-events: none;
 }

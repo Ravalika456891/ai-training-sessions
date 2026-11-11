@@ -10,7 +10,6 @@ import {
   Info,
   CheckCircle2
 } from 'lucide-react';
-import { Card } from '../common/Card';
 import { Badge } from '../common/Badge';
 import { AI_TOOLS_DATA } from '../../data/workshopData';
 import type { AITool } from '../../types/workshop';
@@ -57,8 +56,28 @@ export const AIToolsSection: React.FC = () => {
   };
 
   return (
-    <section id="tools" className="py-20 bg-white relative scroll-mt-20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section
+      id="tools"
+      className="py-24 stylish-3d-view-backdrop relative scroll-mt-20 overflow-hidden border-b border-slate-200/80"
+    >
+      {/* 3D Photorealistic Landscape & Vector Mesh Backdrop */}
+      <div className="stylish-3d-bg-layer" />
+      <div className="stylish-3d-vector-mesh" />
+
+      {/* Dynamic Luminous Ambient Glows & Cyber Dot Matrix */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 overflow-hidden select-none"
+      >
+        <div className="absolute -top-32 -left-20 w-[24rem] sm:w-[36rem] h-[24rem] sm:h-[36rem] rounded-full bg-blue-400/15 blur-3xl animate-ambient-pulse-slow" />
+        <div className="absolute top-1/2 -right-20 w-[22rem] sm:w-[32rem] h-[22rem] sm:h-[32rem] rounded-full bg-indigo-400/15 blur-3xl animate-ambient-pulse-delayed" />
+        <div className="absolute -bottom-24 left-1/3 w-[24rem] sm:w-[36rem] h-[24rem] sm:h-[36rem] rounded-full bg-cyan-400/15 blur-3xl" />
+        <div className="absolute inset-0 cyber-dots-pattern opacity-30" />
+        <div className="absolute top-0 left-0 right-0 h-16 bg-gradient-to-b from-white to-transparent" />
+        <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-white to-transparent" />
+      </div>
+
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto space-y-4">
           <Badge variant="primary" size="md">
@@ -78,10 +97,10 @@ export const AIToolsSection: React.FC = () => {
             <button
               key={category}
               onClick={() => setSelectedCategory(category)}
-              className={`px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-medium transition-all ${
+              className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all ${
                 selectedCategory === category
-                  ? 'bg-blue-600 text-white shadow-sm'
-                  : 'bg-slate-100 border border-slate-200 text-[#475569] hover:text-[#0F172A] hover:bg-slate-200/60'
+                  ? 'bg-blue-600 text-white shadow-md shadow-blue-500/25 scale-105'
+                  : 'bg-white/85 backdrop-blur-md border border-slate-200/90 text-[#475569] hover:text-[#0F172A] hover:bg-white shadow-sm'
               }`}
             >
               {category}
@@ -92,10 +111,13 @@ export const AIToolsSection: React.FC = () => {
         {/* Tools Cards Grid */}
         <div className="mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredTools.map((tool) => (
-            <Card key={tool.name} hoverable className="p-6 border-slate-200 bg-white shadow-sm flex flex-col justify-between">
+            <div
+              key={tool.name}
+              className="stylish-glass-card group p-6 sm:p-7 flex flex-col justify-between rounded-2xl relative overflow-hidden transition-all duration-300"
+            >
               <div>
                 <div className="flex items-center justify-between">
-                  <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-center">
+                  <div className="w-11 h-11 rounded-xl bg-blue-50/90 border border-blue-200/80 flex items-center justify-center group-hover:scale-110 transition-transform shadow-xs">
                     {getToolIcon(tool.icon)}
                   </div>
                   <Badge variant={getTierBadgeVariant(tool.accessTier)} size="sm">
@@ -115,16 +137,16 @@ export const AIToolsSection: React.FC = () => {
                 </p>
               </div>
 
-              <div className="mt-6 pt-4 border-t border-slate-100 flex items-center gap-1.5 text-xs text-slate-500">
+              <div className="mt-6 pt-4 border-t border-slate-200/60 flex items-center gap-1.5 text-xs text-slate-500">
                 <CheckCircle2 className="w-3.5 h-3.5 text-blue-600" />
                 <span>Guided interactive lab included</span>
               </div>
-            </Card>
+            </div>
           ))}
         </div>
 
         {/* PRD Disclosed Access Caveat Note */}
-        <div className="mt-8 max-w-3xl mx-auto p-4 rounded-xl bg-slate-50 border border-slate-200 text-xs text-[#475569] flex items-start gap-3">
+        <div className="mt-10 max-w-3xl mx-auto p-4 sm:p-5 rounded-2xl stylish-glass-card text-xs text-[#475569] flex items-start gap-3 shadow-sm">
           <Info className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
           <p className="leading-relaxed">
             <strong className="text-[#0F172A]">Transparent Access Policy:</strong> All required workshop exercises can be performed using completely free plans or complimentary trials. We demonstrate optional premium features for reference but will never require paid tool subscriptions to complete the bootcamp or earn your certificate.
