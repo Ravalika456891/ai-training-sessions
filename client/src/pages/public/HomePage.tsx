@@ -16,7 +16,7 @@ import { AuthModal } from '../../components/auth/AuthModal';
 import { AdminConsoleModal } from '../../components/admin/AdminConsoleModal';
 import { CertificateVerifyModal } from '../../components/certificate/CertificateVerifyModal';
 import { BATCH_OPTIONS, WORKSHOP_CONFIG } from '../../data/workshopData';
-import { ArrowRight, Clock, Mail, ShieldCheck, LogIn, UserPlus, LayoutDashboard } from 'lucide-react';
+import { ArrowRight, Clock, Mail, ShieldCheck, LogIn, LayoutDashboard } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { api, type ApiWorkshop } from '../../services/api';
 import type { BatchOption } from '../../types/workshop';
@@ -165,24 +165,14 @@ export const HomePage: React.FC = () => {
                 <span>{user.name} ({user.role})</span>
               </button>
             ) : (
-              <div className="inline-flex items-center gap-3">
-                <button
-                  type="button"
-                  onClick={() => setIsAuthModalOpen(true)}
-                  className="inline-flex items-center gap-1 text-white hover:text-blue-100 transition-colors cursor-pointer"
-                >
-                  <LogIn className="w-3.5 h-3.5" />
-                  <span>Sign In</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setIsAuthModalOpen(true)}
-                  className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded bg-[#1F386B] hover:bg-[#192e57] text-white font-bold transition-colors cursor-pointer"
-                >
-                  <UserPlus className="w-3.5 h-3.5" />
-                  <span>Sign Up</span>
-                </button>
-              </div>
+              <button
+                type="button"
+                onClick={() => setIsAuthModalOpen(true)}
+                className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded bg-[#1F386B] hover:bg-[#192e57] text-white font-bold transition-colors cursor-pointer"
+              >
+                <LogIn className="w-3.5 h-3.5" />
+                <span>Sign In</span>
+              </button>
             )}
           </div>
         </div>
