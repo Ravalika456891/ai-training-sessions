@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Edit3, Archive, Trash2, Globe, EyeOff, RefreshCw, X } from 'lucide-react';
+import { Plus, Edit3, Archive, Trash2, Globe, EyeOff, RefreshCw, X, ExternalLink } from 'lucide-react';
 import { useAdmin } from './AdminLayout';
 import { Button } from '../../components/common/Button';
+import { normalizeMeetingUrl, isValidMeetingUrl } from '../../utils/url';
 
 export const AdminWorkshops: React.FC = () => {
   const { adminFetch, showToast } = useAdmin();
@@ -24,6 +25,7 @@ export const AdminWorkshops: React.FC = () => {
     instructorName: 'Vikram Malhotra',
     instructorRole: 'Staff AI Engineer & Former ML Lead',
     thumbnailUrl: '',
+    liveSessionUrl: 'https://meet.google.com/ailp-live-cohort',
     status: 'published',
   });
 
@@ -59,6 +61,7 @@ export const AdminWorkshops: React.FC = () => {
       instructorName: 'Vikram Malhotra',
       instructorRole: 'Staff AI Engineer & Former ML Lead',
       thumbnailUrl: '',
+      liveSessionUrl: 'https://meet.google.com/ailp-live-cohort',
       status: 'published',
     });
     setIsModalOpen(true);
@@ -79,6 +82,7 @@ export const AdminWorkshops: React.FC = () => {
       instructorName: w.instructor?.name || 'Vikram Malhotra',
       instructorRole: w.instructor?.role || 'Staff AI Engineer',
       thumbnailUrl: w.thumbnailUrl || '',
+      liveSessionUrl: w.liveSessionUrl || 'https://meet.google.com/ailp-live-cohort',
       status: w.status || 'published',
     });
     setIsModalOpen(true);
@@ -86,17 +90,25 @@ export const AdminWorkshops: React.FC = () => {
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (form.liveSessionUrl.trim() && !isValidMeetingUrl(form.liveSessionUrl)) {
+      showToast('Please enter a valid Live Meeting URL (e.g., https://meet.google.com/abc-defg-hij)', 'error');
+      return;
+    }
+    const payload = {
+      ...form,
+      liveSessionUrl: form.liveSessionUrl.trim() ? normalizeMeetingUrl(form.liveSessionUrl) : '',
+    };
     try {
       if (editingId) {
         await adminFetch(`/api/admin/workshops/${editingId}`, {
           method: 'PATCH',
-          body: JSON.stringify(form),
+          body: JSON.stringify(payload),
         });
         showToast('Workshop updated successfully');
       } else {
         await adminFetch('/api/admin/workshops', {
           method: 'POST',
-          body: JSON.stringify(form),
+          body: JSON.stringify(payload),
         });
         showToast('New workshop cohort created');
       }
@@ -381,6 +393,34 @@ export const AdminWorkshops: React.FC = () => {
                     placeholder="https://..."
                     className="w-full px-3 py-2 rounded-xl border border-slate-200"
                   />
+                </div>
+              </div>
+
+              <div>
+                <label className="font-semibold text-slate-700 block mb-1">Live Meeting URL (Google Meet / Zoom)</label>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    value={form.liveSessionUrl}
+                    onChange={(e) => setForm({ ...form, liveSessionUrl: e.target.value })}
+                    onBlur={(e) => {
+                      const norm = normalizeMeetingUrl(e.target.value);
+                      if (norm) setForm({ ...form, liveSessionUrl: norm });
+                    }}
+                    placeholder="https://meet.google.com/abc-defg-hij"
+                    className="flex-1 min-w-0 px-3 py-2 rounded-xl border border-slate-200 font-mono text-xs"
+                  />
+                  {isValidMeetingUrl(form.liveSessionUrl) && (
+                    <a
+                      href={normalizeMeetingUrl(form.liveSessionUrl)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 px-3 py-2 rounded-xl bg-[#1F386B]/10 hover:bg-[#1F386B] text-[#1F386B] hover:text-white font-bold text-xs shrink-0 transition-colors"
+                    >
+                      <ExternalLink className="w-3.5 h-3.5" />
+                      <span>Test</span>
+                    </a>
+                  )}
                 </div>
               </div>
 

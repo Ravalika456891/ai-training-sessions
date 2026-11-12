@@ -127,14 +127,14 @@ const WorkshopSchema = new import_mongoose.Schema(
       title: { type: String, default: "Day 1: LLM Foundations, Prompt Engineering & Custom Assistants" },
       startTime: { type: String, default: "10:00 AM IST" },
       endTime: { type: String, default: "3:00 PM IST" },
-      liveUrl: { type: String, default: "https://meet.google.com/ailp-day1-cohort" },
+      liveUrl: { type: String, default: "https://meet.jit.si/AILaunchpad-AILP-Cohort-Day1" },
       instructorName: { type: String }
     },
     day2Session: {
       title: { type: String, default: "Day 2: Multi-Step AI Workflows, Prototypes & Deployment" },
       startTime: { type: String, default: "10:00 AM IST" },
       endTime: { type: String, default: "3:00 PM IST" },
-      liveUrl: { type: String, default: "https://meet.google.com/ailp-day2-cohort" },
+      liveUrl: { type: String, default: "https://meet.jit.si/AILaunchpad-AILP-Cohort-Day2" },
       instructorName: { type: String }
     },
     curriculum: { type: [import_mongoose.Schema.Types.Mixed], default: [] },

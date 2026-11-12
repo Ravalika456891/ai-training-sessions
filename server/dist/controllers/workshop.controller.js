@@ -24,6 +24,7 @@ var import_workshop_service = require("../services/workshop.service.js");
 class WorkshopController {
   static async getWorkshops(_req, res, next) {
     try {
+      res.set("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
       const workshops = await import_workshop_service.WorkshopService.getPublishedWorkshops();
       res.status(200).json({
         success: true,
@@ -36,6 +37,7 @@ class WorkshopController {
   }
   static async getWorkshopById(req, res, next) {
     try {
+      res.set("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
       const workshopId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
       const workshop = await import_workshop_service.WorkshopService.getWorkshopById(workshopId);
       res.status(200).json({

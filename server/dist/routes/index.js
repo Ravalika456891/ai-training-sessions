@@ -44,11 +44,17 @@ var import_enrollment_controller = require("../controllers/enrollment.controller
 var import_auth_middleware = require("../middleware/auth.middleware.js");
 var import_validate_middleware = require("../middleware/validate.middleware.js");
 var import_workshop_validator = require("../validators/workshop.validator.js");
+var import_db = require("../config/db.js");
 const router = (0, import_express.Router)();
 router.get("/health", (_req, res) => {
+  res.set("Cache-Control", "no-store");
+  const dbConnected = (0, import_db.isDBConnected)();
   res.status(200).json({
     success: true,
     message: "AI Launchpad Backend API is running.",
+    dbConnected,
+    persistenceMode: dbConnected ? "mongodb" : "memory",
+    isVercel: Boolean(process.env.VERCEL || process.env.VERCEL_ENV),
     timestamp: (/* @__PURE__ */ new Date()).toISOString()
   });
 });

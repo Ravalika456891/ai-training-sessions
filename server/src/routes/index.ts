@@ -12,14 +12,20 @@ import { EnrollmentController } from '../controllers/enrollment.controller.js';
 import { authenticate, requireRole } from '../middleware/auth.middleware.js';
 import { validateRequest } from '../middleware/validate.middleware.js';
 import { createWorkshopSchema, updateWorkshopSchema } from '../validators/workshop.validator.js';
+import { isDBConnected } from '../config/db.js';
 
 const router = Router();
 
 // Health check
 router.get('/health', (_req, res) => {
+  res.set('Cache-Control', 'no-store');
+  const dbConnected = isDBConnected();
   res.status(200).json({
     success: true,
     message: 'AI Launchpad Backend API is running.',
+    dbConnected,
+    persistenceMode: dbConnected ? 'mongodb' : 'memory',
+    isVercel: Boolean(process.env.VERCEL || process.env.VERCEL_ENV),
     timestamp: new Date().toISOString(),
   });
 });

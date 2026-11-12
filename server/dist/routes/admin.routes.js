@@ -43,6 +43,7 @@ router.post("/batches", (0, import_auth_middleware.requireRole)("admin"), import
 router.get("/sessions", (0, import_auth_middleware.requireRole)("admin", "instructor"), import_admin_controller.AdminController.getSessions);
 router.post("/sessions", (0, import_auth_middleware.requireRole)("admin"), import_admin_controller.AdminController.upsertSession);
 router.patch("/sessions/:id", (0, import_auth_middleware.requireRole)("admin"), import_admin_controller.AdminController.upsertSession);
+router.delete("/sessions/:id", (0, import_auth_middleware.requireRole)("admin"), import_admin_controller.AdminController.deleteSession);
 router.get("/calendar/sessions", (0, import_auth_middleware.requireRole)("admin", "instructor"), import_admin_controller.AdminController.getCalendarSessions);
 router.get("/calendar/sessions/:id", (0, import_auth_middleware.requireRole)("admin", "instructor"), import_admin_controller.AdminController.getCalendarSessionById);
 router.post("/calendar/sessions", (0, import_auth_middleware.requireRole)("admin"), import_admin_controller.AdminController.createCalendarSession);

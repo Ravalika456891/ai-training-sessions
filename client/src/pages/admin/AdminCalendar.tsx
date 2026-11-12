@@ -20,8 +20,10 @@ import {
   CalendarDays,
   CalendarRange,
   LayoutList,
+  ExternalLink,
 } from 'lucide-react';
 import { useAdmin } from './AdminLayout';
+import { normalizeMeetingUrl, isValidMeetingUrl } from '../../utils/url';
 
 export interface CalendarSession {
   _id: string;
@@ -566,11 +568,12 @@ export const AdminCalendar: React.FC = () => {
       setFormError('Instructor name is required.');
       return;
     }
-    if (!formData.liveSessionUrl.trim()) {
-      setFormError('Meeting URL is required.');
+    if (!formData.liveSessionUrl.trim() || !isValidMeetingUrl(formData.liveSessionUrl)) {
+      setFormError('Please enter a valid Live Meeting URL (e.g., https://meet.google.com/abc-defg-hij).');
       return;
     }
 
+    const normalizedUrl = normalizeMeetingUrl(formData.liveSessionUrl);
     setSubmitting(true);
     try {
       const payload = {
@@ -587,7 +590,7 @@ export const AdminCalendar: React.FC = () => {
         timezone: formData.timezone,
         classType: formData.classType,
         meetingProvider: formData.meetingProvider,
-        liveSessionUrl: formData.liveSessionUrl.trim(),
+        liveSessionUrl: normalizedUrl,
         meetingPasscode: formData.meetingPasscode.trim(),
         visibility: formData.visibility,
         status: formData.status,
@@ -1756,14 +1759,31 @@ export const AdminCalendar: React.FC = () => {
                   <label className="block text-xs font-bold text-slate-700 mb-1">
                     Protected Meeting URL (Hidden from unpaid users) *
                   </label>
-                  <input
-                    type="url"
-                    required
-                    placeholder="https://meet.google.com/..."
-                    value={formData.liveSessionUrl}
-                    onChange={(e) => setFormData({ ...formData, liveSessionUrl: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold"
-                  />
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      required
+                      placeholder="https://meet.google.com/abc-defg-hij"
+                      value={formData.liveSessionUrl}
+                      onChange={(e) => setFormData({ ...formData, liveSessionUrl: e.target.value })}
+                      onBlur={(e) => {
+                        const norm = normalizeMeetingUrl(e.target.value);
+                        if (norm) setFormData({ ...formData, liveSessionUrl: norm });
+                      }}
+                      className="flex-1 min-w-0 px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-mono font-semibold"
+                    />
+                    {isValidMeetingUrl(formData.liveSessionUrl) && (
+                      <a
+                        href={normalizeMeetingUrl(formData.liveSessionUrl)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 px-3 py-2.5 rounded-xl bg-[#1F386B]/10 hover:bg-[#1F386B] text-[#1F386B] hover:text-white text-xs font-bold shrink-0 transition-colors"
+                      >
+                        <ExternalLink className="w-3.5 h-3.5" />
+                        <span>Test</span>
+                      </a>
+                    )}
+                  </div>
                 </div>
 
                 <div>

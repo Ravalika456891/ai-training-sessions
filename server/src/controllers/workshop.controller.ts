@@ -4,6 +4,7 @@ import { WorkshopService } from '../services/workshop.service.js';
 export class WorkshopController {
   static async getWorkshops(_req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
+      res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
       const workshops = await WorkshopService.getPublishedWorkshops();
       res.status(200).json({
         success: true,
@@ -17,6 +18,7 @@ export class WorkshopController {
 
   static async getWorkshopById(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
+      res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
       const workshopId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
       const workshop = await WorkshopService.getWorkshopById(workshopId);
       res.status(200).json({

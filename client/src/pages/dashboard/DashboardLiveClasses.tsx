@@ -16,6 +16,7 @@ import {
   RefreshCw,
 } from 'lucide-react';
 import { useDashboard } from './DashboardLayout';
+import { normalizeMeetingUrl } from '../../utils/url';
 
 function buildStudentIcs(session: any, batchCode: string): string {
   const startIso = session.startAt || session.sessionDate || new Date().toISOString();
@@ -283,13 +284,13 @@ export const DashboardLiveClasses: React.FC = () => {
                   </button>
                 )}
                 <a
-                  href={
+                  href={normalizeMeetingUrl(
                     currentSession?.liveSessionUrl ||
-                    primary?.sessionAccess?.joinUrl ||
-                    'https://meet.google.com/ailp-live-cohort'
-                  }
+                      primary?.sessionAccess?.joinUrl ||
+                      'https://meet.google.com/ailp-live-cohort'
+                  )}
                   target="_blank"
-                  rel="noreferrer"
+                  rel="noopener noreferrer"
                   className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-[#E41937] hover:bg-[#c5122d] text-white font-bold text-xs shadow-sm transition-all cursor-pointer shrink-0"
                 >
                   <Video className="w-4 h-4" />

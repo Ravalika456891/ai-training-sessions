@@ -178,6 +178,7 @@ export const api = {
   async getWorkshops(): Promise<{ success: boolean; data: ApiWorkshop[] }> {
     const res = await fetch(`${API_BASE}/workshops`, {
       headers: customHeaders,
+      cache: 'no-store',
     });
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
@@ -189,6 +190,7 @@ export const api = {
   async getWorkshopById(id: string): Promise<{ success: boolean; data: ApiWorkshop }> {
     const res = await fetch(`${API_BASE}/workshops/${id}`, {
       headers: customHeaders,
+      cache: 'no-store',
     });
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));

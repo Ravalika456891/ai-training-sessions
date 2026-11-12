@@ -32,6 +32,7 @@ router.post('/batches', requireRole('admin'), AdminController.createWorkshop);
 router.get('/sessions', requireRole('admin', 'instructor'), AdminController.getSessions);
 router.post('/sessions', requireRole('admin'), AdminController.upsertSession);
 router.patch('/sessions/:id', requireRole('admin'), AdminController.upsertSession);
+router.delete('/sessions/:id', requireRole('admin'), AdminController.deleteSession);
 
 // 4b. Class Scheduling & Calendar Management (Admin & Instructor view, Admin mutate)
 router.get('/calendar/sessions', requireRole('admin', 'instructor'), AdminController.getCalendarSessions);

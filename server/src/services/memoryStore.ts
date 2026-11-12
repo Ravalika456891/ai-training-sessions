@@ -665,7 +665,28 @@ class MemoryStoreService {
   // --- Workshop Operations ---
   async getPublishedWorkshops(): Promise<IMemoryWorkshop[]> {
     await this.init();
-    return Array.from(this.workshops.values()).filter((w) => w.status === 'published');
+    return Array.from(this.workshops.values())
+      .filter((w) => w.status === 'published')
+      .sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime());
+  }
+
+  async findWorkshopExact(idOrCode: string): Promise<IMemoryWorkshop | null> {
+    await this.init();
+    if (!idOrCode) return null;
+    if (this.workshops.has(idOrCode)) {
+      return this.workshops.get(idOrCode)!;
+    }
+    const needle = idOrCode.trim().toLowerCase();
+    for (const w of this.workshops.values()) {
+      if (
+        w.batchCode.toLowerCase() === needle ||
+        w.slug.toLowerCase() === needle ||
+        w._id.toLowerCase() === needle
+      ) {
+        return w;
+      }
+    }
+    return null;
   }
 
   async findWorkshop(idOrCode: string): Promise<IMemoryWorkshop | null> {
@@ -963,6 +984,11 @@ class MemoryStoreService {
     };
     this.sessions.set(id, updated);
     return updated;
+  }
+
+  async deleteSession(id: string): Promise<boolean> {
+    await this.init();
+    return this.sessions.delete(id);
   }
 
   async getAllResources(): Promise<any[]> {

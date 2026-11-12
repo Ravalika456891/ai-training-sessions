@@ -645,6 +645,9 @@ class AdminController {
           avatarUrl: updates.instructorAvatarUrl || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80"
         };
       }
+      if (updates.liveSessionUrl !== void 0 && String(updates.liveSessionUrl).trim()) {
+        updates.liveSessionUrl = AdminController.normalizeMeetingUrl(String(updates.liveSessionUrl));
+      }
       let updated = null;
       if ((0, import_db.isDBConnected)() && import_mongoose.default.Types.ObjectId.isValid(id)) {
         const existing = await import_Workshop.Workshop.findById(id);
@@ -662,6 +665,28 @@ class AdminController {
       }
       if (!updated) {
         throw import_apiError.ApiError.notFound("Workshop not found.");
+      }
+      if (updates.liveSessionUrl) {
+        const encUrl = `enc:${Buffer.from(String(updates.liveSessionUrl)).toString("base64")}`;
+        if ((0, import_db.isDBConnected)()) {
+          try {
+            await import_WorkshopSession.WorkshopSession.updateMany(
+              { batchCode: updated.batchCode },
+              { liveSessionUrl: updates.liveSessionUrl, encryptedMeetingUrl: encUrl }
+            );
+          } catch {
+          }
+        }
+        const memSessions = await import_memoryStore.memoryStore.getAllSessions();
+        for (const ms of memSessions) {
+          if (String(ms.batchCode).toUpperCase() === String(updated.batchCode).toUpperCase()) {
+            await import_memoryStore.memoryStore.upsertSession({
+              ...ms,
+              liveSessionUrl: updates.liveSessionUrl,
+              encryptedMeetingUrl: encUrl
+            });
+          }
+        }
       }
       await AdminController.logAudit(
         req,
@@ -740,9 +765,148 @@ class AdminController {
       next(error);
     }
   }
+  /** Normalize & validate a meeting URL, automatically prepending https:// if missing scheme. */
+  static normalizeMeetingUrl(rawUrl) {
+    const trimmed = String(rawUrl || "").trim();
+    if (!trimmed) {
+      throw import_apiError.ApiError.badRequest("Live Meeting URL is required.");
+    }
+    const candidate = /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
+    try {
+      const parsed = new URL(candidate);
+      if (!["http:", "https:"].includes(parsed.protocol) || !parsed.hostname || !parsed.hostname.includes(".")) {
+        throw new Error("Invalid host");
+      }
+      return parsed.toString();
+    } catch {
+      throw import_apiError.ApiError.badRequest(
+        "Please enter a valid Live Meeting URL (for example https://meet.google.com/abc-defg-hij or a Zoom link)."
+      );
+    }
+  }
+  /**
+   * Ensure a published Workshop cohort exists for a scheduled session's batchCode,
+   * and keep Workshop dates/timings/instructor/meeting URL synced so the public site updates immediately.
+   */
+  static async syncWorkshopForSession(opts) {
+    const normalizedCode = opts.batchCode.trim().toUpperCase();
+    const dayNum = Number(opts.dayNumber) || 1;
+    const baseDate = new Date(opts.sessionDate);
+    const defaultStart = new Date(baseDate);
+    const defaultEnd = dayNum === 1 ? new Date(baseDate.getTime() + 24 * 60 * 60 * 1e3) : new Date(baseDate);
+    const timingsStr = `${opts.startTime} \u2013 ${opts.endTime}${opts.timezone.includes("IST") ? " IST" : ""}`;
+    let resolvedWorkshopId;
+    if ((0, import_db.isDBConnected)()) {
+      try {
+        let ws = null;
+        if (opts.workshopId && import_mongoose.default.Types.ObjectId.isValid(opts.workshopId)) {
+          ws = await import_Workshop.Workshop.findById(opts.workshopId);
+        }
+        if (!ws) {
+          ws = await import_Workshop.Workshop.findOne({ batchCode: normalizedCode });
+        }
+        if (!ws) {
+          const slug = `ai-launchpad-${normalizedCode.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
+          ws = await import_Workshop.Workshop.create({
+            title: "AI Launchpad \u2014 2-Day Hands-On AI Bootcamp",
+            slug,
+            batchCode: normalizedCode,
+            description: "Master practical Generative AI in one weekend. Build custom AI assistants, workflows, and functional prototypes with live mentorship.",
+            instructor: {
+              name: opts.instructorName || "Vikram Malhotra",
+              role: "Staff AI Engineer & Former ML Lead",
+              bio: "Over 12 years building production software and leading enterprise LLM integrations.",
+              avatarUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80"
+            },
+            startDate: defaultStart,
+            endDate: defaultEnd,
+            timings: timingsStr,
+            timezone: opts.timezone || "Asia/Kolkata (IST)",
+            capacity: opts.capacity || 60,
+            price: {
+              basePrice: opts.basePrice !== void 0 ? Number(opts.basePrice) : 1999,
+              currency: "INR",
+              taxPercentage: 18,
+              isFree: opts.basePrice === 0
+            },
+            status: "published",
+            liveSessionUrl: opts.liveSessionUrl,
+            meetingPasscode: opts.meetingPasscode || "AILP2026"
+          });
+        } else {
+          const nextStart = baseDate.getTime() < new Date(ws.startDate).getTime() ? baseDate : ws.startDate;
+          const nextEnd = baseDate.getTime() > new Date(ws.endDate).getTime() ? baseDate : ws.endDate;
+          await import_Workshop.Workshop.findByIdAndUpdate(ws._id, {
+            startDate: nextStart,
+            endDate: nextEnd,
+            timings: timingsStr,
+            timezone: opts.timezone || ws.timezone,
+            capacity: Math.max(Number(opts.capacity) || 60, ws.enrolledCount || 0),
+            liveSessionUrl: opts.liveSessionUrl,
+            ...opts.meetingPasscode ? { meetingPasscode: opts.meetingPasscode } : {},
+            ...ws.status === "draft" ? { status: "published" } : {},
+            "instructor.name": opts.instructorName || ws.instructor?.name || "Vikram Malhotra"
+          });
+        }
+        resolvedWorkshopId = ws._id?.toString();
+      } catch (err) {
+        console.warn("[Admin syncWorkshopForSession DB Warning]", err.message);
+      }
+    }
+    const memWs = await import_memoryStore.memoryStore.findWorkshopExact(normalizedCode);
+    if (!memWs) {
+      const createdMemWs = await import_memoryStore.memoryStore.createWorkshop({
+        title: "AI Launchpad \u2014 2-Day Hands-On AI Bootcamp",
+        slug: `ai-launchpad-${normalizedCode.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`,
+        batchCode: normalizedCode,
+        description: "Master practical Generative AI in one weekend. Build custom AI assistants, workflows, and functional prototypes with live mentorship.",
+        instructor: {
+          name: opts.instructorName || "Vikram Malhotra",
+          role: "Staff AI Engineer & Former ML Lead",
+          bio: "Over 12 years building production software and leading enterprise LLM integrations.",
+          avatarUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80"
+        },
+        startDate: defaultStart,
+        endDate: defaultEnd,
+        timings: timingsStr,
+        timezone: opts.timezone || "Asia/Kolkata (IST)",
+        capacity: opts.capacity || 60,
+        price: {
+          basePrice: opts.basePrice !== void 0 ? Number(opts.basePrice) : 1999,
+          currency: "INR",
+          taxPercentage: 18,
+          isFree: opts.basePrice === 0
+        },
+        status: "published",
+        liveSessionUrl: opts.liveSessionUrl,
+        meetingPasscode: opts.meetingPasscode || "AILP2026"
+      });
+      if (!resolvedWorkshopId) resolvedWorkshopId = createdMemWs._id;
+    } else {
+      const nextStart = baseDate.getTime() < new Date(memWs.startDate).getTime() ? baseDate : memWs.startDate;
+      const nextEnd = baseDate.getTime() > new Date(memWs.endDate).getTime() ? baseDate : memWs.endDate;
+      await import_memoryStore.memoryStore.updateWorkshop(memWs._id, {
+        startDate: nextStart,
+        endDate: nextEnd,
+        timings: timingsStr,
+        timezone: opts.timezone || memWs.timezone,
+        capacity: Math.max(Number(opts.capacity) || 60, memWs.enrolledCount || 0),
+        liveSessionUrl: opts.liveSessionUrl,
+        ...opts.meetingPasscode ? { meetingPasscode: opts.meetingPasscode } : {},
+        ...memWs.status === "draft" ? { status: "published" } : {},
+        instructor: {
+          ...memWs.instructor,
+          name: opts.instructorName || memWs.instructor?.name || "Vikram Malhotra"
+        }
+      });
+      if (!resolvedWorkshopId) resolvedWorkshopId = memWs._id;
+    }
+    return resolvedWorkshopId || normalizedCode;
+  }
   static async upsertSession(req, res, next) {
     try {
       const {
+        _id: bodyId,
         workshopId,
         batchCode,
         dayNumber,
@@ -755,70 +919,131 @@ class AdminController {
         liveSessionUrl,
         meetingPasscode,
         capacity,
+        basePrice,
         registrationDeadline,
         status
       } = req.body;
       if (!batchCode || !dayNumber || !title || !liveSessionUrl) {
         throw import_apiError.ApiError.badRequest("batchCode, dayNumber, title, and liveSessionUrl are required.");
       }
+      const normalizedCode = String(batchCode).trim().toUpperCase();
+      const normalizedUrl = AdminController.normalizeMeetingUrl(liveSessionUrl);
+      const parsedTime = AdminController.parseSessionStartEnd({
+        sessionDate: sessionDate || (/* @__PURE__ */ new Date()).toISOString().slice(0, 10),
+        startTime: startTime || "10:00 AM",
+        endTime: endTime || "3:00 PM",
+        timezone: timezone || "Asia/Kolkata (IST)"
+      });
+      const resolvedInstructor = (instructorName || "Vikram Malhotra").trim();
+      const resolvedCapacity = Number(capacity) || 60;
+      const resolvedPasscode = (meetingPasscode || "AILP2026").trim();
+      const resolvedWorkshopId = await AdminController.syncWorkshopForSession({
+        workshopId,
+        batchCode: normalizedCode,
+        dayNumber: Number(dayNumber),
+        sessionDate: parsedTime.sessionDate,
+        startTime: parsedTime.startTime,
+        endTime: parsedTime.endTime,
+        timezone: parsedTime.timezone,
+        instructorName: resolvedInstructor,
+        liveSessionUrl: normalizedUrl,
+        meetingPasscode: resolvedPasscode,
+        capacity: resolvedCapacity,
+        basePrice: basePrice !== void 0 ? Number(basePrice) : void 0
+      });
+      const targetId = typeof req.params.id === "string" && req.params.id || (bodyId ? String(bodyId).trim() : void 0);
+      const encUrl = `enc:${Buffer.from(normalizedUrl).toString("base64")}`;
+      const sessionData = {
+        workshopId: import_mongoose.default.Types.ObjectId.isValid(resolvedWorkshopId) ? new import_mongoose.default.Types.ObjectId(resolvedWorkshopId) : resolvedWorkshopId,
+        batchId: resolvedWorkshopId,
+        batchCode: normalizedCode,
+        dayNumber: Number(dayNumber),
+        title: String(title).trim(),
+        sessionDate: parsedTime.sessionDate,
+        startAt: parsedTime.startAt,
+        endAt: parsedTime.endAt,
+        durationMinutes: parsedTime.durationMinutes,
+        startTime: parsedTime.startTime,
+        endTime: parsedTime.endTime,
+        timezone: parsedTime.timezone,
+        instructorName: resolvedInstructor,
+        liveSessionUrl: normalizedUrl,
+        encryptedMeetingUrl: encUrl,
+        meetingPasscode: resolvedPasscode,
+        capacity: resolvedCapacity,
+        maxAttendees: resolvedCapacity,
+        registrationDeadline: registrationDeadline ? new Date(registrationDeadline) : void 0,
+        status: status || "scheduled"
+      };
       let saved = null;
-      if ((0, import_db.isDBConnected)() && workshopId && import_mongoose.default.Types.ObjectId.isValid(workshopId)) {
+      if ((0, import_db.isDBConnected)()) {
         try {
-          saved = await import_WorkshopSession.WorkshopSession.findOneAndUpdate(
-            { workshopId, dayNumber: Number(dayNumber) },
-            {
-              workshopId,
-              batchCode: batchCode.toUpperCase(),
-              dayNumber: Number(dayNumber),
-              title,
-              sessionDate: sessionDate ? new Date(sessionDate) : /* @__PURE__ */ new Date(),
-              startTime: startTime || "10:00 AM",
-              endTime: endTime || "3:00 PM",
-              timezone: timezone || "Asia/Kolkata (IST)",
-              instructorName: instructorName || "Vikram Malhotra",
-              liveSessionUrl,
-              meetingPasscode,
-              capacity: Number(capacity) || 60,
-              registrationDeadline: registrationDeadline ? new Date(registrationDeadline) : void 0,
-              status: status || "scheduled"
-            },
-            { upsert: true, new: true }
-          );
+          if (targetId && import_mongoose.default.Types.ObjectId.isValid(targetId)) {
+            saved = await import_WorkshopSession.WorkshopSession.findByIdAndUpdate(targetId, sessionData, {
+              upsert: true,
+              new: true
+            });
+          } else {
+            saved = await import_WorkshopSession.WorkshopSession.findOneAndUpdate(
+              { batchCode: normalizedCode, dayNumber: Number(dayNumber) },
+              sessionData,
+              { upsert: true, new: true }
+            );
+          }
         } catch (err) {
           console.warn("[Admin upsertSession DB Fallback]", err.message);
         }
       }
-      if (!saved) {
-        saved = await import_memoryStore.memoryStore.upsertSession({
-          _id: req.params.id,
-          workshopId: workshopId || batchCode,
-          batchCode: batchCode.toUpperCase(),
-          dayNumber: Number(dayNumber),
-          title,
-          sessionDate: sessionDate ? new Date(sessionDate) : /* @__PURE__ */ new Date(),
-          startTime: startTime || "10:00 AM",
-          endTime: endTime || "3:00 PM",
-          timezone: timezone || "Asia/Kolkata (IST)",
-          instructorName: instructorName || "Vikram Malhotra",
-          liveSessionUrl,
-          meetingPasscode,
-          capacity: Number(capacity) || 60,
-          registrationDeadline: registrationDeadline ? new Date(registrationDeadline) : void 0,
-          status: status || "scheduled"
-        });
+      let memId = targetId || saved?._id?.toString();
+      if (!memId) {
+        const existingMem = (await import_memoryStore.memoryStore.getAllSessions()).find(
+          (s) => String(s.batchCode).toUpperCase() === normalizedCode && Number(s.dayNumber) === Number(dayNumber)
+        );
+        memId = existingMem?._id;
       }
+      const memSaved = await import_memoryStore.memoryStore.upsertSession({
+        ...sessionData,
+        workshopId: resolvedWorkshopId,
+        _id: memId
+      });
+      const finalSaved = AdminController.normalizeSessionRecord(saved || memSaved);
       await AdminController.logAudit(
         req,
         "UPSERT_SESSION",
         "session",
-        `Configured Day ${dayNumber} session for batch ${batchCode}`,
-        saved._id?.toString(),
-        { batchCode, dayNumber, instructorName, liveSessionUrl }
+        `Configured Day ${dayNumber} session for batch ${normalizedCode}`,
+        finalSaved._id?.toString(),
+        { batchCode: normalizedCode, dayNumber, instructorName: resolvedInstructor, liveSessionUrl: normalizedUrl }
       );
       res.status(200).json({
         success: true,
-        message: `Day ${dayNumber} session saved for ${batchCode}.`,
-        data: saved
+        message: `Day ${dayNumber} session saved for ${normalizedCode} and synced to public registration.`,
+        data: finalSaved
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+  static async deleteSession(req, res, next) {
+    try {
+      const id = String(req.params["id"] || "").trim();
+      if (!id) {
+        throw import_apiError.ApiError.badRequest("Session ID is required.");
+      }
+      if ((0, import_db.isDBConnected)() && import_mongoose.default.Types.ObjectId.isValid(id)) {
+        await import_WorkshopSession.WorkshopSession.findByIdAndDelete(id);
+      }
+      await import_memoryStore.memoryStore.deleteSession(id);
+      await AdminController.logAudit(
+        req,
+        "DELETE_SESSION",
+        "session",
+        `Deleted session ${id}`,
+        id
+      );
+      res.status(200).json({
+        success: true,
+        message: "Session deleted successfully."
       });
     } catch (error) {
       next(error);
@@ -2686,6 +2911,7 @@ class AdminController {
       if (!liveSessionUrl || !liveSessionUrl.trim()) {
         throw import_apiError.ApiError.badRequest("Meeting URL is required.");
       }
+      const normalizedUrl = AdminController.normalizeMeetingUrl(liveSessionUrl);
       const parsedTime = AdminController.parseSessionStartEnd(req.body);
       const nowMs = Date.now();
       if (parsedTime.startAt.getTime() < nowMs - 5 * 60 * 1e3 && !allowPastCorrection) {
@@ -2702,13 +2928,26 @@ class AdminController {
           instructorId,
           batchCode: resolvedBatchCode,
           batchId: batchId || resolvedBatchCode,
-          liveSessionUrl: liveSessionUrl.trim(),
+          liveSessionUrl: normalizedUrl,
           classType: classType || "live"
         });
         if (conflictCheck.hasConflict) {
           throw import_apiError.ApiError.conflict(conflictCheck.conflicts[0].message);
         }
       }
+      const syncedWorkshopId = await AdminController.syncWorkshopForSession({
+        workshopId,
+        batchCode: resolvedBatchCode,
+        dayNumber: Number(dayNumber) || 1,
+        sessionDate: parsedTime.sessionDate,
+        startTime: parsedTime.startTime,
+        endTime: parsedTime.endTime,
+        timezone: parsedTime.timezone,
+        instructorName: instructorName.trim(),
+        liveSessionUrl: normalizedUrl,
+        meetingPasscode: (meetingPasscode || "").trim(),
+        capacity: Number(maxAttendees || capacity) || 60
+      });
       const adminActor = req.user?.email || req.user?.name || "admin@ailaunchpad.edu";
       const initialHistory = [
         {
@@ -2719,8 +2958,8 @@ class AdminController {
         }
       ];
       const sessionPayload = {
-        workshopId: workshopId && import_mongoose.default.Types.ObjectId.isValid(workshopId) ? new import_mongoose.default.Types.ObjectId(workshopId) : workshopId || resolvedBatchCode,
-        batchId: batchId || resolvedBatchCode,
+        workshopId: import_mongoose.default.Types.ObjectId.isValid(syncedWorkshopId) ? new import_mongoose.default.Types.ObjectId(syncedWorkshopId) : syncedWorkshopId,
+        batchId: syncedWorkshopId,
         batchCode: resolvedBatchCode,
         instructorId: instructorId || "inst_1",
         instructorName: instructorName.trim(),
@@ -2736,8 +2975,8 @@ class AdminController {
         timezone: parsedTime.timezone,
         classType: ["live", "recorded", "hybrid"].includes(classType) ? classType : "live",
         meetingProvider: ["google_meet", "zoom", "teams", "custom"].includes(meetingProvider) ? meetingProvider : "google_meet",
-        liveSessionUrl: liveSessionUrl.trim(),
-        encryptedMeetingUrl: `enc:${Buffer.from(liveSessionUrl.trim()).toString("base64")}`,
+        liveSessionUrl: normalizedUrl,
+        encryptedMeetingUrl: `enc:${Buffer.from(normalizedUrl).toString("base64")}`,
         meetingPasscode: (meetingPasscode || "").trim(),
         visibility: visibility === "public_preview" ? "public_preview" : "enrolled_only",
         capacity: Number(maxAttendees || capacity) || 60,
@@ -2811,7 +3050,9 @@ class AdminController {
       const parsedTime = AdminController.parseSessionStartEnd(req.body, existing);
       const updatedBatchCode = (req.body.batchCode || req.body.batchId || existing.batchCode).trim().toUpperCase();
       const updatedInstructor = (req.body.instructorName || existing.instructorName).trim();
-      const updatedUrl = (req.body.liveSessionUrl ?? existing.liveSessionUrl).trim();
+      const updatedUrl = AdminController.normalizeMeetingUrl(
+        req.body.liveSessionUrl ?? existing.liveSessionUrl
+      );
       const updatedStatus = req.body.status || existing.status;
       const updatedClassType = req.body.classType || existing.classType || "live";
       let targetSessions = [existing];
@@ -2900,6 +3141,19 @@ class AdminController {
         updatedRecords.push(AdminController.normalizeSessionRecord(savedMem));
       }
       const primaryUpdated = updatedRecords[0];
+      await AdminController.syncWorkshopForSession({
+        workshopId: req.body.workshopId || existing.workshopId?.toString(),
+        batchCode: updatedBatchCode,
+        dayNumber: Number(primaryUpdated.dayNumber) || 1,
+        sessionDate: new Date(primaryUpdated.startAt),
+        startTime: primaryUpdated.startTime,
+        endTime: primaryUpdated.endTime,
+        timezone: primaryUpdated.timezone,
+        instructorName: primaryUpdated.instructorName,
+        liveSessionUrl: primaryUpdated.liveSessionUrl,
+        meetingPasscode: primaryUpdated.meetingPasscode,
+        capacity: Number(primaryUpdated.capacity) || 60
+      });
       await AdminController.logAudit(
         req,
         wasRescheduled ? "RESCHEDULE_CALENDAR_SESSION" : "UPDATE_CALENDAR_SESSION",
