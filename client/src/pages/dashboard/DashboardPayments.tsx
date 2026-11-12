@@ -21,7 +21,7 @@ export const DashboardPayments: React.FC = () => {
 
       {payments.length === 0 && workshops.length === 0 ? (
         <div className="p-8 sm:p-12 rounded-3xl bg-white border border-slate-200 text-center space-y-4">
-          <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mx-auto">
+          <div className="w-12 h-12 rounded-2xl bg-[#1F386B]/[0.06] text-[#1F386B] flex items-center justify-center mx-auto">
             <CreditCard className="w-6 h-6" />
           </div>
           <div>
@@ -32,7 +32,7 @@ export const DashboardPayments: React.FC = () => {
           </div>
         </div>
       ) : (
-        <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+        <div className="bg-white rounded-xl border border-slate-200 border-b-[3px] border-b-[#1F386B] shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead className="bg-slate-50 border-b border-slate-200 text-[11px] font-bold uppercase tracking-wider text-slate-500">
@@ -84,7 +84,7 @@ export const DashboardPayments: React.FC = () => {
                     <td className="py-4 px-6 text-right">
                       <button
                         onClick={() => window.print()}
-                        className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 font-semibold cursor-pointer"
+                        className="inline-flex items-center gap-1 text-[#1F386B] hover:text-[#1F386B] font-semibold cursor-pointer"
                       >
                         <FileText className="w-3.5 h-3.5" />
                         <span>Invoice</span>
@@ -130,7 +130,7 @@ export const DashboardPayments: React.FC = () => {
                       <td className="py-4 px-6 text-right">
                         <button
                           onClick={() => window.print()}
-                          className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 font-semibold cursor-pointer"
+                          className="inline-flex items-center gap-1 text-[#1F386B] hover:text-[#1F386B] font-semibold cursor-pointer"
                         >
                           <FileText className="w-3.5 h-3.5" />
                           <span>Invoice</span>
@@ -146,7 +146,7 @@ export const DashboardPayments: React.FC = () => {
 
       {/* Security Guarantee */}
       <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 flex items-center gap-3 text-xs text-slate-600">
-        <ShieldCheck className="w-5 h-5 text-blue-600 shrink-0" />
+        <ShieldCheck className="w-5 h-5 text-[#1F386B] shrink-0" />
         <div>
           <span className="font-bold text-[#0F172A] block">100% Secure Processing</span>
           <span>

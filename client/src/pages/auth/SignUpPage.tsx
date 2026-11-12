@@ -127,24 +127,46 @@ export const SignUpPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 font-sans">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <Link to="/" className="flex items-center justify-center gap-2.5 mb-6 group">
-          <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-sm group-hover:bg-blue-700 transition-colors">
-            <Sparkles className="w-5 h-5 text-white" />
-          </div>
-          <span className="font-extrabold text-xl tracking-tight text-[#0F172A]">AI Launchpad</span>
-        </Link>
-        <h2 className="text-center text-2xl font-black text-[#0F172A] tracking-tight">
-          Create Your Student Account
-        </h2>
-        <p className="mt-2 text-center text-xs text-slate-500">
-          Get lifetime access to the curriculum, code repositories, prompt kits, and community.
-        </p>
+    <div className="min-h-screen bg-[#F7F8FA] flex flex-col font-sans">
+      <div className="bg-[#E41937] text-white text-xs font-semibold px-4 sm:px-6 py-2">
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-3">
+          <span>AI Launchpad Institution • Student Registration</span>
+          <Link to="/" className="underline hover:text-blue-100">
+            Back to Website
+          </Link>
+        </div>
       </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-6 sm:px-10 border border-slate-200 rounded-3xl shadow-xl">
+      <div className="flex-1 flex flex-col justify-center py-10 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 top-0 h-72 bg-gradient-to-br from-[#081e4a] via-[#1F386B] to-[#192e57] border-b-4 border-b-[#E41937]"
+        />
+
+        <div className="relative z-10 sm:mx-auto sm:w-full sm:max-w-md">
+          <Link to="/" className="flex items-center justify-center gap-3 mb-5 group">
+            <div className="w-11 h-11 rounded-full bg-[#081e4a] border-2 border-[#E41937] flex items-center justify-center text-white shadow-md">
+              <Sparkles className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <span className="font-black text-lg uppercase tracking-tight text-white block">
+                AI LAUNCHPAD <span className="text-[#E41937]">INSTITUTION</span>
+              </span>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-blue-200 block">
+                Student Account Creation
+              </span>
+            </div>
+          </Link>
+          <h2 className="text-center text-2xl font-black uppercase tracking-tight text-white">
+            Create Your Student Account
+          </h2>
+          <p className="mt-1.5 text-center text-xs text-blue-100/90">
+            Get lifetime access to the curriculum, code repositories, prompt kits, and community.
+          </p>
+        </div>
+
+        <div className="relative z-10 mt-7 sm:mx-auto sm:w-full sm:max-w-md">
+          <div className="bg-white py-8 px-6 sm:px-10 border border-slate-200 border-t-4 border-t-[#E41937] border-b-[3px] border-b-[#1F386B] rounded-xl shadow-xl">
           {error && (
             <div className="mb-5 p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2">
               <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
@@ -194,7 +216,7 @@ export const SignUpPage: React.FC = () => {
                     value={googleEmail}
                     onChange={(e) => setGoogleEmail(e.target.value)}
                     placeholder="you@gmail.com"
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs text-[#0F172A] focus:outline-none focus:ring-2 focus:ring-blue-600"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs text-[#0F172A] focus:outline-none focus:ring-2 focus:ring-[#1F386B]"
                   />
                 </div>
                 <div>
@@ -206,7 +228,7 @@ export const SignUpPage: React.FC = () => {
                       value={googlePassword}
                       onChange={(e) => setGooglePassword(e.target.value)}
                       placeholder="Enter your password"
-                      className="w-full px-3.5 pr-10 py-2.5 rounded-xl border border-slate-200 text-xs text-[#0F172A] focus:outline-none focus:ring-2 focus:ring-blue-600"
+                      className="w-full px-3.5 pr-10 py-2.5 rounded-xl border border-slate-200 text-xs text-[#0F172A] focus:outline-none focus:ring-2 focus:ring-[#1F386B]"
                     />
                     <button
                       type="button"
@@ -263,7 +285,7 @@ export const SignUpPage: React.FC = () => {
                         if (isInputUnlocked) setName(e.target.value);
                       }}
                       placeholder="e.g. Rahul Sharma"
-                      className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-slate-200 text-xs text-[#0F172A] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition-colors bg-white"
+                      className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-slate-200 text-xs text-[#0F172A] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1F386B] focus:border-[#1F386B] transition-colors bg-white"
                     />
                   </div>
                 </div>
@@ -291,7 +313,7 @@ export const SignUpPage: React.FC = () => {
                         if (isInputUnlocked) setPhone(e.target.value.replace(/\D/g, '').slice(0, 10));
                       }}
                       placeholder="9876543210"
-                      className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-slate-200 text-xs text-[#0F172A] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition-colors bg-white"
+                      className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-slate-200 text-xs text-[#0F172A] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1F386B] focus:border-[#1F386B] transition-colors bg-white"
                     />
                   </div>
                 </div>
@@ -318,7 +340,7 @@ export const SignUpPage: React.FC = () => {
                         if (isInputUnlocked) setEmail(e.target.value);
                       }}
                       placeholder="student@example.com"
-                      className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-slate-200 text-xs text-[#0F172A] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition-colors bg-white"
+                      className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-slate-200 text-xs text-[#0F172A] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1F386B] focus:border-[#1F386B] transition-colors bg-white"
                     />
                   </div>
                 </div>
@@ -345,7 +367,7 @@ export const SignUpPage: React.FC = () => {
                         if (isInputUnlocked) setPassword(e.target.value);
                       }}
                       placeholder="Min. 6 characters"
-                      className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-slate-200 text-xs text-[#0F172A] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition-colors bg-white"
+                      className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-slate-200 text-xs text-[#0F172A] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1F386B] focus:border-[#1F386B] transition-colors bg-white"
                     />
                     <button
                       type="button"
@@ -379,7 +401,7 @@ export const SignUpPage: React.FC = () => {
                         if (isInputUnlocked) setConfirmPassword(e.target.value);
                       }}
                       placeholder="Repeat your password"
-                      className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-slate-200 text-xs text-[#0F172A] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition-colors bg-white"
+                      className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-slate-200 text-xs text-[#0F172A] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1F386B] focus:border-[#1F386B] transition-colors bg-white"
                     />
                   </div>
                 </div>
@@ -391,7 +413,7 @@ export const SignUpPage: React.FC = () => {
                       required
                       checked={agreeTerms}
                       onChange={(e) => setAgreeTerms(e.target.checked)}
-                      className="mt-0.5 h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                      className="mt-0.5 h-4 w-4 rounded border-slate-300 text-[#1F386B] focus:ring-[#1F386B] cursor-pointer"
                     />
                     <span className="text-[11px] text-slate-500 leading-tight">
                       I agree to the AI Launchpad Terms of Service, Privacy Policy, and Student Code of Conduct.
@@ -463,12 +485,13 @@ export const SignUpPage: React.FC = () => {
             Already have an account?{' '}
             <Link
               to={redirect !== '/dashboard' ? `/signin?redirect=${encodeURIComponent(redirect)}` : '/signin'}
-              className="font-bold text-blue-600 hover:underline"
+              className="font-bold text-[#E41937] hover:underline"
             >
               Sign In
             </Link>
           </div>
         </div>
+      </div>
       </div>
     </div>
   );

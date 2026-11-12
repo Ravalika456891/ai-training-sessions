@@ -73,7 +73,7 @@ export const AdminStudents: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Header & Filters */}
-      <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-xs space-y-4">
+      <div className="bg-white p-6 rounded-xl border border-slate-200 border-b-[3px] border-b-[#1F386B] shadow-xs space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <h2 className="text-xl font-black text-[#0F172A]">Student Directory</h2>
@@ -81,7 +81,7 @@ export const AdminStudents: React.FC = () => {
               View learner profiles, enrollment & payment histories, and manage account access.
             </p>
           </div>
-          <span className="text-xs font-bold text-blue-600 bg-blue-50 px-3 py-1.5 rounded-xl border border-blue-200 self-start">
+          <span className="text-xs font-bold text-[#1F386B] bg-[#1F386B]/[0.06] px-3 py-1.5 rounded-xl border border-[#1F386B]/20 self-start">
             Total Students: {pagination.total}
           </span>
         </div>
@@ -100,7 +100,7 @@ export const AdminStudents: React.FC = () => {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search by name, email, or phone..."
-              className="w-full pl-10 pr-4 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-blue-600"
+              className="w-full pl-10 pr-4 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-[#1F386B]"
             />
           </div>
           <select
@@ -128,10 +128,10 @@ export const AdminStudents: React.FC = () => {
       </div>
 
       {/* Students Table */}
-      <div className="bg-white rounded-3xl border border-slate-200 shadow-xs overflow-hidden">
+      <div className="bg-white rounded-xl border border-slate-200 border-b-[3px] border-b-[#1F386B] shadow-xs overflow-hidden">
         {isLoading ? (
           <div className="p-12 text-center">
-            <RefreshCw className="w-5 h-5 text-blue-600 animate-spin mx-auto mb-2" />
+            <RefreshCw className="w-5 h-5 text-[#1F386B] animate-spin mx-auto mb-2" />
             <p className="text-xs text-slate-500">Loading student directory...</p>
           </div>
         ) : students.length === 0 ? (
@@ -184,7 +184,7 @@ export const AdminStudents: React.FC = () => {
                     <td className="py-3 px-4 text-right space-x-1.5">
                       <button
                         onClick={() => handleViewDetails(st._id)}
-                        className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-blue-50 text-slate-700 hover:text-blue-600 font-semibold cursor-pointer"
+                        className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-[#1F386B]/10 text-slate-700 hover:text-[#E41937] font-semibold cursor-pointer"
                       >
                         <Eye className="w-3.5 h-3.5" />
                         <span>Inspect</span>
@@ -241,7 +241,7 @@ export const AdminStudents: React.FC = () => {
       {/* Student Detail Modal */}
       {selectedStudent && (
         <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl border border-slate-200 max-w-2xl w-full p-6 space-y-5 shadow-2xl max-h-[85vh] overflow-y-auto">
+          <div className="bg-white rounded-xl border border-slate-200 border-b-[3px] border-b-[#1F386B] max-w-2xl w-full p-6 space-y-5 shadow-2xl max-h-[85vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-slate-200 pb-3">
               <div>
                 <h3 className="text-base font-black text-[#0F172A]">
@@ -299,7 +299,7 @@ export const AdminStudents: React.FC = () => {
                         </span>
                         <span className="text-slate-500 block">{e.workshopId?.title}</span>
                       </div>
-                      <span className="font-bold uppercase text-blue-600">{e.status}</span>
+                      <span className="font-bold uppercase text-[#1F386B]">{e.status}</span>
                     </div>
                   ))}
                   {(selectedStudent.registrations || []).map((r: any) => (

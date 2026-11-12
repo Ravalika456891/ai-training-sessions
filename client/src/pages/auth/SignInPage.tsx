@@ -123,24 +123,48 @@ export const SignInPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen body-3d flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 font-sans">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <Link to="/" className="flex items-center justify-center gap-2.5 mb-6 group">
-          <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-sm group-hover:bg-blue-700 transition-colors">
-            <Sparkles className="w-5 h-5 text-white" />
-          </div>
-          <span className="font-extrabold text-xl tracking-tight text-[#0F172A]">AI Launchpad</span>
-        </Link>
-        <h2 className="text-center text-2xl font-black text-[#0F172A] tracking-tight">
-          Welcome back to AI Launchpad
-        </h2>
-        <p className="mt-2 text-center text-xs text-slate-600 font-medium">
-          Sign in to access your workshops, live classes, assignments, and certificates.
-        </p>
+    <div className="min-h-screen bg-[#F7F8FA] flex flex-col font-sans">
+      {/* IIEM Crimson Top Utility Strip */}
+      <div className="bg-[#E41937] text-white text-xs font-semibold px-4 sm:px-6 py-2">
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-3">
+          <span>AI Launchpad Institution • Student &amp; Faculty Portal</span>
+          <Link to="/" className="underline hover:text-blue-100">
+            Back to Website
+          </Link>
+        </div>
       </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white/95 backdrop-blur-md py-8 px-6 sm:px-10 border border-slate-200/90 rounded-3xl shadow-xl">
+      {/* Deep IIEM Navy Upper Backdrop */}
+      <div className="flex-1 flex flex-col justify-center py-10 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 top-0 h-72 bg-gradient-to-br from-[#081e4a] via-[#1F386B] to-[#192e57] border-b-4 border-b-[#E41937]"
+        />
+
+        <div className="relative z-10 sm:mx-auto sm:w-full sm:max-w-md">
+          <Link to="/" className="flex items-center justify-center gap-3 mb-5 group">
+            <div className="w-11 h-11 rounded-full bg-[#081e4a] border-2 border-[#E41937] flex items-center justify-center text-white shadow-md">
+              <Sparkles className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <span className="font-black text-lg uppercase tracking-tight text-white block">
+                AI LAUNCHPAD <span className="text-[#E41937]">INSTITUTION</span>
+              </span>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-blue-200 block">
+                Cohort Portal Sign In
+              </span>
+            </div>
+          </Link>
+          <h2 className="text-center text-2xl font-black uppercase tracking-tight text-white">
+            Welcome Back
+          </h2>
+          <p className="mt-1.5 text-center text-xs text-blue-100/90 font-medium">
+            Sign in to access your workshops, live classes, assignments, and certificates.
+          </p>
+        </div>
+
+        <div className="relative z-10 mt-7 sm:mx-auto sm:w-full sm:max-w-md">
+          <div className="bg-white py-8 px-6 sm:px-10 border border-slate-200 border-t-4 border-t-[#E41937] border-b-[3px] border-b-[#1F386B] rounded-xl shadow-xl">
           {error && (
             <div className="mb-5 p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2">
               <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
@@ -202,7 +226,7 @@ export const SignInPage: React.FC = () => {
                       if (isInputUnlocked) setGoogleEmail(e.target.value);
                     }}
                     placeholder="you@gmail.com"
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs text-[#0F172A] focus:outline-none focus:ring-2 focus:ring-blue-600"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs text-[#0F172A] focus:outline-none focus:ring-2 focus:ring-[#1F386B]"
                   />
                 </div>
                 <div>
@@ -224,7 +248,7 @@ export const SignInPage: React.FC = () => {
                         if (isInputUnlocked) setGooglePassword(e.target.value);
                       }}
                       placeholder="Enter your password"
-                      className="w-full px-3.5 pr-10 py-2.5 rounded-xl border border-slate-200 text-xs text-[#0F172A] focus:outline-none focus:ring-2 focus:ring-blue-600"
+                      className="w-full px-3.5 pr-10 py-2.5 rounded-xl border border-slate-200 text-xs text-[#0F172A] focus:outline-none focus:ring-2 focus:ring-[#1F386B]"
                     />
                     <button
                       type="button"
@@ -282,7 +306,7 @@ export const SignInPage: React.FC = () => {
                         if (isInputUnlocked) setEmail(e.target.value);
                       }}
                       placeholder="student@example.com"
-                      className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-slate-200 text-xs text-[#0F172A] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition-colors bg-white"
+                      className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-slate-200 text-xs text-[#0F172A] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1F386B] focus:border-[#1F386B] transition-colors bg-white"
                     />
                   </div>
                 </div>
@@ -292,7 +316,7 @@ export const SignInPage: React.FC = () => {
                     <label className="block text-xs font-semibold text-slate-700">Password</label>
                     <Link
                       to="/forgot-password"
-                      className="text-[11px] font-semibold text-blue-600 hover:underline"
+                      className="text-[11px] font-semibold text-[#1F386B] hover:underline"
                     >
                       Forgot password?
                     </Link>
@@ -317,7 +341,7 @@ export const SignInPage: React.FC = () => {
                         if (isInputUnlocked) setPassword(e.target.value);
                       }}
                       placeholder="••••••••"
-                      className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-slate-200 text-xs text-[#0F172A] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition-colors bg-white"
+                      className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-slate-200 text-xs text-[#0F172A] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1F386B] focus:border-[#1F386B] transition-colors bg-white"
                     />
                     <button
                       type="button"
@@ -395,9 +419,9 @@ export const SignInPage: React.FC = () => {
                   type="button"
                   onClick={handleQuickAdminLogin}
                   disabled={isLoading}
-                  className="w-full mt-2.5 flex items-center justify-center gap-2 py-2.5 px-4 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 rounded-xl text-xs font-bold text-indigo-700 transition-all cursor-pointer"
+                  className="w-full mt-2.5 flex items-center justify-center gap-2 py-2.5 px-4 bg-[#E41937]/[0.08] hover:bg-[#E41937]/15 border border-[#E41937]/25 rounded-xl text-xs font-bold text-[#E41937] transition-all cursor-pointer"
                 >
-                  <ShieldCheck className="w-4 h-4 text-indigo-600 shrink-0" />
+                  <ShieldCheck className="w-4 h-4 text-[#E41937] shrink-0" />
                   <span>Sign In as Administrator (Admin Console)</span>
                 </button>
               )}
@@ -408,12 +432,13 @@ export const SignInPage: React.FC = () => {
             Don't have an account?{' '}
             <Link
               to={redirect !== '/dashboard' ? `/signup?redirect=${encodeURIComponent(redirect)}` : '/signup'}
-              className="font-bold text-blue-600 hover:underline"
+              className="font-bold text-[#E41937] hover:underline"
             >
               Create Account
             </Link>
           </div>
         </div>
+      </div>
       </div>
     </div>
   );

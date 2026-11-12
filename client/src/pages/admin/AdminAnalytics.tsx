@@ -25,8 +25,8 @@ export const AdminAnalytics: React.FC = () => {
 
   if (isLoading && !analytics) {
     return (
-      <div className="p-12 text-center bg-white rounded-3xl border border-slate-200">
-        <RefreshCw className="w-5 h-5 text-blue-600 animate-spin mx-auto mb-2" />
+      <div className="p-12 text-center bg-white rounded-xl border border-slate-200 border-b-[3px] border-b-[#1F386B]">
+        <RefreshCw className="w-5 h-5 text-[#1F386B] animate-spin mx-auto mb-2" />
         <p className="text-xs text-slate-500">Generating cohort performance analytics...</p>
       </div>
     );
@@ -37,14 +37,14 @@ export const AdminAnalytics: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-xs flex items-center justify-between">
+      <div className="bg-white p-6 rounded-xl border border-slate-200 border-b-[3px] border-b-[#1F386B] shadow-xs flex items-center justify-between">
         <div>
           <h2 className="text-xl font-black text-[#0F172A]">Platform Analytics & Cohort Reports</h2>
           <p className="text-xs text-slate-500">
             Enrollment velocity, workshop capacity fill rates, verified revenue trends, and graduation metrics.
           </p>
         </div>
-        <BarChart3 className="w-6 h-6 text-blue-600" />
+        <BarChart3 className="w-6 h-6 text-[#1F386B]" />
       </div>
 
       {/* Summary KPIs */}
@@ -55,7 +55,7 @@ export const AdminAnalytics: React.FC = () => {
         </div>
         <div className="bg-white p-5 rounded-3xl border border-slate-200">
           <span className="text-xs text-slate-500 font-semibold">Total Registrations</span>
-          <p className="text-2xl font-black text-blue-600 mt-1 flex items-center gap-1.5">
+          <p className="text-2xl font-black text-[#1F386B] mt-1 flex items-center gap-1.5">
             <Users className="w-5 h-5" />
             {totals.totalRegistrations || 0}
           </p>
@@ -69,7 +69,7 @@ export const AdminAnalytics: React.FC = () => {
         </div>
         <div className="bg-white p-5 rounded-3xl border border-slate-200">
           <span className="text-xs text-slate-500 font-semibold">Completion Rate</span>
-          <p className="text-2xl font-black text-purple-600 mt-1 flex items-center gap-1.5">
+          <p className="text-2xl font-black text-[#E41937] mt-1 flex items-center gap-1.5">
             <Award className="w-5 h-5" />
             {totals.completionRate || 0}%
           </p>
@@ -77,7 +77,7 @@ export const AdminAnalytics: React.FC = () => {
       </div>
 
       {/* Cohort Performance Table & Visual Fill Bars */}
-      <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-xs space-y-4">
+      <div className="bg-white p-6 rounded-xl border border-slate-200 border-b-[3px] border-b-[#1F386B] shadow-xs space-y-4">
         <h3 className="text-sm font-bold text-[#0F172A]">Workshop Performance Breakdown</h3>
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse text-xs">
@@ -93,7 +93,7 @@ export const AdminAnalytics: React.FC = () => {
             <tbody className="divide-y divide-slate-100">
               {cohorts.map((c, idx) => (
                 <tr key={idx} className="hover:bg-slate-50">
-                  <td className="py-3 px-4 font-bold text-blue-600">{c.batchCode}</td>
+                  <td className="py-3 px-4 font-bold text-[#1F386B]">{c.batchCode}</td>
                   <td className="py-3 px-4 font-semibold text-[#0F172A]">{c.instructor}</td>
                   <td className="py-3 px-4">
                     {c.enrolled} / {c.capacity} seats
@@ -102,7 +102,7 @@ export const AdminAnalytics: React.FC = () => {
                     <div className="flex items-center gap-2">
                       <div className="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden">
                         <div
-                          className="h-full bg-blue-600 rounded-full"
+                          className="h-full bg-[#1F386B] rounded-full"
                           style={{ width: `${c.fillRate}%` }}
                         />
                       </div>

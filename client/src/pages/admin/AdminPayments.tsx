@@ -87,7 +87,7 @@ export const AdminPayments: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-white p-6 rounded-xl border border-slate-200 border-b-[3px] border-b-[#1F386B] shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-xl font-black text-[#0F172A]">Razorpay Payment & Revenue Ledger</h2>
           <p className="text-xs text-slate-500">
@@ -96,7 +96,7 @@ export const AdminPayments: React.FC = () => {
         </div>
         <button
           onClick={exportCsvReport}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-xs cursor-pointer self-start"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#E41937] hover:bg-[#c5122d] text-white text-xs font-bold shadow-xs cursor-pointer self-start"
         >
           <Download className="w-3.5 h-3.5" />
           <span>Export Financial CSV</span>
@@ -139,15 +139,15 @@ export const AdminPayments: React.FC = () => {
       </div>
 
       {/* Security Policy Notice */}
-      <div className="p-4 rounded-2xl bg-blue-50/70 border border-blue-200 flex items-center gap-3 text-xs text-blue-900">
-        <ShieldCheck className="w-5 h-5 text-blue-600 shrink-0" />
+      <div className="p-4 rounded-2xl bg-[#1F386B]/[0.06] border border-[#1F386B]/20 flex items-center gap-3 text-xs text-blue-900">
+        <ShieldCheck className="w-5 h-5 text-[#1F386B] shrink-0" />
         <span>
           <strong>Strict Financial Integrity Policy:</strong> Unverified payments can never be manually marked as paid. All transitions to <code>captured</code> require a valid Razorpay HMAC-SHA256 signature or live gateway verification.
         </span>
       </div>
 
       {/* Filters & Table */}
-      <div className="bg-white rounded-3xl border border-slate-200 shadow-xs overflow-hidden">
+      <div className="bg-white rounded-xl border border-slate-200 border-b-[3px] border-b-[#1F386B] shadow-xs overflow-hidden">
         <div className="p-4 border-b border-slate-200 flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1">
             <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-2.5" />
@@ -175,7 +175,7 @@ export const AdminPayments: React.FC = () => {
 
         {isLoading ? (
           <div className="p-12 text-center">
-            <RefreshCw className="w-5 h-5 text-blue-600 animate-spin mx-auto mb-2" />
+            <RefreshCw className="w-5 h-5 text-[#1F386B] animate-spin mx-auto mb-2" />
             <p className="text-xs text-slate-500">Loading payment ledger...</p>
           </div>
         ) : payments.length === 0 ? (
@@ -241,7 +241,7 @@ export const AdminPayments: React.FC = () => {
                       {p.status === 'pending' && (
                         <button
                           onClick={() => handleReconcileGateway(p._id)}
-                          className="px-2.5 py-1.5 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold cursor-pointer"
+                          className="px-2.5 py-1.5 rounded-lg bg-[#1F386B]/[0.06] hover:bg-[#1F386B]/10 text-[#1F386B] font-semibold cursor-pointer"
                         >
                           Sync Gateway
                         </button>

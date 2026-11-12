@@ -67,7 +67,7 @@ export const DashboardOverview: React.FC = () => {
   if (isLoading) {
     return (
       <div className="p-12 rounded-3xl bg-white border border-slate-200 flex flex-col items-center justify-center gap-3 text-slate-500">
-        <Loader2 className="w-6 h-6 animate-spin text-indigo-600" />
+        <Loader2 className="w-6 h-6 animate-spin text-[#E41937]" />
         <span className="text-xs font-semibold">Loading your workspace...</span>
       </div>
     );
@@ -91,28 +91,28 @@ export const DashboardOverview: React.FC = () => {
       return (
         <div className="space-y-5">
           {/* 1. Focused Compact Pending Banner */}
-          <div className="p-5 sm:p-6 rounded-2xl bg-gradient-to-r from-amber-50/90 via-white to-blue-50/60 border border-amber-200/90 shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="p-5 sm:p-6 rounded-xl bg-white border border-slate-200 border-l-4 border-l-[#E41937] border-b-[3px] border-b-[#1F386B] shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="space-y-1.5">
               <div className="flex flex-wrap items-center gap-2">
-                <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-md bg-amber-100 text-amber-900 border border-amber-300">
+                <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded bg-amber-100 text-amber-900 border border-amber-300">
                   Seat Reserved • Payment Pending
                 </span>
                 <span className="text-xs font-mono font-bold text-slate-500">
                   ID: #{pendingWorkshop.enrollmentId?.slice(-8) || pendingWorkshop.enrollmentId}
                 </span>
               </div>
-              <h2 className="text-xl sm:text-2xl font-black text-[#0F172A] tracking-tight">
+              <h2 className="text-xl sm:text-2xl font-black uppercase tracking-tight text-[#1F386B]">
                 {pendingWorkshop.workshop?.title}
               </h2>
               <p className="text-xs text-slate-600 max-w-2xl leading-relaxed">
-                Your seat in cohort <strong className="text-[#0F172A]">{pendingWorkshop.workshop?.batchCode}</strong> is temporarily held. Complete your checkout to confirm admission and unlock the live interactive classroom, prompt libraries, and project repos.
+                Your seat in cohort <strong className="text-[#1F386B]">{pendingWorkshop.workshop?.batchCode}</strong> is temporarily held. Complete your checkout to confirm admission and unlock the live interactive classroom, prompt libraries, and project repos.
               </p>
             </div>
 
             <div className="flex items-center gap-2.5 shrink-0">
               <button
                 onClick={() => openCheckout(pendingWorkshop.enrollmentId)}
-                className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-sm transition-all cursor-pointer"
+                className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-lg bg-[#E41937] hover:bg-[#c5122d] text-white text-xs font-extrabold uppercase tracking-wide shadow-sm transition-all cursor-pointer"
               >
                 <CreditCard className="w-4 h-4" />
                 <span>Complete Payment (₹{totalAmount.toLocaleString('en-IN')})</span>
@@ -123,35 +123,35 @@ export const DashboardOverview: React.FC = () => {
           {/* 2. Compact 4-Card Quick Stat Strip */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
             <div className="p-3.5 rounded-xl bg-white border border-slate-200 shadow-2xs flex items-center gap-3">
-              <div className="w-9 h-9 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 border border-blue-100">
+              <div className="w-9 h-9 rounded-lg bg-[#1F386B]/[0.06] text-[#1F386B] flex items-center justify-center shrink-0 border border-[#1F386B]/20">
                 <Calendar className="w-4 h-4" />
               </div>
               <div className="min-w-0">
                 <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider truncate">Dates</div>
                 <div className="text-xs font-bold text-[#0F172A] truncate">Nov 14 – 15, 2026</div>
-                <div className="text-[10px] text-blue-600 font-medium truncate">Saturday & Sunday</div>
+                <div className="text-[10px] text-[#1F386B] font-medium truncate">Saturday & Sunday</div>
               </div>
             </div>
 
             <div className="p-3.5 rounded-xl bg-white border border-slate-200 shadow-2xs flex items-center gap-3">
-              <div className="w-9 h-9 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0 border border-indigo-100">
+              <div className="w-9 h-9 rounded-lg bg-[#E41937]/[0.08] text-[#E41937] flex items-center justify-center shrink-0 border border-[#E41937]/25">
                 <Clock className="w-4 h-4" />
               </div>
               <div className="min-w-0">
                 <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider truncate">Schedule</div>
                 <div className="text-xs font-bold text-[#0F172A] truncate">10:00 AM – 3:00 PM IST</div>
-                <div className="text-[10px] text-indigo-600 font-medium truncate">10 Hours Live Training</div>
+                <div className="text-[10px] text-[#E41937] font-medium truncate">10 Hours Live Training</div>
               </div>
             </div>
 
             <div className="p-3.5 rounded-xl bg-white border border-slate-200 shadow-2xs flex items-center gap-3">
-              <div className="w-9 h-9 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center shrink-0 border border-purple-100">
+              <div className="w-9 h-9 rounded-lg bg-[#E41937]/[0.08] text-[#E41937] flex items-center justify-center shrink-0 border border-[#E41937]/25">
                 <Sparkles className="w-4 h-4" />
               </div>
               <div className="min-w-0">
                 <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider truncate">Curriculum</div>
                 <div className="text-xs font-bold text-[#0F172A] truncate">8+ AI Tools & 5 Projects</div>
-                <div className="text-[10px] text-purple-600 font-medium truncate">Hands-on Labs</div>
+                <div className="text-[10px] text-[#E41937] font-medium truncate">Hands-on Labs</div>
               </div>
             </div>
 
@@ -172,13 +172,13 @@ export const DashboardOverview: React.FC = () => {
             {/* Left Column (8 cols): Workshop Details, Curriculum, and Prerequisites */}
             <div className="lg:col-span-8 space-y-4">
               {/* Workshop Overview Card */}
-              <div className="p-5 sm:p-6 rounded-2xl bg-white border border-slate-200 shadow-2xs space-y-4">
+              <div className="p-5 sm:p-6 rounded-xl bg-white border border-slate-200 border-b-[3px] border-b-[#1F386B] shadow-2xs space-y-4">
                 <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                   <div>
                     <h3 className="text-sm font-extrabold text-[#0F172A]">Reserved Workshop Details</h3>
                     <p className="text-xs text-slate-500">Live 2-day interactive bootcamp led by senior industry AI architects</p>
                   </div>
-                  <span className="px-3 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200">
+                  <span className="px-3 py-1 rounded-full text-xs font-bold bg-[#1F386B]/[0.06] text-[#1F386B] border border-[#1F386B]/20">
                     {pendingWorkshop.workshop?.batchCode || 'AILP-2026-NOV-14'}
                   </span>
                 </div>
@@ -197,7 +197,7 @@ export const DashboardOverview: React.FC = () => {
                     <div className="text-xs font-bold text-[#0F172A]">
                       {pendingWorkshop.workshop?.instructor?.name || 'Vikram Malhotra'}
                     </div>
-                    <div className="text-[11px] text-blue-600 font-medium">
+                    <div className="text-[11px] text-[#1F386B] font-medium">
                       {pendingWorkshop.workshop?.instructor?.role || 'Staff AI Engineer & Former ML Lead'}
                     </div>
                     <p className="text-[11px] text-slate-500 mt-0.5 line-clamp-1">
@@ -233,13 +233,13 @@ export const DashboardOverview: React.FC = () => {
               </div>
 
               {/* 2-Day Syllabus Card */}
-              <div className="p-5 sm:p-6 rounded-2xl bg-white border border-slate-200 shadow-2xs space-y-3.5">
+              <div className="p-5 sm:p-6 rounded-xl bg-white border border-slate-200 border-b-[3px] border-b-[#1F386B] shadow-2xs space-y-3.5">
                 <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                   <div>
                     <h3 className="text-sm font-extrabold text-[#0F172A]">2-Day Hands-On Curriculum</h3>
                     <p className="text-xs text-slate-500">Structured for immediate workplace applicability with live coding</p>
                   </div>
-                  <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2.5 py-0.5 rounded-lg border border-blue-200">
+                  <span className="text-xs font-bold text-[#1F386B] bg-[#1F386B]/[0.06] px-2.5 py-0.5 rounded-lg border border-[#1F386B]/20">
                     10 Modules
                   </span>
                 </div>
@@ -247,7 +247,7 @@ export const DashboardOverview: React.FC = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
                   <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded bg-blue-100 text-blue-800">
+                      <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded bg-[#1F386B]/10 text-[#1F386B]">
                         Day 1 • Saturday
                       </span>
                       <span className="text-[10px] text-slate-500 font-medium">10 AM – 3 PM IST</span>
@@ -255,19 +255,19 @@ export const DashboardOverview: React.FC = () => {
                     <h4 className="text-xs font-bold text-[#0F172A]">Prompt Architecture & Agentic Workflows</h4>
                     <ul className="space-y-1 text-[11px] text-slate-600 list-none p-0 m-0">
                       <li className="flex items-start gap-1.5">
-                        <CheckCircle2 className="w-3 h-3 text-blue-600 shrink-0 mt-0.5" />
+                        <CheckCircle2 className="w-3 h-3 text-[#1F386B] shrink-0 mt-0.5" />
                         <span>System Prompting & Multi-turn Context Windows</span>
                       </li>
                       <li className="flex items-start gap-1.5">
-                        <CheckCircle2 className="w-3 h-3 text-blue-600 shrink-0 mt-0.5" />
+                        <CheckCircle2 className="w-3 h-3 text-[#1F386B] shrink-0 mt-0.5" />
                         <span>Structured Outputs & JSON Schema Generation</span>
                       </li>
                       <li className="flex items-start gap-1.5">
-                        <CheckCircle2 className="w-3 h-3 text-blue-600 shrink-0 mt-0.5" />
+                        <CheckCircle2 className="w-3 h-3 text-[#1F386B] shrink-0 mt-0.5" />
                         <span>Multi-Modal Prompting (Image, Audio, PDF)</span>
                       </li>
                       <li className="flex items-start gap-1.5">
-                        <CheckCircle2 className="w-3 h-3 text-blue-600 shrink-0 mt-0.5" />
+                        <CheckCircle2 className="w-3 h-3 text-[#1F386B] shrink-0 mt-0.5" />
                         <span>Lab: Build an Autonomous Research Agent</span>
                       </li>
                     </ul>
@@ -283,19 +283,19 @@ export const DashboardOverview: React.FC = () => {
                     <h4 className="text-xs font-bold text-[#0F172A]">Full-Stack AI Apps & Deployment</h4>
                     <ul className="space-y-1 text-[11px] text-slate-600 list-none p-0 m-0">
                       <li className="flex items-start gap-1.5">
-                        <CheckCircle2 className="w-3 h-3 text-purple-600 shrink-0 mt-0.5" />
+                        <CheckCircle2 className="w-3 h-3 text-[#E41937] shrink-0 mt-0.5" />
                         <span>Function Calling & Tool Execution with APIs</span>
                       </li>
                       <li className="flex items-start gap-1.5">
-                        <CheckCircle2 className="w-3 h-3 text-purple-600 shrink-0 mt-0.5" />
+                        <CheckCircle2 className="w-3 h-3 text-[#E41937] shrink-0 mt-0.5" />
                         <span>RAG Architecture with Pinecone Vector DB</span>
                       </li>
                       <li className="flex items-start gap-1.5">
-                        <CheckCircle2 className="w-3 h-3 text-purple-600 shrink-0 mt-0.5" />
+                        <CheckCircle2 className="w-3 h-3 text-[#E41937] shrink-0 mt-0.5" />
                         <span>AI Workflow Automation with n8n & Webhooks</span>
                       </li>
                       <li className="flex items-start gap-1.5">
-                        <CheckCircle2 className="w-3 h-3 text-purple-600 shrink-0 mt-0.5" />
+                        <CheckCircle2 className="w-3 h-3 text-[#E41937] shrink-0 mt-0.5" />
                         <span>Capstone: Deploy Live AI Micro-SaaS to Web</span>
                       </li>
                     </ul>
@@ -304,7 +304,7 @@ export const DashboardOverview: React.FC = () => {
               </div>
 
               {/* Prerequisites Strip */}
-              <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200 shadow-2xs space-y-2.5">
+              <div className="p-4 sm:p-5 rounded-xl bg-white border border-slate-200 border-b-[3px] border-b-[#1F386B] shadow-2xs space-y-2.5">
                 <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
                   Student Prerequisites & Preparation
                 </div>
@@ -327,7 +327,7 @@ export const DashboardOverview: React.FC = () => {
 
             {/* Right Column (4 cols): Order Summary & Support */}
             <div className="lg:col-span-4 space-y-4">
-              <div className="p-5 sm:p-6 rounded-2xl bg-white border border-slate-200 shadow-2xs space-y-4">
+              <div className="p-5 sm:p-6 rounded-xl bg-white border border-slate-200 border-b-[3px] border-b-[#1F386B] shadow-2xs space-y-4">
                 <h3 className="text-sm font-extrabold text-[#0F172A] border-b border-slate-100 pb-3">
                   Order Summary
                 </h3>
@@ -343,13 +343,13 @@ export const DashboardOverview: React.FC = () => {
                   </div>
                   <div className="pt-2.5 border-t border-slate-100 flex items-center justify-between text-sm font-black text-[#0F172A]">
                     <span>Total Amount</span>
-                    <span className="text-blue-600 text-base">₹{totalAmount.toLocaleString('en-IN')}</span>
+                    <span className="text-[#1F386B] text-base">₹{totalAmount.toLocaleString('en-IN')}</span>
                   </div>
                 </div>
 
                 <button
                   onClick={() => openCheckout(pendingWorkshop.enrollmentId)}
-                  className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-sm transition-all cursor-pointer"
+                  className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-[#E41937] hover:bg-[#c5122d] text-white text-xs font-bold shadow-sm transition-all cursor-pointer"
                 >
                   <CreditCard className="w-4 h-4" />
                   <span>Pay ₹{totalAmount.toLocaleString('en-IN')} to Confirm</span>
@@ -361,7 +361,7 @@ export const DashboardOverview: React.FC = () => {
                     <span>Razorpay 256-bit SSL encrypted checkout</span>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                    <CheckCircle2 className="w-3.5 h-3.5 text-[#1F386B] shrink-0" />
                     <span>Instant confirmation & GST invoice sent to email</span>
                   </div>
                 </div>
@@ -372,7 +372,7 @@ export const DashboardOverview: React.FC = () => {
                 <div className="font-bold text-[#0F172A]">Need Assistance?</div>
                 <p className="text-[11px] leading-relaxed">
                   Questions about batch timing or invoices? Reach out to our admissions desk at{' '}
-                  <a href="mailto:support@ailaunchpad.edu" className="text-blue-600 font-semibold hover:underline">
+                  <a href="mailto:support@ailaunchpad.edu" className="text-[#1F386B] font-semibold hover:underline">
                     support@ailaunchpad.edu
                   </a>
                 </p>
@@ -390,16 +390,16 @@ export const DashboardOverview: React.FC = () => {
         title: 'Confirm Your Cohort',
         desc: 'Review and select the upcoming workshop cohort (max 60 learners).',
         icon: ClipboardCheck,
-        badgeClass: 'bg-[#EBF2FF] text-[#1D4ED8]',
-        iconClass: 'bg-blue-50 text-blue-600 border-blue-100',
+        badgeClass: 'bg-[#EBF2FF] text-[#E41937]',
+        iconClass: 'bg-[#1F386B]/[0.06] text-[#1F386B] border-[#1F386B]/20',
       },
       {
         num: 2,
         title: 'Complete Verified Payment',
         desc: 'Pay securely via Razorpay (UPI, Cards, NetBanking) with instant GST receipt.',
         icon: CreditCard,
-        badgeClass: 'bg-purple-50 text-purple-600',
-        iconClass: 'bg-purple-50 text-purple-600 border-purple-100',
+        badgeClass: 'bg-[#E41937]/[0.08] text-[#E41937]',
+        iconClass: 'bg-[#E41937]/[0.08] text-[#E41937] border-[#E41937]/25',
       },
       {
         num: 3,
@@ -413,39 +413,28 @@ export const DashboardOverview: React.FC = () => {
 
     return (
       <div className="space-y-4 sm:space-y-5">
-        {/* 1. Sky-Blue Executive Welcome Hero Banner */}
-        <div className="relative overflow-hidden p-5 sm:p-7 rounded-3xl bg-gradient-to-r from-[#EEF4FF] via-[#DCEAFE] to-[#C8DDFD] text-[#0F172A] border border-[#CFE0FF] shadow-[0_8px_28px_-10px_rgba(37,99,235,0.2)]">
-          {/* Subtle Sweeping Wave Backdrop */}
-          <svg
+        {/* 1. IIEM Deep Navy Executive Welcome Hero Banner */}
+        <div className="relative overflow-hidden p-5 sm:p-7 rounded-xl bg-gradient-to-br from-[#081e4a] via-[#1F386B] to-[#192e57] text-white border-b-4 border-b-[#E41937] shadow-lg">
+          {/* Subtle Architectural Navy Glow */}
+          <div
             aria-hidden="true"
-            viewBox="0 0 600 220"
-            className="pointer-events-none absolute right-0 top-0 h-full w-2/3 opacity-45"
-            preserveAspectRatio="none"
-          >
-            <path
-              d="M120 220 C220 120 340 40 600 10 L600 220 Z"
-              fill="url(#welcomeWaveGrad)"
-            />
-            <defs>
-              <linearGradient id="welcomeWaveGrad" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.65" />
-                <stop offset="100%" stopColor="#93C5FD" stopOpacity="0.35" />
-              </linearGradient>
-            </defs>
-          </svg>
+            className="pointer-events-none absolute -right-12 -top-12 w-72 h-72 rounded-full bg-white/[0.04]"
+          />
 
           <div className="relative flex flex-col lg:flex-row lg:items-center justify-between gap-5">
-            <div className="space-y-2.5 max-w-xl">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/95 border border-blue-200/80 text-[#1D4ED8] text-[11px] font-bold shadow-2xs">
-                <Sparkles className="w-3.5 h-3.5 text-[#1D4ED8]" />
-                <span>Welcome to AI Launchpad</span>
+            <div className="space-y-3 max-w-xl">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-blue-100 text-[11px] font-bold">
+                <Sparkles className="w-3.5 h-3.5 text-[#E41937]" />
+                <span>Welcome to AI Launchpad Institution</span>
               </div>
-              <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-[#0B1F44]">
+              <h2 className="text-2xl sm:text-3xl font-black uppercase tracking-tight text-white">
                 Hello, {user?.name || 'Learner'}!
               </h2>
-              <p className="text-xs sm:text-sm text-slate-700 leading-relaxed">
-                Your learning journey is ready! Enroll in the upcoming 2-Day Hands-On AI Bootcamp cohort below to unlock live classes, prompt libraries, assignments, and your verified certificate.
-              </p>
+              <div className="border-l-4 border-[#E41937] bg-[#172a4f]/90 px-3.5 py-2 rounded-r">
+                <p className="text-xs sm:text-sm text-blue-100 leading-relaxed">
+                  Your learning journey is ready! Enroll in the upcoming 2-Day Hands-On AI Bootcamp cohort below to unlock live classes, prompt libraries, assignments, and your verified certificate.
+                </p>
+              </div>
             </div>
 
             <div className="flex items-center justify-between lg:justify-end gap-5 shrink-0">
@@ -532,16 +521,16 @@ export const DashboardOverview: React.FC = () => {
               <div className="flex flex-wrap items-center gap-2.5">
                 <button
                   onClick={scrollToBatches}
-                  className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-[#0A2558] hover:bg-[#081E4A] text-white text-xs sm:text-sm font-bold shadow-sm transition-all cursor-pointer"
+                  className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg bg-[#E41937] hover:bg-[#c5122d] text-white text-xs sm:text-sm font-extrabold uppercase tracking-wide shadow-md transition-all cursor-pointer"
                 >
                   <span>Enroll Now</span>
                   <ArrowRight className="w-4 h-4" />
                 </button>
                 <Link
                   to="/dashboard/profile"
-                  className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200/90 text-[#0F172A] text-xs sm:text-sm font-semibold shadow-2xs transition-colors"
+                  className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-[#172a4f] hover:bg-[#192e57] border border-white/25 text-white text-xs sm:text-sm font-bold shadow-2xs transition-colors"
                 >
-                  <User className="w-4 h-4 text-[#0A2558]" />
+                  <User className="w-4 h-4 text-[#E41937]" />
                   <span>Profile</span>
                 </Link>
               </div>
@@ -586,9 +575,9 @@ export const DashboardOverview: React.FC = () => {
 
         {/* 3. Preserved Workshop Selection (Only shown if multiple cohorts exist) */}
         {availableWorkshops.length > 1 && highlightedBatch && preservedBatchId && (
-          <div className="p-4 sm:p-5 rounded-2xl bg-indigo-50/70 border border-indigo-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="p-4 sm:p-5 rounded-2xl bg-[#E41937]/[0.08] border border-[#E41937]/25 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="space-y-1">
-              <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-indigo-100 text-indigo-700">
+              <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-[#E41937]/[0.08] text-[#E41937]">
                 Saved Selection
               </span>
               <h3 className="text-sm font-extrabold text-[#0F172A]">
@@ -612,7 +601,7 @@ export const DashboardOverview: React.FC = () => {
             <button
               disabled={isEnrolling}
               onClick={() => enrollInBatch(highlightedBatch._id)}
-              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-[#0A2558] hover:bg-[#081E4A] text-white text-xs font-bold shadow-sm transition-all cursor-pointer shrink-0 disabled:opacity-60"
+              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-[#1F386B] hover:bg-[#081E4A] text-white text-xs font-bold shadow-sm transition-all cursor-pointer shrink-0 disabled:opacity-60"
             >
               <span>{isEnrolling ? 'Reserving...' : 'Continue to Payment'}</span>
               <ArrowRight className="w-4 h-4" />
@@ -624,7 +613,7 @@ export const DashboardOverview: React.FC = () => {
         {!hasConfirmedEnrollment && !pendingWorkshop && workshops.length === 0 && availableWorkshops.length > 0 && (
           <div id="available-batches" className="space-y-3.5 scroll-mt-20">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-white border border-slate-200/90 shadow-2xs flex items-center justify-center text-[#0A2558] shrink-0">
+              <div className="w-9 h-9 rounded-xl bg-white border border-slate-200/90 shadow-2xs flex items-center justify-center text-[#1F386B] shrink-0">
                 <Calendar className="w-4 h-4" />
               </div>
               <div>
@@ -662,7 +651,7 @@ export const DashboardOverview: React.FC = () => {
                         <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-100">
                           <div className="flex flex-wrap items-center gap-2">
                             <span className="inline-flex items-center gap-1.5 font-mono text-xs font-bold text-[#0B1F44] bg-[#F7F9FD] px-3 py-1 rounded-full border border-slate-200">
-                              <Calendar className="w-3.5 h-3.5 text-blue-600" />
+                              <Calendar className="w-3.5 h-3.5 text-[#1F386B]" />
                               {batch.batchCode}
                             </span>
                             <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
@@ -671,7 +660,7 @@ export const DashboardOverview: React.FC = () => {
                             </span>
                           </div>
                           <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-700 bg-[#F7F9FD] px-3 py-1 rounded-full border border-slate-200">
-                            <Video className="w-3.5 h-3.5 text-blue-600" />
+                            <Video className="w-3.5 h-3.5 text-[#1F386B]" />
                             Live Online Bootcamp
                           </span>
                         </div>
@@ -689,7 +678,7 @@ export const DashboardOverview: React.FC = () => {
                         {/* Dates & Timings Row */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 text-xs">
                           <div className="p-3.5 rounded-2xl bg-[#F7F9FD] border border-slate-200/80 flex items-center gap-3">
-                            <div className="w-9 h-9 rounded-xl bg-white border border-blue-100 text-blue-600 flex items-center justify-center shrink-0 shadow-2xs">
+                            <div className="w-9 h-9 rounded-xl bg-white border border-[#1F386B]/20 text-[#1F386B] flex items-center justify-center shrink-0 shadow-2xs">
                               <Calendar className="w-4 h-4" />
                             </div>
                             <div>
@@ -701,7 +690,7 @@ export const DashboardOverview: React.FC = () => {
                           </div>
 
                           <div className="p-3.5 rounded-2xl bg-[#F7F9FD] border border-slate-200/80 flex items-center gap-3">
-                            <div className="w-9 h-9 rounded-xl bg-white border border-purple-100 text-purple-600 flex items-center justify-center shrink-0 shadow-2xs">
+                            <div className="w-9 h-9 rounded-xl bg-white border border-[#E41937]/25 text-[#E41937] flex items-center justify-center shrink-0 shadow-2xs">
                               <Clock className="w-4 h-4" />
                             </div>
                             <div>
@@ -716,7 +705,7 @@ export const DashboardOverview: React.FC = () => {
                         {/* Curriculum Grid */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
                           <div className="p-4 rounded-2xl bg-[#F7F9FD] border border-slate-200/80 space-y-2">
-                            <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-md bg-blue-100/80 text-blue-700 inline-block">
+                            <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-md bg-[#1F386B]/10/80 text-[#1F386B] inline-block">
                               Day 1 • Saturday
                             </span>
                             <div className="text-xs sm:text-sm font-bold text-[#0F172A]">
@@ -755,7 +744,7 @@ export const DashboardOverview: React.FC = () => {
                           <div className="text-xs sm:text-sm font-bold text-[#0F172A] truncate">
                             Lead Instructor: {batch.instructor?.name || 'Vikram Malhotra'}
                           </div>
-                          <div className="text-[11px] sm:text-xs text-blue-600 font-medium truncate">
+                          <div className="text-[11px] sm:text-xs text-[#1F386B] font-medium truncate">
                             {batch.instructor?.role || 'Staff AI Engineer & Former ML Lead'}
                           </div>
                         </div>
@@ -767,14 +756,14 @@ export const DashboardOverview: React.FC = () => {
                       <div className="space-y-4">
                         <div className="flex items-start justify-between gap-3 border-b border-slate-100 pb-3.5">
                           <div>
-                            <span className="text-[10px] font-extrabold uppercase tracking-wider text-blue-600">
+                            <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#1F386B]">
                               Bootcamp Enrollment
                             </span>
                             <h4 className="text-lg font-black text-[#0B1F44] mt-0.5">
                               Reserve Your Seat
                             </h4>
                           </div>
-                          <div className="w-9 h-9 rounded-xl bg-[#EDF4FF] text-[#1D4ED8] border border-blue-200/70 flex items-center justify-center shrink-0">
+                          <div className="w-9 h-9 rounded-xl bg-[#EDF4FF] text-[#E41937] border border-[#1F386B]/20/70 flex items-center justify-center shrink-0">
                             <GraduationCap className="w-4 h-4" />
                           </div>
                         </div>
@@ -796,7 +785,7 @@ export const DashboardOverview: React.FC = () => {
                           )}
                           <div className="pt-3 border-t border-slate-100 flex items-center justify-between font-black text-[#0F172A]">
                             <span className="text-sm">Total Payable</span>
-                            <span className="text-2xl text-blue-600">
+                            <span className="text-2xl text-[#1F386B]">
                               {isFree ? 'Free' : `₹${totalAmount.toLocaleString('en-IN')}`}
                             </span>
                           </div>
@@ -826,7 +815,7 @@ export const DashboardOverview: React.FC = () => {
                         <button
                           disabled={isEnrolling}
                           onClick={() => enrollInBatch(batch._id)}
-                          className="w-full inline-flex items-center justify-center gap-2 py-3.5 px-5 rounded-xl bg-[#0A2558] hover:bg-[#081E4A] text-white text-xs sm:text-sm font-bold shadow-sm transition-all cursor-pointer disabled:opacity-60"
+                          className="w-full inline-flex items-center justify-center gap-2 py-3.5 px-5 rounded-xl bg-[#1F386B] hover:bg-[#081E4A] text-white text-xs sm:text-sm font-bold shadow-sm transition-all cursor-pointer disabled:opacity-60"
                         >
                           <span>
                             {isEnrolling
@@ -867,7 +856,7 @@ export const DashboardOverview: React.FC = () => {
                     >
                       <div className="space-y-3">
                         <div className="flex items-center justify-between gap-2">
-                          <span className="font-mono text-xs font-bold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-lg border border-indigo-200">
+                          <span className="font-mono text-xs font-bold text-[#E41937] bg-[#E41937]/[0.08] px-2.5 py-1 rounded-lg border border-[#E41937]/25">
                             {batch.batchCode}
                           </span>
                           <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
@@ -884,17 +873,17 @@ export const DashboardOverview: React.FC = () => {
 
                         <div className="grid grid-cols-2 gap-2.5 pt-1 text-xs">
                           <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center gap-2">
-                            <Calendar className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+                            <Calendar className="w-3.5 h-3.5 text-[#E41937] shrink-0" />
                             <span className="font-semibold text-[#0F172A] truncate">{dateRange}</span>
                           </div>
                           <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center gap-2">
-                            <Clock className="w-3.5 h-3.5 text-purple-600 shrink-0" />
+                            <Clock className="w-3.5 h-3.5 text-[#E41937] shrink-0" />
                             <span className="font-semibold text-[#0F172A] truncate">{batch.timings}</span>
                           </div>
                         </div>
 
                         <div className="flex items-center gap-2 text-xs text-slate-600 pt-1">
-                          <Users className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+                          <Users className="w-3.5 h-3.5 text-[#E41937] shrink-0" />
                           <span>
                             Instructor: <strong className="text-[#0F172A]">{batch.instructor?.name || 'Vikram Malhotra'}</strong>
                           </span>
@@ -917,7 +906,7 @@ export const DashboardOverview: React.FC = () => {
                         <button
                           disabled={isEnrolling}
                           onClick={() => enrollInBatch(batch._id)}
-                          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-sm transition-all cursor-pointer disabled:opacity-60"
+                          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#E41937] hover:bg-[#c5122d] text-white text-xs font-bold shadow-sm transition-all cursor-pointer disabled:opacity-60"
                         >
                           <span>{isFree ? 'Enroll for Free' : 'Enroll & Pay'}</span>
                           <ArrowRight className="w-3.5 h-3.5" />
@@ -965,10 +954,10 @@ export const DashboardOverview: React.FC = () => {
     : 'Nov 14 – Nov 15, 2026';
 
   const resourceIconMap: Record<string, { icon: React.ComponentType<any>; color: string }> = {
-    slides: { icon: Presentation, color: 'bg-blue-50 text-blue-600 border-blue-200' },
-    prompts: { icon: Cpu, color: 'bg-purple-50 text-purple-600 border-purple-200' },
+    slides: { icon: Presentation, color: 'bg-[#1F386B]/[0.06] text-[#1F386B] border-[#1F386B]/20' },
+    prompts: { icon: Cpu, color: 'bg-[#E41937]/[0.08] text-[#E41937] border-[#E41937]/25' },
     projects: { icon: Code2, color: 'bg-emerald-50 text-emerald-600 border-emerald-200' },
-    notes: { icon: FileText, color: 'bg-indigo-50 text-indigo-600 border-indigo-200' },
+    notes: { icon: FileText, color: 'bg-[#E41937]/[0.08] text-[#E41937] border-[#E41937]/25' },
   };
 
   const displayTasks =
@@ -995,11 +984,11 @@ export const DashboardOverview: React.FC = () => {
 
   return (
     <div className="space-y-5">
-      {/* 1. Executive Student Welcome Hero Banner */}
-      <div className="relative overflow-hidden p-5 sm:p-7 rounded-3xl bg-gradient-to-br from-[#081E4A] via-[#0F2A6B] to-[#1D4ED8] text-white border border-blue-900/40 shadow-md">
+      {/* 1. IIEM Executive Student Welcome Hero Banner */}
+      <div className="relative overflow-hidden p-5 sm:p-7 rounded-xl bg-gradient-to-br from-[#081e4a] via-[#1F386B] to-[#192e57] text-white border-b-4 border-b-[#E41937] shadow-lg">
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute -top-20 -right-16 w-72 h-72 rounded-full bg-cyan-400/20 blur-3xl"
+          className="pointer-events-none absolute -top-20 -right-16 w-72 h-72 rounded-full bg-[#E41937]/15 blur-3xl"
         />
         <div className="relative grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
           <div className="lg:col-span-8 space-y-3">
@@ -1013,31 +1002,33 @@ export const DashboardOverview: React.FC = () => {
               </span>
             </div>
 
-            <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
+            <h2 className="text-2xl sm:text-3xl font-black uppercase tracking-tight text-white">
               Welcome back, {user?.name || 'Student'}!
             </h2>
-            <p className="text-xs sm:text-sm text-blue-100/90 max-w-2xl leading-relaxed">
-              Your learning workspace for <strong className="text-white">{workshopInfo.title || 'AI Launchpad Bootcamp'}</strong> is unlocked. Join live interactive sessions, explore study materials, submit your assignments, and track your completion progress below.
-            </p>
+            <div className="border-l-4 border-[#E41937] bg-[#172a4f]/90 px-3.5 py-2 rounded-r max-w-2xl">
+              <p className="text-xs sm:text-sm text-blue-100 leading-relaxed">
+                Your learning workspace for <strong className="text-white">{workshopInfo.title || 'AI Launchpad Bootcamp'}</strong> is unlocked. Join live interactive sessions, explore study materials, submit your assignments, and track your completion progress below.
+              </p>
+            </div>
 
             <div className="flex flex-wrap items-center gap-3 pt-1">
               <Link
                 to="/dashboard/live-classes"
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white hover:bg-blue-50 text-[#081E4A] text-xs font-extrabold shadow-sm transition-all"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[#E41937] hover:bg-[#c5122d] text-white text-xs font-extrabold uppercase tracking-wide shadow-md transition-all"
               >
-                <Video className="w-4 h-4 text-blue-600" />
+                <Video className="w-4 h-4 text-white" />
                 <span>Open Live Classroom</span>
               </Link>
               <Link
                 to="/dashboard/materials"
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600/40 hover:bg-blue-600/60 border border-white/25 text-white text-xs font-bold transition-colors"
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-[#172a4f] hover:bg-[#192e57] border border-white/25 text-white text-xs font-bold transition-colors"
               >
-                <BookOpen className="w-4 h-4" />
+                <BookOpen className="w-4 h-4 text-[#E41937]" />
                 <span>Learning Materials</span>
               </Link>
               <Link
                 to="/dashboard/assignments"
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs font-semibold transition-colors"
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs font-semibold transition-colors"
               >
                 <ClipboardCheck className="w-4 h-4" />
                 <span>Assignments</span>
@@ -1070,8 +1061,8 @@ export const DashboardOverview: React.FC = () => {
 
       {/* 2. Live Dashboard KPI Row */}
       <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4">
-        <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-2xs flex items-center gap-3.5">
-          <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 border border-blue-100 flex items-center justify-center shrink-0">
+        <div className="p-4 rounded-xl bg-white border border-slate-200 border-b-[3px] border-b-[#1F386B] shadow-2xs flex items-center gap-3.5">
+          <div className="w-10 h-10 rounded-xl bg-[#1F386B]/[0.06] text-[#1F386B] border border-[#1F386B]/20 flex items-center justify-center shrink-0">
             <GraduationCap className="w-5 h-5" />
           </div>
           <div className="min-w-0">
@@ -1083,8 +1074,8 @@ export const DashboardOverview: React.FC = () => {
           </div>
         </div>
 
-        <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-2xs flex items-center gap-3.5">
-          <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 border border-purple-100 flex items-center justify-center shrink-0">
+        <div className="p-4 rounded-xl bg-white border border-slate-200 border-b-[3px] border-b-[#1F386B] shadow-2xs flex items-center gap-3.5">
+          <div className="w-10 h-10 rounded-xl bg-[#E41937]/[0.08] text-[#E41937] border border-[#E41937]/25 flex items-center justify-center shrink-0">
             <Video className="w-5 h-5" />
           </div>
           <div className="min-w-0">
@@ -1094,14 +1085,14 @@ export const DashboardOverview: React.FC = () => {
             <div className="text-sm font-black text-[#0F172A] truncate">
               {sessions.length || 2} Live Sessions
             </div>
-            <div className="text-[11px] font-mono text-purple-600 font-semibold truncate">
+            <div className="text-[11px] font-mono text-[#E41937] font-semibold truncate">
               Passcode: {meetingPasscode}
             </div>
           </div>
         </div>
 
-        <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-2xs flex items-center gap-3.5">
-          <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 border border-indigo-100 flex items-center justify-center shrink-0">
+        <div className="p-4 rounded-xl bg-white border border-slate-200 border-b-[3px] border-b-[#1F386B] shadow-2xs flex items-center gap-3.5">
+          <div className="w-10 h-10 rounded-xl bg-[#E41937]/[0.08] text-[#E41937] border border-[#E41937]/25 flex items-center justify-center shrink-0">
             <BookOpen className="w-5 h-5" />
           </div>
           <div className="min-w-0">
@@ -1115,7 +1106,7 @@ export const DashboardOverview: React.FC = () => {
           </div>
         </div>
 
-        <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-2xs flex items-center gap-3.5">
+        <div className="p-4 rounded-xl bg-white border border-slate-200 border-b-[3px] border-b-[#1F386B] shadow-2xs flex items-center gap-3.5">
           <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100 flex items-center justify-center shrink-0">
             <TrendingUp className="w-5 h-5" />
           </div>
@@ -1141,7 +1132,7 @@ export const DashboardOverview: React.FC = () => {
           <div className="p-5 sm:p-6 rounded-3xl bg-white border border-slate-200 shadow-2xs space-y-4">
             <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-100">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-lg bg-purple-50 text-purple-600 border border-purple-200 flex items-center justify-center">
+                <div className="w-8 h-8 rounded-lg bg-[#E41937]/[0.08] text-[#E41937] border border-[#E41937]/25 flex items-center justify-center">
                   <Video className="w-4 h-4" />
                 </div>
                 <div>
@@ -1156,7 +1147,7 @@ export const DashboardOverview: React.FC = () => {
 
               <Link
                 to="/dashboard/live-classes"
-                className="inline-flex items-center gap-1 text-xs font-bold text-blue-600 hover:text-blue-700"
+                className="inline-flex items-center gap-1 text-xs font-bold text-[#1F386B] hover:text-[#E41937]"
               >
                 <span>All Sessions</span>
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -1172,7 +1163,7 @@ export const DashboardOverview: React.FC = () => {
                   >
                     <div className="space-y-1.5">
                       <div className="flex items-center justify-between gap-2">
-                        <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded bg-blue-100 text-blue-800">
+                        <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded bg-[#1F386B]/10 text-[#1F386B]">
                           Day {session.dayNumber || idx + 1} Live
                         </span>
                         <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 capitalize">
@@ -1186,25 +1177,25 @@ export const DashboardOverview: React.FC = () => {
 
                     <div className="pt-2 border-t border-slate-200/70 flex items-center justify-between text-[11px] text-slate-600">
                       <span className="flex items-center gap-1 font-medium">
-                        <Clock className="w-3 h-3 text-purple-600" />
+                        <Clock className="w-3 h-3 text-[#E41937]" />
                         {session.startTime || '10:00 AM'} – {session.endTime || '3:00 PM'}
                       </span>
-                      <span className="font-mono font-bold text-indigo-600">{meetingPasscode}</span>
+                      <span className="font-mono font-bold text-[#E41937]">{meetingPasscode}</span>
                     </div>
                   </div>
                 )
               )}
             </div>
 
-            <div className="p-3.5 rounded-2xl bg-blue-50/70 border border-blue-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="p-3.5 rounded-2xl bg-[#1F386B]/[0.06] border border-[#1F386B]/20 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div className="flex items-center gap-2.5 text-xs">
-                <Calendar className="w-4 h-4 text-blue-600 shrink-0" />
+                <Calendar className="w-4 h-4 text-[#1F386B] shrink-0" />
                 <div>
                   <span className="font-bold text-[#0F172A] block">
                     Virtual Classroom Ready
                   </span>
                   <span className="text-[11px] text-slate-600">
-                    Passcode: <strong className="font-mono text-blue-700">{meetingPasscode}</strong>
+                    Passcode: <strong className="font-mono text-[#1F386B]">{meetingPasscode}</strong>
                   </span>
                 </div>
               </div>
@@ -1214,7 +1205,7 @@ export const DashboardOverview: React.FC = () => {
                     href={joinUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-xs transition-all"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#E41937] hover:bg-[#c5122d] text-white text-xs font-bold shadow-xs transition-all"
                   >
                     <span>Join Live Room</span>
                     <ExternalLink className="w-3.5 h-3.5" />
@@ -1222,7 +1213,7 @@ export const DashboardOverview: React.FC = () => {
                 ) : (
                   <Link
                     to="/dashboard/live-classes"
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-xs transition-all"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#E41937] hover:bg-[#c5122d] text-white text-xs font-bold shadow-xs transition-all"
                   >
                     <span>Open Classroom</span>
                     <ArrowRight className="w-3.5 h-3.5" />
@@ -1252,7 +1243,7 @@ export const DashboardOverview: React.FC = () => {
 
                 <Link
                   to="/dashboard/assignments"
-                  className="inline-flex items-center gap-1 text-xs font-bold text-blue-600 hover:text-blue-700"
+                  className="inline-flex items-center gap-1 text-xs font-bold text-[#1F386B] hover:text-[#E41937]"
                 >
                   <span>Open Submissions</span>
                   <ArrowRight className="w-3.5 h-3.5" />
@@ -1269,7 +1260,7 @@ export const DashboardOverview: React.FC = () => {
                     >
                       <div className="space-y-1 min-w-0">
                         <div className="flex items-center gap-2">
-                          <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-indigo-100 text-indigo-700">
+                          <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-[#E41937]/[0.08] text-[#E41937]">
                             Day {task.dayNumber || idx + 1} Lab
                           </span>
                           <span className="text-[10px] font-semibold text-slate-500">
@@ -1307,7 +1298,7 @@ export const DashboardOverview: React.FC = () => {
               </span>
               <Link
                 to="/dashboard/assignments"
-                className="inline-flex items-center gap-1.5 font-bold text-indigo-600 hover:text-indigo-700 shrink-0"
+                className="inline-flex items-center gap-1.5 font-bold text-[#E41937] hover:text-[#E41937] shrink-0"
               >
                 <span>{submissions.length > 0 ? 'View Feedback' : 'Submit Project'}</span>
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -1332,14 +1323,14 @@ export const DashboardOverview: React.FC = () => {
                   <p className="text-[11px] text-slate-500">Bootcamp completion &amp; milestones</p>
                 </div>
               </div>
-              <span className="text-2xl font-black text-blue-600">
+              <span className="text-2xl font-black text-[#1F386B]">
                 {currentProgress.percentage}%
               </span>
             </div>
 
             <div className="w-full bg-slate-100 h-3 rounded-full overflow-hidden">
               <div
-                className="bg-gradient-to-r from-blue-600 to-indigo-600 h-3 rounded-full transition-all"
+                className="bg-gradient-to-r from-[#1F386B] to-[#E41937] h-3 rounded-full transition-all"
                 style={{ width: `${Math.max(15, currentProgress.percentage)}%` }}
               />
             </div>
@@ -1379,7 +1370,7 @@ export const DashboardOverview: React.FC = () => {
 
             <Link
               to="/dashboard/certificates"
-              className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-slate-900 hover:bg-blue-700 text-white text-xs font-bold transition-colors"
+              className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-slate-900 hover:bg-[#c5122d] text-white text-xs font-bold transition-colors"
             >
               <Award className="w-4 h-4" />
               <span>View Certificate Eligibility</span>
@@ -1392,7 +1383,7 @@ export const DashboardOverview: React.FC = () => {
             <div className="space-y-3">
               <div className="flex items-center justify-between pb-3 border-b border-slate-100">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 border border-blue-200 flex items-center justify-center">
+                  <div className="w-8 h-8 rounded-lg bg-[#1F386B]/[0.06] text-[#1F386B] border border-[#1F386B]/20 flex items-center justify-center">
                     <BookOpen className="w-4 h-4" />
                   </div>
                   <div>
@@ -1406,7 +1397,7 @@ export const DashboardOverview: React.FC = () => {
                 </div>
                 <Link
                   to="/dashboard/materials"
-                  className="text-xs font-bold text-blue-600 hover:text-blue-700 shrink-0"
+                  className="text-xs font-bold text-[#1F386B] hover:text-[#E41937] shrink-0"
                 >
                   View All →
                 </Link>
@@ -1420,7 +1411,7 @@ export const DashboardOverview: React.FC = () => {
                     <Link
                       key={res.id || res.title}
                       to="/dashboard/materials"
-                      className="p-3 rounded-2xl bg-slate-50 hover:bg-blue-50/50 border border-slate-200/80 hover:border-blue-300 flex items-center justify-between gap-3 transition-all group"
+                      className="p-3 rounded-2xl bg-slate-50 hover:bg-[#1F386B]/10 border border-slate-200/80 hover:border-blue-300 flex items-center justify-between gap-3 transition-all group"
                     >
                       <div className="flex items-center gap-3 min-w-0">
                         <div
@@ -1429,7 +1420,7 @@ export const DashboardOverview: React.FC = () => {
                           <Icon className="w-4 h-4" />
                         </div>
                         <div className="min-w-0">
-                          <div className="text-xs font-bold text-[#0F172A] group-hover:text-blue-700 truncate">
+                          <div className="text-xs font-bold text-[#0F172A] group-hover:text-[#E41937] truncate">
                             {res.title}
                           </div>
                           <div className="text-[10px] text-slate-500 truncate">{res.type}</div>
@@ -1453,11 +1444,11 @@ export const DashboardOverview: React.FC = () => {
           to="/dashboard/workshops"
           className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200 hover:border-blue-400 transition-all shadow-2xs flex items-center gap-3.5 group"
         >
-          <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
+          <div className="w-10 h-10 rounded-xl bg-[#E41937]/[0.08] text-[#E41937] flex items-center justify-center shrink-0">
             <GraduationCap className="w-5 h-5" />
           </div>
           <div className="min-w-0">
-            <h4 className="font-bold text-sm text-[#0F172A] group-hover:text-blue-600 truncate">
+            <h4 className="font-bold text-sm text-[#0F172A] group-hover:text-[#E41937] truncate">
               My Workshops &amp; Syllabus
             </h4>
             <p className="text-[11px] text-slate-500 truncate">
@@ -1466,7 +1457,7 @@ export const DashboardOverview: React.FC = () => {
           </div>
         </Link>
 
-        <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200 shadow-2xs flex items-center gap-3.5">
+        <div className="p-4 sm:p-5 rounded-xl bg-white border border-slate-200 border-b-[3px] border-b-[#1F386B] shadow-2xs flex items-center gap-3.5">
           <img
             src={
               workshopInfo.instructor?.avatarUrl ||
@@ -1479,7 +1470,7 @@ export const DashboardOverview: React.FC = () => {
             <div className="text-xs font-bold text-[#0F172A] truncate">
               Mentor: {instructorName}
             </div>
-            <div className="text-[11px] text-blue-600 font-medium truncate">
+            <div className="text-[11px] text-[#1F386B] font-medium truncate">
               {instructorRole}
             </div>
           </div>
@@ -1493,7 +1484,7 @@ export const DashboardOverview: React.FC = () => {
             <User className="w-5 h-5" />
           </div>
           <div className="min-w-0">
-            <h4 className="font-bold text-sm text-[#0F172A] group-hover:text-blue-600 truncate">
+            <h4 className="font-bold text-sm text-[#0F172A] group-hover:text-[#E41937] truncate">
               Student Profile &amp; Support
             </h4>
             <p className="text-[11px] text-slate-500 truncate">

@@ -50,8 +50,8 @@ export const AdminSettings: React.FC = () => {
 
   if (isLoading || !settings) {
     return (
-      <div className="p-12 text-center bg-white rounded-3xl border border-slate-200">
-        <RefreshCw className="w-5 h-5 text-blue-600 animate-spin mx-auto mb-2" />
+      <div className="p-12 text-center bg-white rounded-xl border border-slate-200 border-b-[3px] border-b-[#1F386B]">
+        <RefreshCw className="w-5 h-5 text-[#1F386B] animate-spin mx-auto mb-2" />
         <p className="text-xs text-slate-500">Loading platform settings & audit trail...</p>
       </div>
     );
@@ -60,7 +60,7 @@ export const AdminSettings: React.FC = () => {
   return (
     <div className="space-y-6">
       <form onSubmit={handleSave} className="space-y-6">
-        <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="bg-white p-6 rounded-xl border border-slate-200 border-b-[3px] border-b-[#1F386B] shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h2 className="text-xl font-black text-[#0F172A]">Platform Settings & Security Audit</h2>
             <p className="text-xs text-slate-500">
@@ -80,7 +80,7 @@ export const AdminSettings: React.FC = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 text-xs">
           {/* Branding & Registration */}
-          <div className="bg-white p-6 rounded-3xl border border-slate-200 space-y-4">
+          <div className="bg-white p-6 rounded-xl border border-slate-200 border-b-[3px] border-b-[#1F386B] space-y-4">
             <h3 className="text-sm font-bold text-[#0F172A]">Website Branding & Admissions</h3>
             <div className="grid grid-cols-2 gap-3">
               <div>
@@ -156,7 +156,7 @@ export const AdminSettings: React.FC = () => {
           </div>
 
           {/* Instructor Permissions & Notifications */}
-          <div className="bg-white p-6 rounded-3xl border border-slate-200 space-y-4">
+          <div className="bg-white p-6 rounded-xl border border-slate-200 border-b-[3px] border-b-[#1F386B] space-y-4">
             <h3 className="text-sm font-bold text-[#0F172A]">
               Instructor Permissions & Notifications
             </h3>
@@ -177,7 +177,7 @@ export const AdminSettings: React.FC = () => {
                       },
                     })
                   }
-                  className="h-4 w-4 rounded text-blue-600"
+                  className="h-4 w-4 rounded text-[#1F386B]"
                 />
               </label>
 
@@ -197,7 +197,7 @@ export const AdminSettings: React.FC = () => {
                       },
                     })
                   }
-                  className="h-4 w-4 rounded text-blue-600"
+                  className="h-4 w-4 rounded text-[#1F386B]"
                 />
               </label>
 
@@ -217,7 +217,7 @@ export const AdminSettings: React.FC = () => {
                       },
                     })
                   }
-                  className="h-4 w-4 rounded text-blue-600"
+                  className="h-4 w-4 rounded text-[#1F386B]"
                 />
               </label>
             </div>
@@ -226,10 +226,10 @@ export const AdminSettings: React.FC = () => {
       </form>
 
       {/* Immutable Security Audit Logs */}
-      <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-xs space-y-4">
+      <div className="bg-white p-6 rounded-xl border border-slate-200 border-b-[3px] border-b-[#1F386B] shadow-xs space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <ShieldCheck className="w-5 h-5 text-blue-600" />
+            <ShieldCheck className="w-5 h-5 text-[#1F386B]" />
             <h3 className="text-sm font-bold text-[#0F172A]">
               Administrative Security Audit Trail
             </h3>
@@ -260,7 +260,7 @@ export const AdminSettings: React.FC = () => {
                       {log.createdAt ? new Date(log.createdAt).toLocaleString() : '—'}
                     </td>
                     <td className="py-2.5 px-3 font-semibold text-[#0F172A]">{log.actorEmail}</td>
-                    <td className="py-2.5 px-3 font-mono font-bold text-blue-600">{log.action}</td>
+                    <td className="py-2.5 px-3 font-mono font-bold text-[#1F386B]">{log.action}</td>
                     <td className="py-2.5 px-3 uppercase text-[10px] font-bold text-slate-500">
                       {log.entityType}
                     </td>

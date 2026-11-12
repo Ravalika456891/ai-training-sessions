@@ -108,10 +108,10 @@ const STATUS_BADGE_MAP: Record<
   },
   scheduled: {
     label: 'Scheduled',
-    bg: 'bg-blue-50',
-    text: 'text-blue-700',
-    border: 'border-blue-200',
-    dot: 'bg-blue-600',
+    bg: 'bg-[#1F386B]/[0.06]',
+    text: 'text-[#1F386B]',
+    border: 'border-[#1F386B]/20',
+    dot: 'bg-[#1F386B]',
   },
   live: {
     label: 'Live Now',
@@ -122,10 +122,10 @@ const STATUS_BADGE_MAP: Record<
   },
   completed: {
     label: 'Completed',
-    bg: 'bg-indigo-50',
-    text: 'text-indigo-700',
-    border: 'border-indigo-200',
-    dot: 'bg-indigo-500',
+    bg: 'bg-[#E41937]/[0.08]',
+    text: 'text-[#E41937]',
+    border: 'border-[#E41937]/25',
+    dot: 'bg-[#E41937]/[0.08]0',
   },
   cancelled: {
     label: 'Cancelled',
@@ -746,9 +746,9 @@ export const AdminCalendar: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Header Banner */}
-      <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-xs flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+      <div className="bg-white rounded-xl border border-slate-200 border-b-[3px] border-b-[#1F386B] p-6 shadow-xs flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-bold border border-blue-200 mb-2">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#1F386B]/[0.06] text-[#1F386B] text-xs font-bold border border-[#1F386B]/20 mb-2">
             <CalendarIcon className="w-3.5 h-3.5" />
             Anytime Class Scheduling & Conflict Engine
           </div>
@@ -773,7 +773,7 @@ export const AdminCalendar: React.FC = () => {
             type="button"
             onClick={() => openCreateModal()}
             data-testid="add-class-btn"
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-sm cursor-pointer transition-all"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#E41937] hover:bg-[#c5122d] text-white text-xs font-bold shadow-sm cursor-pointer transition-all"
           >
             <Plus className="w-4 h-4" />
             Add Class
@@ -785,9 +785,9 @@ export const AdminCalendar: React.FC = () => {
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
         {[
           { label: 'Total Classes', count: stats.total, color: 'text-slate-900', bg: 'bg-white' },
-          { label: 'Scheduled', count: stats.scheduled, color: 'text-blue-700', bg: 'bg-blue-50/60' },
+          { label: 'Scheduled', count: stats.scheduled, color: 'text-[#1F386B]', bg: 'bg-[#1F386B]/[0.06]' },
           { label: 'Live Now', count: stats.live, color: 'text-emerald-700', bg: 'bg-emerald-50/60' },
-          { label: 'Completed', count: stats.completed, color: 'text-indigo-700', bg: 'bg-indigo-50/60' },
+          { label: 'Completed', count: stats.completed, color: 'text-[#E41937]', bg: 'bg-[#E41937]/[0.08]/60' },
           { label: 'Drafts', count: stats.draft, color: 'text-slate-700', bg: 'bg-slate-100/70' },
           { label: 'Cancelled', count: stats.cancelled, color: 'text-rose-700', bg: 'bg-rose-50/60' },
         ].map((item) => (
@@ -804,7 +804,7 @@ export const AdminCalendar: React.FC = () => {
       </div>
 
       {/* Calendar Controls & Filters Toolbar */}
-      <div className="bg-white rounded-3xl border border-slate-200 p-4 sm:p-5 shadow-xs space-y-4">
+      <div className="bg-white rounded-xl border border-slate-200 border-b-[3px] border-b-[#1F386B] p-4 sm:p-5 shadow-xs space-y-4">
         {/* Top Row: View Switcher + Date Navigation + Date Picker */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-4 border-b border-slate-100">
           {/* Navigation Controls */}
@@ -867,7 +867,7 @@ export const AdminCalendar: React.FC = () => {
                   setCurrentDate(new Date(`${e.target.value}T10:00:00`));
                 }
               }}
-              className="ml-auto md:ml-2 px-2.5 py-1.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="ml-auto md:ml-2 px-2.5 py-1.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#1F386B]"
             />
           </div>
 
@@ -890,7 +890,7 @@ export const AdminCalendar: React.FC = () => {
                   onClick={() => setViewMode(v.id)}
                   className={`flex-1 md:flex-initial inline-flex items-center justify-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                     active
-                      ? 'bg-white text-blue-600 shadow-xs'
+                      ? 'bg-white text-[#1F386B] shadow-xs'
                       : 'text-slate-600 hover:text-[#0F172A]'
                   }`}
                 >
@@ -911,7 +911,7 @@ export const AdminCalendar: React.FC = () => {
               placeholder="Search title, batch, instructor..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-3 py-2 rounded-xl border border-slate-200 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full pl-9 pr-3 py-2 rounded-xl border border-slate-200 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-[#1F386B]"
             />
           </div>
 
@@ -1032,7 +1032,7 @@ export const AdminCalendar: React.FC = () => {
           VIEW 1: MONTH VIEW
       ===================================================================== */}
       {viewMode === 'month' && (
-        <div className="bg-white rounded-3xl border border-slate-200 shadow-xs overflow-hidden">
+        <div className="bg-white rounded-xl border border-slate-200 border-b-[3px] border-b-[#1F386B] shadow-xs overflow-hidden">
           <div className="overflow-x-auto">
             <div className="min-w-[680px]">
               <div className="grid grid-cols-7 border-b border-slate-200 bg-slate-50">
@@ -1055,7 +1055,7 @@ export const AdminCalendar: React.FC = () => {
                     <div
                       key={cell.dateKey}
                       onClick={() => openCreateModal(cell.date)}
-                      className={`min-h-[120px] sm:min-h-[140px] p-2 transition-colors hover:bg-blue-50/30 cursor-pointer flex flex-col ${
+                      className={`min-h-[120px] sm:min-h-[140px] p-2 transition-colors hover:bg-[#1F386B]/10/30 cursor-pointer flex flex-col ${
                         cell.isCurrentMonth ? 'bg-white' : 'bg-slate-50/60 text-slate-400'
                       }`}
                     >
@@ -1063,7 +1063,7 @@ export const AdminCalendar: React.FC = () => {
                         <span
                           className={`w-6 h-6 rounded-full text-xs font-bold flex items-center justify-center ${
                             isToday
-                              ? 'bg-blue-600 text-white shadow-xs'
+                              ? 'bg-[#1F386B] text-white shadow-xs'
                               : cell.isCurrentMonth
                               ? 'text-slate-800'
                               : 'text-slate-400'
@@ -1119,7 +1119,7 @@ export const AdminCalendar: React.FC = () => {
           VIEW 2: WEEK VIEW
       ===================================================================== */}
       {viewMode === 'week' && (
-        <div className="bg-white rounded-3xl border border-slate-200 shadow-xs overflow-x-auto">
+        <div className="bg-white rounded-xl border border-slate-200 border-b-[3px] border-b-[#1F386B] shadow-xs overflow-x-auto">
           <div className="min-w-[800px]">
             <div className="grid grid-cols-7 border-b border-slate-200 bg-slate-50 divide-x divide-slate-200">
               {weekDays.map((wd) => {
@@ -1131,7 +1131,7 @@ export const AdminCalendar: React.FC = () => {
                     </div>
                     <div
                       className={`mt-1 inline-flex w-8 h-8 rounded-full items-center justify-center text-sm font-black ${
-                        isToday ? 'bg-blue-600 text-white' : 'text-[#0F172A]'
+                        isToday ? 'bg-[#1F386B] text-white' : 'text-[#0F172A]'
                       }`}
                     >
                       {wd.date.getDate()}
@@ -1148,7 +1148,7 @@ export const AdminCalendar: React.FC = () => {
                   <div
                     key={wd.dateKey}
                     onClick={() => openCreateModal(wd.date, 10)}
-                    className="p-2.5 space-y-2 hover:bg-blue-50/20 cursor-pointer"
+                    className="p-2.5 space-y-2 hover:bg-[#1F386B]/10/20 cursor-pointer"
                   >
                     {daySessions.length === 0 ? (
                       <div className="h-full flex items-center justify-center text-[11px] text-slate-300 font-medium py-12">
@@ -1203,7 +1203,7 @@ export const AdminCalendar: React.FC = () => {
           VIEW 3: DAY VIEW (Hourly Time Slots + Anytime Sessions)
       ===================================================================== */}
       {viewMode === 'day' && (
-        <div className="bg-white rounded-3xl border border-slate-200 shadow-xs p-5 space-y-4">
+        <div className="bg-white rounded-xl border border-slate-200 border-b-[3px] border-b-[#1F386B] shadow-xs p-5 space-y-4">
           <div className="flex items-center justify-between border-b border-slate-100 pb-3">
             <div>
               <h4 className="text-sm font-black text-[#0F172A]">
@@ -1216,7 +1216,7 @@ export const AdminCalendar: React.FC = () => {
             <button
               type="button"
               onClick={() => openCreateModal(currentDate, 10)}
-              className="px-3.5 py-2 rounded-xl bg-blue-600 text-white text-xs font-bold cursor-pointer"
+              className="px-3.5 py-2 rounded-xl bg-[#1F386B] text-white text-xs font-bold cursor-pointer"
             >
               + Schedule on This Day
             </button>
@@ -1235,7 +1235,7 @@ export const AdminCalendar: React.FC = () => {
                 <div
                   key={hour}
                   onClick={() => openCreateModal(currentDate, hour)}
-                  className="py-3 px-3 flex items-start gap-4 hover:bg-blue-50/30 cursor-pointer rounded-xl transition-colors"
+                  className="py-3 px-3 flex items-start gap-4 hover:bg-[#1F386B]/10/30 cursor-pointer rounded-xl transition-colors"
                 >
                   <div className="w-20 shrink-0 text-xs font-bold text-slate-500 pt-1">
                     {format24To12Hour(`${String(hour).padStart(2, '0')}:00`)}
@@ -1301,7 +1301,7 @@ export const AdminCalendar: React.FC = () => {
           VIEW 4: AGENDA / LIST VIEW
       ===================================================================== */}
       {viewMode === 'agenda' && (
-        <div className="bg-white rounded-3xl border border-slate-200 shadow-xs overflow-hidden">
+        <div className="bg-white rounded-xl border border-slate-200 border-b-[3px] border-b-[#1F386B] shadow-xs overflow-hidden">
           {filteredSessions.length === 0 ? (
             <div className="p-12 text-center">
               <CalendarIcon className="w-10 h-10 text-slate-300 mx-auto mb-2" />
@@ -1322,7 +1322,7 @@ export const AdminCalendar: React.FC = () => {
                   >
                     <div className="flex items-start gap-4">
                       <div className="w-16 shrink-0 rounded-2xl bg-slate-100 border border-slate-200 p-2 text-center">
-                        <div className="text-[10px] font-bold uppercase text-blue-600">
+                        <div className="text-[10px] font-bold uppercase text-[#1F386B]">
                           {d.toLocaleDateString('en-US', { month: 'short' })}
                         </div>
                         <div className="text-xl font-black text-[#0F172A]">{d.getDate()}</div>
@@ -1342,11 +1342,11 @@ export const AdminCalendar: React.FC = () => {
                           <span className="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 text-[11px] font-bold uppercase">
                             {ses.classType}
                           </span>
-                          <span className="px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 text-[11px] font-bold">
+                          <span className="px-2.5 py-0.5 rounded-full bg-[#1F386B]/[0.06] text-[#1F386B] text-[11px] font-bold">
                             {ses.batchCode}
                           </span>
                           {ses.recurrenceSeriesId && (
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-purple-50 text-purple-700 text-[11px] font-bold">
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#E41937]/[0.08] text-purple-700 text-[11px] font-bold">
                               <Repeat className="w-3 h-3" />
                               Recurring Series
                             </span>
@@ -1363,7 +1363,7 @@ export const AdminCalendar: React.FC = () => {
 
                         <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-600">
                           <span className="inline-flex items-center gap-1 font-semibold">
-                            <Clock className="w-3.5 h-3.5 text-blue-600" />
+                            <Clock className="w-3.5 h-3.5 text-[#1F386B]" />
                             {ses.startTime} – {ses.endTime} ({ses.durationMinutes}m • {ses.timezone})
                           </span>
                           <span className="inline-flex items-center gap-1">
@@ -1371,7 +1371,7 @@ export const AdminCalendar: React.FC = () => {
                             {ses.instructorName}
                           </span>
                           <span className="inline-flex items-center gap-1">
-                            <Video className="w-3.5 h-3.5 text-indigo-600" />
+                            <Video className="w-3.5 h-3.5 text-[#E41937]" />
                             {ses.meetingProvider.replace('_', ' ').toUpperCase()}
                           </span>
                         </div>
@@ -1396,7 +1396,7 @@ export const AdminCalendar: React.FC = () => {
                       <button
                         type="button"
                         onClick={() => openEditModal(ses)}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-blue-200 bg-blue-50 hover:bg-blue-100 text-xs font-bold text-blue-700 cursor-pointer"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-[#1F386B]/20 bg-[#1F386B]/[0.06] hover:bg-[#1F386B]/10 text-xs font-bold text-[#1F386B] cursor-pointer"
                       >
                         <Edit3 className="w-3.5 h-3.5" />
                         Edit / Reschedule
@@ -1429,7 +1429,7 @@ export const AdminCalendar: React.FC = () => {
       ===================================================================== */}
       {isFormOpen && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-3xl w-full max-h-[92vh] flex flex-col overflow-hidden">
+          <div className="bg-white rounded-xl border border-slate-200 border-b-[3px] border-b-[#1F386B] shadow-2xl max-w-3xl w-full max-h-[92vh] flex flex-col overflow-hidden">
             {/* Modal Header */}
             <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
               <div>
@@ -1463,9 +1463,9 @@ export const AdminCalendar: React.FC = () => {
 
               {/* Recurring Edit Scope selector when editing an existing recurring session */}
               {editingSession?.recurrenceSeriesId && (
-                <div className="p-3.5 rounded-2xl bg-purple-50 border border-purple-200 space-y-2">
+                <div className="p-3.5 rounded-2xl bg-[#E41937]/[0.08] border border-[#E41937]/25 space-y-2">
                   <div className="flex items-center gap-2 text-xs font-extrabold text-purple-900">
-                    <Repeat className="w-4 h-4 text-purple-600" />
+                    <Repeat className="w-4 h-4 text-[#E41937]" />
                     <span>Recurring Series Edit Scope</span>
                   </div>
                   <div className="flex flex-wrap gap-3 text-xs font-semibold text-purple-800">
@@ -1512,7 +1512,7 @@ export const AdminCalendar: React.FC = () => {
                     placeholder="e.g., Agentic RAG Systems & Multi-Agent Orchestration Lab"
                     value={formData.title}
                     onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-[#1F386B]"
                   />
                 </div>
 
@@ -1606,7 +1606,7 @@ export const AdminCalendar: React.FC = () => {
               <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <span className="text-xs font-extrabold text-[#0F172A] flex items-center gap-1.5">
-                    <Clock className="w-4 h-4 text-blue-600" />
+                    <Clock className="w-4 h-4 text-[#1F386B]" />
                     Date & Anytime Time Picker (12-Hour AM/PM Synchronized)
                   </span>
                   <div className="flex flex-wrap gap-1.5">
@@ -1721,7 +1721,7 @@ export const AdminCalendar: React.FC = () => {
                     onChange={(e) =>
                       setFormData({ ...formData, allowPastCorrection: e.target.checked })
                     }
-                    className="rounded border-slate-300 text-blue-600"
+                    className="rounded border-slate-300 text-[#1F386B]"
                   />
                   <span>
                     Authorized Historical / Past-Date Schedule Correction (enable only when logging a past session)
@@ -1894,9 +1894,9 @@ export const AdminCalendar: React.FC = () => {
                           setFormData({ ...formData, isRecurring: e.target.checked });
                           setRecurringPreview(null);
                         }}
-                        className="rounded border-slate-300 text-blue-600"
+                        className="rounded border-slate-300 text-[#1F386B]"
                       />
-                      <Repeat className="w-4 h-4 text-blue-600" />
+                      <Repeat className="w-4 h-4 text-[#1F386B]" />
                       <span>Repeat / Recurring Class Series</span>
                     </label>
                   </div>
@@ -1943,7 +1943,7 @@ export const AdminCalendar: React.FC = () => {
                             type="button"
                             onClick={handlePreviewRecurring}
                             disabled={loadingPreview}
-                            className="w-full px-3 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold cursor-pointer"
+                            className="w-full px-3 py-2 rounded-xl bg-[#E41937] hover:bg-[#c5122d] text-white text-xs font-bold cursor-pointer"
                           >
                             {loadingPreview ? 'Checking Conflicts...' : 'Preview Generated Sessions'}
                           </button>
@@ -1970,7 +1970,7 @@ export const AdminCalendar: React.FC = () => {
                                   }}
                                   className={`px-3 py-1 rounded-xl text-xs font-bold border cursor-pointer ${
                                     selected
-                                      ? 'bg-blue-600 text-white border-blue-600'
+                                      ? 'bg-[#1F386B] text-white border-blue-600'
                                       : 'bg-white text-slate-600 border-slate-200'
                                   }`}
                                 >
@@ -2043,7 +2043,7 @@ export const AdminCalendar: React.FC = () => {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-sm cursor-pointer disabled:opacity-50"
+                  className="px-5 py-2.5 rounded-xl bg-[#E41937] hover:bg-[#c5122d] text-white text-xs font-bold shadow-sm cursor-pointer disabled:opacity-50"
                 >
                   {submitting
                     ? 'Verifying Conflicts & Saving...'
@@ -2064,7 +2064,7 @@ export const AdminCalendar: React.FC = () => {
       ===================================================================== */}
       {inspectingSession && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-2xl w-full max-h-[88vh] flex flex-col overflow-hidden">
+          <div className="bg-white rounded-xl border border-slate-200 border-b-[3px] border-b-[#1F386B] shadow-2xl max-w-2xl w-full max-h-[88vh] flex flex-col overflow-hidden">
             <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
               <div className="flex items-center gap-2">
                 <span
@@ -2128,7 +2128,7 @@ export const AdminCalendar: React.FC = () => {
                     href={inspectingSession.liveSessionUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="font-bold text-blue-600 hover:underline break-all"
+                    className="font-bold text-[#1F386B] hover:underline break-all"
                   >
                     {inspectingSession.liveSessionUrl}
                   </a>
@@ -2156,7 +2156,7 @@ export const AdminCalendar: React.FC = () => {
                     (inspectingSession.changeHistory || []).map((h, i) => (
                       <div key={i} className="p-3 text-xs space-y-0.5">
                         <div className="flex items-center justify-between">
-                          <span className="font-extrabold uppercase text-blue-700">{h.action}</span>
+                          <span className="font-extrabold uppercase text-[#1F386B]">{h.action}</span>
                           <span className="text-[11px] text-slate-400">
                             {new Date(h.updatedAt).toLocaleString()} by {h.updatedBy}
                           </span>
@@ -2197,7 +2197,7 @@ export const AdminCalendar: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => openEditModal(inspectingSession)}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#E41937] hover:bg-[#c5122d] text-white text-xs font-bold cursor-pointer"
                 >
                   <Edit3 className="w-3.5 h-3.5" />
                   Edit / Reschedule
@@ -2215,7 +2215,7 @@ export const AdminCalendar: React.FC = () => {
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
           <form
             onSubmit={handleConfirmCancel}
-            className="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-md w-full p-6 space-y-4"
+            className="bg-white rounded-xl border border-slate-200 border-b-[3px] border-b-[#1F386B] shadow-2xl max-w-md w-full p-6 space-y-4"
           >
             <div className="flex items-center gap-2.5 text-rose-600">
               <Ban className="w-6 h-6" />

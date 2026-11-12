@@ -58,14 +58,14 @@ export const DashboardProgress: React.FC = () => {
       <div className="p-6 sm:p-8 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="space-y-1">
-            <span className="text-xs font-bold text-blue-600 uppercase tracking-wider">
+            <span className="text-xs font-bold text-[#1F386B] uppercase tracking-wider">
               {primary?.workshop?.batchCode || 'Bootcamp Cohort'}
             </span>
             <h3 className="text-lg font-bold text-[#0F172A]">Overall Bootcamp Completion</h3>
           </div>
 
           <div className="text-left sm:text-right">
-            <span className="text-3xl font-black text-blue-600">{percentage}%</span>
+            <span className="text-3xl font-black text-[#1F386B]">{percentage}%</span>
             <span className="text-xs text-slate-400 block font-medium">Completed</span>
           </div>
         </div>
@@ -73,7 +73,7 @@ export const DashboardProgress: React.FC = () => {
         {/* Progress Bar */}
         <div className="w-full bg-slate-100 rounded-full h-3.5 overflow-hidden p-0.5 border border-slate-200">
           <div
-            className="bg-blue-600 h-full rounded-full transition-all duration-500"
+            className="bg-[#1F386B] h-full rounded-full transition-all duration-500"
             style={{ width: `${Math.max(percentage, 5)}%` }}
           />
         </div>

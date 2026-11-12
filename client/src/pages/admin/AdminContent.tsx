@@ -111,7 +111,7 @@ export const AdminContent: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-white p-6 rounded-xl border border-slate-200 border-b-[3px] border-b-[#1F386B] shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-xl font-black text-[#0F172A]">
             Content, Materials, Assignments & Notifications CMS
@@ -125,7 +125,7 @@ export const AdminContent: React.FC = () => {
             variant="outline"
             size="sm"
             onClick={() => setIsNotifyModalOpen(true)}
-            leftIcon={<Bell className="w-4 h-4 text-blue-600" />}
+            leftIcon={<Bell className="w-4 h-4 text-[#1F386B]" />}
           >
             Send Announcement
           </Button>
@@ -158,7 +158,7 @@ export const AdminContent: React.FC = () => {
             onClick={() => setCategoryFilter(cat.id)}
             className={`px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-colors cursor-pointer ${
               categoryFilter === cat.id
-                ? 'bg-blue-600 text-white shadow-xs'
+                ? 'bg-[#1F386B] text-white shadow-xs'
                 : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
             }`}
           >
@@ -168,8 +168,8 @@ export const AdminContent: React.FC = () => {
       </div>
 
       {isLoading ? (
-        <div className="p-12 text-center bg-white rounded-3xl border border-slate-200">
-          <RefreshCw className="w-5 h-5 text-blue-600 animate-spin mx-auto mb-2" />
+        <div className="p-12 text-center bg-white rounded-xl border border-slate-200 border-b-[3px] border-b-[#1F386B]">
+          <RefreshCw className="w-5 h-5 text-[#1F386B] animate-spin mx-auto mb-2" />
           <p className="text-xs text-slate-500">Loading content library...</p>
         </div>
       ) : (
@@ -177,11 +177,11 @@ export const AdminContent: React.FC = () => {
           {resources.map((item) => (
             <div
               key={item._id}
-              className="bg-white rounded-3xl border border-slate-200 p-5 shadow-xs flex flex-col justify-between space-y-3"
+              className="bg-white rounded-xl border border-slate-200 border-b-[3px] border-b-[#1F386B] p-5 shadow-xs flex flex-col justify-between space-y-3"
             >
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-bold uppercase px-2.5 py-0.5 rounded-lg bg-blue-50 text-blue-600 border border-blue-200">
+                  <span className="text-[10px] font-bold uppercase px-2.5 py-0.5 rounded-lg bg-[#1F386B]/[0.06] text-[#1F386B] border border-[#1F386B]/20">
                     {item.category?.replace(/_/g, ' ')}
                   </span>
                   <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-500">
@@ -220,7 +220,7 @@ export const AdminContent: React.FC = () => {
       )}
 
       {/* Student Assignment & Capstone Submissions Review Queue */}
-      <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-xs space-y-4">
+      <div className="bg-white p-6 rounded-xl border border-slate-200 border-b-[3px] border-b-[#1F386B] shadow-xs space-y-4">
         <div className="flex items-center justify-between">
           <div>
             <h3 className="text-sm font-bold text-[#0F172A]">
@@ -230,7 +230,7 @@ export const AdminContent: React.FC = () => {
               Review submitted student projects, publish instructor feedback, and approve graduation deliverables.
             </p>
           </div>
-          <span className="text-xs font-bold text-blue-600 bg-blue-50 px-3 py-1 rounded-xl border border-blue-200">
+          <span className="text-xs font-bold text-[#1F386B] bg-[#1F386B]/[0.06] px-3 py-1 rounded-xl border border-[#1F386B]/20">
             {submissions.length} Submission(s)
           </span>
         </div>
@@ -264,7 +264,7 @@ export const AdminContent: React.FC = () => {
                           href={sub.repositoryUrl}
                           target="_blank"
                           rel="noreferrer"
-                          className="inline-flex items-center gap-1 text-blue-600 font-semibold hover:underline"
+                          className="inline-flex items-center gap-1 text-[#1F386B] font-semibold hover:underline"
                         >
                           <span>Repo</span>
                           <ExternalLink className="w-3 h-3" />
@@ -275,7 +275,7 @@ export const AdminContent: React.FC = () => {
                           href={sub.liveDemoUrl}
                           target="_blank"
                           rel="noreferrer"
-                          className="inline-flex items-center gap-1 text-indigo-600 font-semibold hover:underline"
+                          className="inline-flex items-center gap-1 text-[#E41937] font-semibold hover:underline"
                         >
                           <span>Demo</span>
                           <ExternalLink className="w-3 h-3" />
@@ -316,10 +316,10 @@ export const AdminContent: React.FC = () => {
       {/* Broadcast Notification / Announcement Modal */}
       {isNotifyModalOpen && (
         <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl border border-slate-200 max-w-md w-full p-6 space-y-4 shadow-2xl">
+          <div className="bg-white rounded-xl border border-slate-200 border-b-[3px] border-b-[#1F386B] max-w-md w-full p-6 space-y-4 shadow-2xl">
             <div className="flex items-center justify-between border-b border-slate-200 pb-3">
               <div className="flex items-center gap-2">
-                <Bell className="w-5 h-5 text-blue-600" />
+                <Bell className="w-5 h-5 text-[#1F386B]" />
                 <h3 className="text-base font-black text-[#0F172A]">
                   Broadcast Cohort Announcement
                 </h3>
@@ -408,7 +408,7 @@ export const AdminContent: React.FC = () => {
 
       {isModalOpen && (
         <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl border border-slate-200 max-w-md w-full p-6 space-y-4 shadow-2xl">
+          <div className="bg-white rounded-xl border border-slate-200 border-b-[3px] border-b-[#1F386B] max-w-md w-full p-6 space-y-4 shadow-2xl">
             <div className="flex items-center justify-between border-b border-slate-200 pb-3">
               <h3 className="text-base font-black text-[#0F172A]">Publish Content Resource</h3>
               <button onClick={() => setIsModalOpen(false)} className="p-1 text-slate-400 cursor-pointer">

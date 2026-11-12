@@ -163,7 +163,7 @@ export const AdminConsoleModal: React.FC<AdminConsoleModalProps> = ({
         {/* Header Bar */}
         <div className="p-5 sm:p-6 bg-slate-50 border-b border-slate-200 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 border border-blue-200 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-[#1F386B]/[0.06] text-[#1F386B] border border-[#1F386B]/20 flex items-center justify-center">
               <ShieldAlert className="w-5 h-5" />
             </div>
             <div>
@@ -190,7 +190,7 @@ export const AdminConsoleModal: React.FC<AdminConsoleModalProps> = ({
         {/* Body Content */}
         <div className="p-6 overflow-y-auto space-y-6 flex-1">
           {actionMessage && (
-            <div className="p-3.5 rounded-xl bg-blue-50 border border-blue-200 text-blue-700 text-xs flex items-center justify-between">
+            <div className="p-3.5 rounded-xl bg-[#1F386B]/[0.06] border border-[#1F386B]/20 text-[#1F386B] text-xs flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 shrink-0" />
                 <span>{actionMessage}</span>
@@ -206,18 +206,18 @@ export const AdminConsoleModal: React.FC<AdminConsoleModalProps> = ({
             <Card className="p-4 bg-slate-50 border-slate-200">
               <div className="flex items-center justify-between text-xs text-slate-500">
                 <span>Total Revenue</span>
-                <DollarSign className="w-4 h-4 text-blue-600" />
+                <DollarSign className="w-4 h-4 text-[#1F386B]" />
               </div>
               <div className="text-xl font-black text-[#0F172A] mt-2">
                 ₹{(metrics?.totalRevenue || 0).toLocaleString('en-IN')}
               </div>
-              <div className="text-[10px] text-blue-600 font-medium mt-1">Verified Razorpay Captured</div>
+              <div className="text-[10px] text-[#1F386B] font-medium mt-1">Verified Razorpay Captured</div>
             </Card>
 
             <Card className="p-4 bg-slate-50 border-slate-200">
               <div className="flex items-center justify-between text-xs text-slate-500">
                 <span>Total Registrations</span>
-                <Users className="w-4 h-4 text-blue-600" />
+                <Users className="w-4 h-4 text-[#1F386B]" />
               </div>
               <div className="text-xl font-black text-[#0F172A] mt-2">
                 {metrics?.totalEnrollments || 0}
@@ -230,7 +230,7 @@ export const AdminConsoleModal: React.FC<AdminConsoleModalProps> = ({
             <Card className="p-4 bg-slate-50 border-slate-200">
               <div className="flex items-center justify-between text-xs text-slate-500">
                 <span>Seat Utilization</span>
-                <TrendingUp className="w-4 h-4 text-blue-600" />
+                <TrendingUp className="w-4 h-4 text-[#1F386B]" />
               </div>
               <div className="text-xl font-black text-[#0F172A] mt-2">
                 {metrics?.capacityFillRate || 0}%
@@ -241,12 +241,12 @@ export const AdminConsoleModal: React.FC<AdminConsoleModalProps> = ({
             <Card className="p-4 bg-slate-50 border-slate-200">
               <div className="flex items-center justify-between text-xs text-slate-500">
                 <span>Certificates Issued</span>
-                <Award className="w-4 h-4 text-blue-600" />
+                <Award className="w-4 h-4 text-[#1F386B]" />
               </div>
               <div className="text-xl font-black text-[#0F172A] mt-2">
                 {metrics?.totalCertificates || 0}
               </div>
-              <div className="text-[10px] text-blue-600 font-medium mt-1">Verifiable Credentials</div>
+              <div className="text-[10px] text-[#1F386B] font-medium mt-1">Verifiable Credentials</div>
             </Card>
           </div>
 
@@ -260,7 +260,7 @@ export const AdminConsoleModal: React.FC<AdminConsoleModalProps> = ({
                     setSelectedWorkshopId(e.target.value);
                     fetchRoster(e.target.value);
                   }}
-                  className="bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs text-[#0F172A] focus:outline-none focus:ring-2 focus:ring-blue-600"
+                  className="bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs text-[#0F172A] focus:outline-none focus:ring-2 focus:ring-[#1F386B]"
                 >
                   {workshops.map((w) => (
                     <option key={w.id} value={w.id}>
@@ -276,7 +276,7 @@ export const AdminConsoleModal: React.FC<AdminConsoleModalProps> = ({
                     placeholder="Search attendee or email..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="bg-slate-50 border border-slate-300 rounded-xl pl-8 pr-3 py-1.5 text-xs text-[#0F172A] placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                    className="bg-slate-50 border border-slate-300 rounded-xl pl-8 pr-3 py-1.5 text-xs text-[#0F172A] placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1F386B]"
                   />
                 </div>
               </div>
@@ -310,7 +310,7 @@ export const AdminConsoleModal: React.FC<AdminConsoleModalProps> = ({
                   {isLoading ? (
                     <tr>
                       <td colSpan={7} className="py-12 text-center text-slate-400">
-                        <Loader2 className="w-6 h-6 animate-spin mx-auto mb-2 text-blue-600" />
+                        <Loader2 className="w-6 h-6 animate-spin mx-auto mb-2 text-[#1F386B]" />
                         Loading attendee roster...
                       </td>
                     </tr>
@@ -323,7 +323,7 @@ export const AdminConsoleModal: React.FC<AdminConsoleModalProps> = ({
                   ) : (
                     filteredRoster.map((attendee) => (
                       <tr key={attendee.enrollmentId} className="hover:bg-slate-50 transition-colors">
-                        <td className="py-3 px-4 font-mono font-bold text-blue-600">
+                        <td className="py-3 px-4 font-mono font-bold text-[#1F386B]">
                           {attendee.enrollmentId}
                         </td>
                         <td className="py-3 px-4 font-semibold text-[#0F172A]">
@@ -347,7 +347,7 @@ export const AdminConsoleModal: React.FC<AdminConsoleModalProps> = ({
                             onChange={() =>
                               handleToggleAttendance(attendee.enrollmentId, 1, attendee.day1Attended)
                             }
-                            className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-600 cursor-pointer"
+                            className="w-4 h-4 rounded border-slate-300 text-[#1F386B] focus:ring-[#1F386B] cursor-pointer"
                           />
                         </td>
                         <td className="py-3 px-4 text-center">
@@ -357,14 +357,14 @@ export const AdminConsoleModal: React.FC<AdminConsoleModalProps> = ({
                             onChange={() =>
                               handleToggleAttendance(attendee.enrollmentId, 2, attendee.day2Attended)
                             }
-                            className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-600 cursor-pointer"
+                            className="w-4 h-4 rounded border-slate-300 text-[#1F386B] focus:ring-[#1F386B] cursor-pointer"
                           />
                         </td>
                         <td className="py-3 px-4 text-right">
                           <button
                             type="button"
                             onClick={() => handleIssueCertificate(attendee.enrollmentId)}
-                            className="inline-flex items-center gap-1 text-[11px] text-blue-600 hover:text-blue-800 font-semibold"
+                            className="inline-flex items-center gap-1 text-[11px] text-[#1F386B] hover:text-[#1F386B] font-semibold"
                           >
                             <Award className="w-3.5 h-3.5" />
                             <span>Issue Cert</span>

@@ -64,7 +64,7 @@ export const AdminInstructors: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-white p-6 rounded-xl border border-slate-200 border-b-[3px] border-b-[#1F386B] shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-xl font-black text-[#0F172A]">Instructor Management</h2>
           <p className="text-xs text-slate-500">
@@ -82,8 +82,8 @@ export const AdminInstructors: React.FC = () => {
       </div>
 
       {isLoading ? (
-        <div className="p-12 text-center bg-white rounded-3xl border border-slate-200">
-          <RefreshCw className="w-5 h-5 text-blue-600 animate-spin mx-auto mb-2" />
+        <div className="p-12 text-center bg-white rounded-xl border border-slate-200 border-b-[3px] border-b-[#1F386B]">
+          <RefreshCw className="w-5 h-5 text-[#1F386B] animate-spin mx-auto mb-2" />
           <p className="text-xs text-slate-500">Loading faculty directory...</p>
         </div>
       ) : (
@@ -91,11 +91,11 @@ export const AdminInstructors: React.FC = () => {
           {instructors.map((inst) => (
             <div
               key={inst._id}
-              className="bg-white rounded-3xl border border-slate-200 p-6 shadow-xs space-y-4"
+              className="bg-white rounded-xl border border-slate-200 border-b-[3px] border-b-[#1F386B] p-6 shadow-xs space-y-4"
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-center gap-3">
-                  <div className="w-11 h-11 rounded-2xl bg-blue-600 text-white font-black text-base flex items-center justify-center shrink-0">
+                  <div className="w-11 h-11 rounded-2xl bg-[#1F386B] text-white font-black text-base flex items-center justify-center shrink-0">
                     {inst.name?.charAt(0) || 'I'}
                   </div>
                   <div>
@@ -143,7 +143,7 @@ export const AdminInstructors: React.FC = () => {
                     {(inst.assignedBatches || []).map((b: any) => b.batchCode).join(', ') || 'All Cohorts'}
                   </strong>
                 </span>
-                <span className="font-bold text-blue-600">
+                <span className="font-bold text-[#1F386B]">
                   {inst.scheduledSessionsCount || 2} Sessions
                 </span>
               </div>
@@ -154,10 +154,10 @@ export const AdminInstructors: React.FC = () => {
 
       {isModalOpen && (
         <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl border border-slate-200 max-w-md w-full p-6 space-y-4 shadow-2xl">
+          <div className="bg-white rounded-xl border border-slate-200 border-b-[3px] border-b-[#1F386B] max-w-md w-full p-6 space-y-4 shadow-2xl">
             <div className="flex items-center justify-between border-b border-slate-200 pb-3">
               <div className="flex items-center gap-2">
-                <UserCheck className="w-5 h-5 text-blue-600" />
+                <UserCheck className="w-5 h-5 text-[#1F386B]" />
                 <h3 className="text-base font-black text-[#0F172A]">Add Instructor Profile</h3>
               </div>
               <button onClick={() => setIsModalOpen(false)} className="p-1 text-slate-400 cursor-pointer">

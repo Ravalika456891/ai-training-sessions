@@ -63,26 +63,26 @@ export const AdminCertificates: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-white p-6 rounded-xl border border-slate-200 border-b-[3px] border-b-[#1F386B] shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-xl font-black text-[#0F172A]">Certificate Issuance & Registry</h2>
           <p className="text-xs text-slate-500">
             Review completion eligibility, issue cryptographically signed credentials, and manage revocations.
           </p>
         </div>
-        <span className="text-xs font-bold text-blue-600 bg-blue-50 px-3 py-1.5 rounded-xl border border-blue-200 self-start">
+        <span className="text-xs font-bold text-[#1F386B] bg-[#1F386B]/[0.06] px-3 py-1.5 rounded-xl border border-[#1F386B]/20 self-start">
           Issued Credentials: {certificates.filter((c) => !c.isRevoked).length}
         </span>
       </div>
 
       {/* Completion Eligibility Queue */}
-      <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-xs space-y-4">
+      <div className="bg-white p-6 rounded-xl border border-slate-200 border-b-[3px] border-b-[#1F386B] shadow-xs space-y-4">
         <h3 className="text-sm font-bold text-[#0F172A]">
           Completion Eligibility & Approval Queue
         </h3>
         {isLoading ? (
           <div className="p-8 text-center">
-            <RefreshCw className="w-5 h-5 text-blue-600 animate-spin mx-auto mb-2" />
+            <RefreshCw className="w-5 h-5 text-[#1F386B] animate-spin mx-auto mb-2" />
             <p className="text-xs text-slate-500">Evaluating eligible students...</p>
           </div>
         ) : candidates.length === 0 ? (
@@ -122,7 +122,7 @@ export const AdminCertificates: React.FC = () => {
                       ) : (
                         <button
                           onClick={() => handleIssue(cand)}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold cursor-pointer"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#E41937] hover:bg-[#c5122d] text-white font-bold cursor-pointer"
                         >
                           <Award className="w-3.5 h-3.5" />
                           <span>Approve & Issue</span>
@@ -138,7 +138,7 @@ export const AdminCertificates: React.FC = () => {
       </div>
 
       {/* Issued Certificates Registry */}
-      <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-xs space-y-4">
+      <div className="bg-white p-6 rounded-xl border border-slate-200 border-b-[3px] border-b-[#1F386B] shadow-xs space-y-4">
         <h3 className="text-sm font-bold text-[#0F172A]">Official Certificate Registry</h3>
         {certificates.length === 0 ? (
           <p className="text-xs text-slate-400 py-4 text-center">No certificates issued yet.</p>
@@ -157,7 +157,7 @@ export const AdminCertificates: React.FC = () => {
               <tbody className="divide-y divide-slate-100">
                 {certificates.map((cert) => (
                   <tr key={cert._id || cert.serialNumber} className="hover:bg-slate-50">
-                    <td className="py-2.5 px-3 font-mono font-bold text-blue-600">
+                    <td className="py-2.5 px-3 font-mono font-bold text-[#1F386B]">
                       {cert.serialNumber}
                     </td>
                     <td className="py-2.5 px-3 font-bold text-[#0F172A]">{cert.recipientName}</td>

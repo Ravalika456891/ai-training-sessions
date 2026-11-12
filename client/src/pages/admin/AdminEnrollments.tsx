@@ -74,7 +74,7 @@ export const AdminEnrollments: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-xs space-y-4">
+      <div className="bg-white p-6 rounded-xl border border-slate-200 border-b-[3px] border-b-[#1F386B] shadow-xs space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <h2 className="text-xl font-black text-[#0F172A]">Registration & Enrollment Management</h2>
@@ -82,7 +82,7 @@ export const AdminEnrollments: React.FC = () => {
               Monitor workshop registrations, verify seat statuses, and process authorized cancellations.
             </p>
           </div>
-          <span className="text-xs font-bold text-blue-600 bg-blue-50 px-3 py-1.5 rounded-xl border border-blue-200 self-start">
+          <span className="text-xs font-bold text-[#1F386B] bg-[#1F386B]/[0.06] px-3 py-1.5 rounded-xl border border-[#1F386B]/20 self-start">
             Total Records: {pagination.total}
           </span>
         </div>
@@ -128,10 +128,10 @@ export const AdminEnrollments: React.FC = () => {
         </form>
       </div>
 
-      <div className="bg-white rounded-3xl border border-slate-200 shadow-xs overflow-hidden">
+      <div className="bg-white rounded-xl border border-slate-200 border-b-[3px] border-b-[#1F386B] shadow-xs overflow-hidden">
         {isLoading ? (
           <div className="p-12 text-center">
-            <RefreshCw className="w-5 h-5 text-blue-600 animate-spin mx-auto mb-2" />
+            <RefreshCw className="w-5 h-5 text-[#1F386B] animate-spin mx-auto mb-2" />
             <p className="text-xs text-slate-500">Loading registrations...</p>
           </div>
         ) : enrollments.length === 0 ? (
@@ -156,7 +156,7 @@ export const AdminEnrollments: React.FC = () => {
               <tbody className="divide-y divide-slate-100">
                 {enrollments.map((item) => (
                   <tr key={item._id} className="hover:bg-slate-50">
-                    <td className="py-3 px-4 font-mono font-bold text-blue-600">
+                    <td className="py-3 px-4 font-mono font-bold text-[#1F386B]">
                       {item.enrollmentId}
                     </td>
                     <td className="py-3 px-4">

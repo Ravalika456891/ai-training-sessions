@@ -107,10 +107,10 @@ export const DashboardProfile: React.FC = () => {
         <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-xs space-y-5">
           <div className="pb-3 border-b border-slate-100 flex items-center justify-between">
             <h3 className="text-sm font-bold text-[#0F172A] flex items-center gap-2">
-              <User className="w-4 h-4 text-indigo-600" />
+              <User className="w-4 h-4 text-[#E41937]" />
               <span>Personal Information</span>
             </h3>
-            <span className="text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-md bg-indigo-50 text-indigo-700 border border-indigo-200">
+            <span className="text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-md bg-[#E41937]/[0.08] text-[#E41937] border border-[#E41937]/25">
               {user?.role || 'learner'}
             </span>
           </div>
@@ -200,7 +200,7 @@ export const DashboardProfile: React.FC = () => {
             <button
               type="submit"
               disabled={isUpdatingProfile}
-              className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-sm transition-all cursor-pointer disabled:opacity-60"
+              className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-[#E41937] hover:bg-[#c5122d] text-white text-xs font-bold shadow-sm transition-all cursor-pointer disabled:opacity-60"
             >
               {isUpdatingProfile ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -216,7 +216,7 @@ export const DashboardProfile: React.FC = () => {
         <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-xs space-y-5">
           <div className="pb-3 border-b border-slate-100 flex items-center justify-between">
             <h3 className="text-sm font-bold text-[#0F172A] flex items-center gap-2">
-              <Lock className="w-4 h-4 text-purple-600" />
+              <Lock className="w-4 h-4 text-[#E41937]" />
               <span>Account Security Settings</span>
             </h3>
             <span className="text-[10px] text-slate-400 font-mono">Bcrypt Protected</span>
@@ -280,7 +280,7 @@ export const DashboardProfile: React.FC = () => {
             <button
               type="submit"
               disabled={isUpdatingPassword}
-              className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-colors cursor-pointer disabled:opacity-60"
+              className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-[#E41937] hover:bg-[#c5122d] text-white text-xs font-bold transition-colors cursor-pointer disabled:opacity-60"
             >
               {isUpdatingPassword ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -297,7 +297,7 @@ export const DashboardProfile: React.FC = () => {
       <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-xs space-y-4">
         <div className="flex items-center justify-between pb-3 border-b border-slate-100">
           <div className="flex items-center gap-2">
-            <CreditCard className="w-4 h-4 text-indigo-600" />
+            <CreditCard className="w-4 h-4 text-[#E41937]" />
             <h3 className="text-sm font-extrabold text-[#0F172A]">Payment History</h3>
           </div>
           <span className="text-xs font-semibold text-slate-500">
@@ -379,7 +379,7 @@ export const DashboardProfile: React.FC = () => {
                         {!w.isAuthorized ? (
                           <button
                             onClick={() => openCheckout(w.enrollmentId)}
-                            className="px-3 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-[11px] cursor-pointer"
+                            className="px-3 py-1 rounded-lg bg-[#E41937] hover:bg-[#c5122d] text-white font-bold text-[11px] cursor-pointer"
                           >
                             Pay Now
                           </button>

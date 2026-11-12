@@ -51,7 +51,7 @@ export const DashboardWorkshops: React.FC = () => {
       {/* Enrolled Workshops Section */}
       {workshops.length === 0 ? (
         <div className="p-8 rounded-3xl bg-white border border-slate-200 text-center space-y-3">
-          <div className="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto">
+          <div className="w-12 h-12 rounded-2xl bg-[#E41937]/[0.08] text-[#E41937] flex items-center justify-center mx-auto">
             <GraduationCap className="w-6 h-6" />
           </div>
           <h3 className="font-bold text-base text-[#0F172A]">No Workshops Enrolled Yet</h3>
@@ -77,7 +77,7 @@ export const DashboardWorkshops: React.FC = () => {
                       onClick={() => setSelectedEnrolledId(w.enrollmentId)}
                       className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                         isSelected
-                          ? 'bg-blue-600 text-white shadow-2xs'
+                          ? 'bg-[#1F386B] text-white shadow-2xs'
                           : 'text-slate-600 hover:text-[#0F172A]'
                       }`}
                     >
@@ -90,7 +90,7 @@ export const DashboardWorkshops: React.FC = () => {
                   onClick={() => setSelectedEnrolledId('all')}
                   className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                     selectedEnrolledId === 'all' || !selectedEnrolledId
-                      ? 'bg-white text-blue-700 shadow-2xs font-extrabold'
+                      ? 'bg-white text-[#1F386B] shadow-2xs font-extrabold'
                       : 'text-slate-600 hover:text-[#0F172A]'
                   }`}
                 >
@@ -113,7 +113,7 @@ export const DashboardWorkshops: React.FC = () => {
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                      <span className="font-mono text-xs font-bold text-indigo-600 bg-indigo-50 px-2.5 py-0.5 rounded-md border border-indigo-200">
+                      <span className="font-mono text-xs font-bold text-[#E41937] bg-[#E41937]/[0.08] px-2.5 py-0.5 rounded-md border border-[#E41937]/25">
                         {w.workshop?.batchCode || 'AILP-BATCH'}
                       </span>
                       <span
@@ -144,7 +144,7 @@ export const DashboardWorkshops: React.FC = () => {
                 {/* Metadata Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
                   <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-center gap-3">
-                    <Calendar className="w-4 h-4 text-indigo-600 shrink-0" />
+                    <Calendar className="w-4 h-4 text-[#E41937] shrink-0" />
                     <div>
                       <span className="text-[10px] text-slate-500 font-semibold block uppercase">
                         Dates
@@ -165,7 +165,7 @@ export const DashboardWorkshops: React.FC = () => {
                   </div>
 
                   <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-center gap-3">
-                    <Clock className="w-4 h-4 text-purple-600 shrink-0" />
+                    <Clock className="w-4 h-4 text-[#E41937] shrink-0" />
                     <div>
                       <span className="text-[10px] text-slate-500 font-semibold block uppercase">
                         Schedule
@@ -177,7 +177,7 @@ export const DashboardWorkshops: React.FC = () => {
                   </div>
 
                   <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-center gap-3">
-                    <User className="w-4 h-4 text-indigo-600 shrink-0" />
+                    <User className="w-4 h-4 text-[#E41937] shrink-0" />
                     <div>
                       <span className="text-[10px] text-slate-500 font-semibold block uppercase">
                         Instructor
@@ -192,7 +192,7 @@ export const DashboardWorkshops: React.FC = () => {
                 {/* Day 1 & Day 2 Curriculum & Schedule */}
                 <div className="space-y-2.5">
                   <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
-                    <Layers className="w-3.5 h-3.5 text-indigo-600" />
+                    <Layers className="w-3.5 h-3.5 text-[#E41937]" />
                     <span>Curriculum & Session Schedule</span>
                   </h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -202,7 +202,7 @@ export const DashboardWorkshops: React.FC = () => {
                         className="p-3.5 rounded-2xl bg-slate-50/80 border border-slate-200 space-y-1 text-xs"
                       >
                         <div className="flex items-center justify-between">
-                          <span className="font-bold text-indigo-600">Day {s.dayNumber}</span>
+                          <span className="font-bold text-[#E41937]">Day {s.dayNumber}</span>
                           <span className="text-[11px] text-slate-500">
                             {s.startTime} – {s.endTime}
                           </span>
@@ -231,12 +231,12 @@ export const DashboardWorkshops: React.FC = () => {
                           to="/dashboard/materials"
                           className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl border border-slate-200 hover:border-indigo-300 text-xs font-semibold text-[#0F172A] hover:bg-slate-50 transition-colors"
                         >
-                          <BookOpen className="w-3.5 h-3.5 text-indigo-600" />
+                          <BookOpen className="w-3.5 h-3.5 text-[#E41937]" />
                           <span>Materials</span>
                         </Link>
                         <Link
                           to="/dashboard/live-classes"
-                          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-sm transition-all"
+                          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#E41937] hover:bg-[#c5122d] text-white text-xs font-bold shadow-sm transition-all"
                         >
                           <Video className="w-3.5 h-3.5" />
                           <span>Join Live Class</span>
@@ -245,7 +245,7 @@ export const DashboardWorkshops: React.FC = () => {
                     ) : (
                       <button
                         onClick={() => openCheckout(w.enrollmentId)}
-                        className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-sm transition-all cursor-pointer"
+                        className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#E41937] hover:bg-[#c5122d] text-white text-xs font-bold shadow-sm transition-all cursor-pointer"
                       >
                         <CreditCard className="w-3.5 h-3.5" />
                         <span>Complete Payment</span>
@@ -286,7 +286,7 @@ export const DashboardWorkshops: React.FC = () => {
                       onClick={() => setSelectedOtherBatchId(b._id)}
                       className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                         isSelected
-                          ? 'bg-blue-600 text-white shadow-2xs'
+                          ? 'bg-[#1F386B] text-white shadow-2xs'
                           : 'text-slate-600 hover:text-[#0F172A]'
                       }`}
                     >
@@ -309,7 +309,7 @@ export const DashboardWorkshops: React.FC = () => {
                 >
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
-                      <span className="font-mono text-xs font-bold text-blue-600 bg-blue-50 px-2.5 py-0.5 rounded-md border border-blue-200">
+                      <span className="font-mono text-xs font-bold text-[#1F386B] bg-[#1F386B]/[0.06] px-2.5 py-0.5 rounded-md border border-[#1F386B]/20">
                         {batch.batchCode}
                       </span>
                       <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
@@ -321,7 +321,7 @@ export const DashboardWorkshops: React.FC = () => {
                       <p className="text-xs text-slate-500 mt-1">{batch.description}</p>
                     </div>
                     <p className="text-xs font-semibold text-[#0F172A] flex items-center gap-2">
-                      <Calendar className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                      <Calendar className="w-3.5 h-3.5 text-[#1F386B] shrink-0" />
                       <span>
                         {new Date(batch.startDate).toLocaleDateString('en-US', {
                           month: 'short',
@@ -348,7 +348,7 @@ export const DashboardWorkshops: React.FC = () => {
                             key={ps._id || ps.dayNumber}
                             className="p-2.5 rounded-xl bg-slate-50 border border-slate-200/80 text-xs flex items-start gap-2"
                           >
-                            <span className="font-bold text-blue-600 shrink-0">
+                            <span className="font-bold text-[#1F386B] shrink-0">
                               Day {ps.dayNumber}:
                             </span>
                             <span className="text-[#0F172A] font-medium">{ps.title}</span>
@@ -371,7 +371,7 @@ export const DashboardWorkshops: React.FC = () => {
                     <button
                       disabled={isEnrolling}
                       onClick={() => enrollInBatch(batch._id)}
-                      className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-xs transition-colors cursor-pointer disabled:opacity-60"
+                      className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-[#E41937] hover:bg-[#c5122d] text-white text-xs font-bold shadow-xs transition-colors cursor-pointer disabled:opacity-60"
                     >
                       <CreditCard className="w-3.5 h-3.5" />
                       <span>Enroll & Pay</span>

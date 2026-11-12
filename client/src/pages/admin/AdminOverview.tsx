@@ -38,8 +38,8 @@ export const AdminOverview: React.FC = () => {
 
   if (isLoading && !data) {
     return (
-      <div className="p-12 text-center bg-white rounded-3xl border border-slate-200">
-        <RefreshCw className="w-6 h-6 text-blue-600 animate-spin mx-auto mb-2" />
+      <div className="p-12 text-center bg-white rounded-xl border border-slate-200 border-b-[3px] border-b-[#1F386B]">
+        <RefreshCw className="w-6 h-6 text-[#1F386B] animate-spin mx-auto mb-2" />
         <p className="text-xs font-semibold text-slate-600">Loading live database metrics...</p>
       </div>
     );
@@ -52,42 +52,48 @@ export const AdminOverview: React.FC = () => {
       value: d.totalRegisteredStudents ?? 0,
       sub: `${d.activeStudents ?? 0} Active Accounts`,
       icon: Users,
-      color: 'text-blue-600 bg-blue-50 border-blue-200',
+      color: 'text-[#1F386B] bg-[#1F386B]/10 border-[#1F386B]/20',
+      borderClass: 'border-b-[#1F386B]',
     },
     {
       label: 'Total Workshops',
       value: d.totalWorkshops ?? 0,
       sub: `${d.upcomingWorkshops ?? 0} Published Upcoming`,
       icon: BookOpen,
-      color: 'text-indigo-600 bg-indigo-50 border-indigo-200',
+      color: 'text-[#E41937] bg-[#E41937]/10 border-[#E41937]/20',
+      borderClass: 'border-b-[#E41937]',
     },
     {
       label: 'Confirmed Enrollments',
       value: d.confirmedEnrollments ?? 0,
       sub: `${d.pendingEnrollments ?? 0} Pending Confirmation`,
       icon: CheckCircle2,
-      color: 'text-emerald-600 bg-emerald-50 border-emerald-200',
+      color: 'text-emerald-700 bg-emerald-50 border-emerald-200',
+      borderClass: 'border-b-[#1F386B]',
     },
     {
       label: 'Verified Revenue',
       value: `₹${Number(d.verifiedRevenue || 0).toLocaleString('en-IN')}`,
       sub: 'Captured Razorpay & Verified Seats',
       icon: IndianRupee,
-      color: 'text-blue-600 bg-blue-50 border-blue-200',
+      color: 'text-[#1F386B] bg-[#1F386B]/10 border-[#1F386B]/20',
+      borderClass: 'border-b-[#E41937]',
     },
     {
       label: 'Attendance Rate',
       value: `${d.attendancePercentage ?? 0}%`,
       sub: `Seat Fill Rate: ${d.capacityFillRate ?? 0}%`,
       icon: TrendingUp,
-      color: 'text-amber-600 bg-amber-50 border-amber-200',
+      color: 'text-amber-700 bg-amber-50 border-amber-200',
+      borderClass: 'border-b-[#1F386B]',
     },
     {
       label: 'Issued Certificates',
       value: d.totalCertificates ?? 0,
       sub: 'Cryptographically Signed',
       icon: Award,
-      color: 'text-purple-600 bg-purple-50 border-purple-200',
+      color: 'text-[#E41937] bg-[#E41937]/10 border-[#E41937]/20',
+      borderClass: 'border-b-[#E41937]',
     },
   ];
 
@@ -99,38 +105,46 @@ export const AdminOverview: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-6 rounded-3xl border border-slate-200 shadow-xs">
-        <div>
-          <h2 className="text-xl font-black text-[#0F172A]">Executive Operations Overview</h2>
-          <p className="text-xs text-slate-500 mt-0.5">
-            Real-time metrics aggregated directly from MongoDB Atlas collections.
-          </p>
+      {/* IIEM Deep Navy Hero Operations Header with Crimson Left Highlight */}
+      <div className="relative overflow-hidden flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gradient-to-r from-[#081e4a] via-[#1F386B] to-[#192e57] text-white p-6 rounded-xl border-b-4 border-b-[#E41937] shadow-md">
+        <div className="space-y-1.5">
+          <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded bg-white/10 border border-white/20 text-[10px] font-bold uppercase tracking-wider text-blue-100">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+            Live Institutional Telemetry
+          </div>
+          <h2 className="text-xl sm:text-2xl font-black uppercase tracking-tight text-white">
+            Executive Operations Overview
+          </h2>
+          <div className="border-l-4 border-[#E41937] bg-[#172a4f]/90 px-3 py-1 rounded-r">
+            <p className="text-xs text-blue-100 font-medium">
+              Real-time metrics aggregated directly from MongoDB Atlas collections.
+            </p>
+          </div>
         </div>
         <button
           onClick={loadDashboard}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-bold text-[#0F172A] transition-colors cursor-pointer self-start sm:self-auto"
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-[#E41937] hover:bg-[#c5122d] text-xs font-extrabold uppercase tracking-wide text-white transition-colors cursor-pointer self-start sm:self-auto shadow-md"
         >
-          <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin text-blue-600' : ''}`} />
+          <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin' : ''}`} />
           <span>Refresh Metrics</span>
         </button>
       </div>
 
-      {/* 6 KPI Summary Cards */}
+      {/* 6 KPI Summary Cards (IIEM Navy / Crimson Bottom Trim) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {kpis.map((item, idx) => {
           const Icon = item.icon;
           return (
             <div
               key={idx}
-              className="bg-white p-5 rounded-3xl border border-slate-200 shadow-xs flex items-start justify-between gap-4"
+              className={`bg-white p-5 rounded-xl border border-slate-200 border-b-[3px] ${item.borderClass} hover:border-b-[#E41937] transition-colors shadow-xs flex items-start justify-between gap-4`}
             >
               <div>
-                <p className="text-xs font-semibold text-slate-500">{item.label}</p>
-                <p className="text-2xl font-black text-[#0F172A] mt-1">{item.value}</p>
+                <p className="text-xs font-bold uppercase tracking-wide text-slate-500">{item.label}</p>
+                <p className="text-2xl font-black text-[#1F386B] mt-1">{item.value}</p>
                 <p className="text-[11px] text-slate-500 mt-1">{item.sub}</p>
               </div>
-              <div className={`w-10 h-10 rounded-2xl border flex items-center justify-center shrink-0 ${item.color}`}>
+              <div className={`w-11 h-11 rounded-full border flex items-center justify-center shrink-0 ${item.color}`}>
                 <Icon className="w-5 h-5" />
               </div>
             </div>
@@ -141,13 +155,13 @@ export const AdminOverview: React.FC = () => {
       {/* Enrollment & Revenue Trend Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Enrollment Trend Chart */}
-        <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-xs space-y-4">
+        <div className="bg-white p-6 rounded-xl border border-slate-200 border-b-[3px] border-b-[#1F386B] shadow-xs space-y-4">
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-sm font-bold text-[#0F172A]">Enrollment Trend by Cohort Batch</h3>
               <p className="text-[11px] text-slate-500">Confirmed seats vs. total batch capacity</p>
             </div>
-            <Link to="/admin/workshops" className="text-xs font-bold text-blue-600 hover:underline">
+            <Link to="/admin/workshops" className="text-xs font-bold text-[#1F386B] hover:underline">
               Manage Batches
             </Link>
           </div>
@@ -170,7 +184,7 @@ export const AdminOverview: React.FC = () => {
                     </div>
                     <div className="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
                       <div
-                        className="h-full bg-blue-600 rounded-full transition-all duration-500"
+                        className="h-full bg-[#1F386B] rounded-full transition-all duration-500"
                         style={{ width: `${pct}%` }}
                       />
                     </div>
@@ -182,25 +196,25 @@ export const AdminOverview: React.FC = () => {
         </div>
 
         {/* Revenue Trend & Pending Actions */}
-        <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-xs space-y-4">
+        <div className="bg-white p-6 rounded-xl border border-slate-200 border-b-[3px] border-b-[#1F386B] shadow-xs space-y-4">
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-sm font-bold text-[#0F172A]">Pending Administrative Actions</h3>
               <p className="text-[11px] text-slate-500">Operational tasks requiring attention</p>
             </div>
-            <Clock className="w-4 h-4 text-blue-600" />
+            <Clock className="w-4 h-4 text-[#1F386B]" />
           </div>
           <div className="space-y-2.5">
             {pendingActions.map((act: any) => (
               <Link
                 key={act.id}
                 to={act.link || '/admin'}
-                className="flex items-center justify-between p-3.5 rounded-2xl bg-slate-50 hover:bg-blue-50/50 border border-slate-200 transition-colors"
+                className="flex items-center justify-between p-3.5 rounded-2xl bg-slate-50 hover:bg-[#1F386B]/10 border border-slate-200 transition-colors"
               >
                 <div className="flex items-center gap-2.5 min-w-0">
                   <AlertTriangle
                     className={`w-4 h-4 shrink-0 ${
-                      act.priority === 'high' ? 'text-amber-600' : 'text-blue-600'
+                      act.priority === 'high' ? 'text-amber-600' : 'text-[#1F386B]'
                     }`}
                   />
                   <span className="text-xs font-semibold text-[#0F172A] truncate">{act.title}</span>
@@ -229,10 +243,10 @@ export const AdminOverview: React.FC = () => {
       {/* Recent Registrations & Upcoming Sessions */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Recent Registrations Table */}
-        <div className="lg:col-span-7 bg-white p-6 rounded-3xl border border-slate-200 shadow-xs space-y-4">
+        <div className="lg:col-span-7 bg-white p-6 rounded-xl border border-slate-200 border-b-[3px] border-b-[#1F386B] shadow-xs space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-bold text-[#0F172A]">Recent Student Registrations</h3>
-            <Link to="/admin/enrollments" className="text-xs font-bold text-blue-600 hover:underline">
+            <Link to="/admin/enrollments" className="text-xs font-bold text-[#1F386B] hover:underline">
               View All
             </Link>
           </div>
@@ -254,7 +268,7 @@ export const AdminOverview: React.FC = () => {
                 <tbody className="divide-y divide-slate-100">
                   {recentRegistrations.map((reg, idx) => (
                     <tr key={reg._id || idx} className="hover:bg-slate-50">
-                      <td className="py-2.5 px-2 font-mono font-bold text-blue-600">
+                      <td className="py-2.5 px-2 font-mono font-bold text-[#1F386B]">
                         {reg.enrollmentId}
                       </td>
                       <td className="py-2.5 px-2">
@@ -284,10 +298,10 @@ export const AdminOverview: React.FC = () => {
         </div>
 
         {/* Upcoming Sessions */}
-        <div className="lg:col-span-5 bg-white p-6 rounded-3xl border border-slate-200 shadow-xs space-y-4">
+        <div className="lg:col-span-5 bg-white p-6 rounded-xl border border-slate-200 border-b-[3px] border-b-[#1F386B] shadow-xs space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-bold text-[#0F172A]">Upcoming Scheduled Cohorts</h3>
-            <Link to="/admin/sessions" className="text-xs font-bold text-blue-600 hover:underline">
+            <Link to="/admin/sessions" className="text-xs font-bold text-[#1F386B] hover:underline">
               Schedule
             </Link>
           </div>
@@ -298,7 +312,7 @@ export const AdminOverview: React.FC = () => {
                 className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2"
               >
                 <div className="flex items-center justify-between">
-                  <span className="text-[11px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md border border-blue-200">
+                  <span className="text-[11px] font-bold text-[#1F386B] bg-[#1F386B]/[0.06] px-2 py-0.5 rounded-md border border-[#1F386B]/20">
                     {ses.batchCode}
                   </span>
                   <span className="text-[11px] font-semibold text-slate-600">
@@ -308,7 +322,7 @@ export const AdminOverview: React.FC = () => {
                 <p className="text-xs font-bold text-[#0F172A]">{ses.title}</p>
                 <div className="flex items-center justify-between text-[11px] text-slate-500">
                   <span className="flex items-center gap-1">
-                    <Calendar className="w-3.5 h-3.5 text-blue-600" />
+                    <Calendar className="w-3.5 h-3.5 text-[#1F386B]" />
                     {ses.startDate ? new Date(ses.startDate).toLocaleDateString() : 'Upcoming'}
                   </span>
                   <span>Lead: {ses.instructorName}</span>

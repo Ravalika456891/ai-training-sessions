@@ -195,7 +195,7 @@ export const DashboardLiveClasses: React.FC = () => {
                   }}
                   className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                     isSelected
-                      ? 'bg-blue-600 text-white shadow-xs'
+                      ? 'bg-[#1F386B] text-white shadow-xs'
                       : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                   }`}
                 >
@@ -210,8 +210,8 @@ export const DashboardLiveClasses: React.FC = () => {
         <div className="p-6 sm:p-8 rounded-3xl bg-white text-[#0F172A] border border-slate-200 shadow-xs space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
             <div className="space-y-1.5">
-              <span className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-blue-700 bg-blue-50 px-2.5 py-0.5 rounded-md border border-blue-200">
-                <Sparkles className="w-3.5 h-3.5 text-blue-600" />
+              <span className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-[#1F386B] bg-[#1F386B]/[0.06] px-2.5 py-0.5 rounded-md border border-[#1F386B]/20">
+                <Sparkles className="w-3.5 h-3.5 text-[#1F386B]" />
                 <span>
                   {isAuthorized ? 'Interactive Live Session' : 'Live Schedule Preview'} • {batchCode}
                 </span>
@@ -233,7 +233,7 @@ export const DashboardLiveClasses: React.FC = () => {
                     ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
                     : primary
                     ? 'bg-amber-50 text-amber-800 border-amber-200'
-                    : 'bg-blue-50 text-blue-700 border-blue-200'
+                    : 'bg-[#1F386B]/[0.06] text-[#1F386B] border-[#1F386B]/20'
                 }`}
               >
                 {isAuthorized ? (
@@ -254,7 +254,7 @@ export const DashboardLiveClasses: React.FC = () => {
 
           {/* Join Session Action Box */}
           {isAuthorized ? (
-            <div className="p-5 rounded-2xl bg-blue-50/60 border border-blue-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="p-5 rounded-2xl bg-[#1F386B]/[0.06] border border-[#1F386B]/20 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="space-y-1">
                 <h4 className="font-bold text-sm text-[#0F172A]">Virtual Classroom Pass Unlocked</h4>
                 <p className="text-xs text-slate-600">
@@ -263,7 +263,7 @@ export const DashboardLiveClasses: React.FC = () => {
                 </p>
                 <div className="pt-1 text-xs font-mono text-slate-600">
                   Meeting Passcode:{' '}
-                  <span className="bg-white px-2.5 py-0.5 rounded border border-blue-200 font-bold text-blue-700">
+                  <span className="bg-white px-2.5 py-0.5 rounded border border-[#1F386B]/20 font-bold text-[#1F386B]">
                     {currentSession?.meetingPasscode ||
                       primary?.sessionAccess?.meetingPasscode ||
                       'AILP2026'}
@@ -278,7 +278,7 @@ export const DashboardLiveClasses: React.FC = () => {
                     onClick={() => handleDownloadIcs(currentSession)}
                     className="inline-flex items-center gap-1.5 px-4 py-3 rounded-xl bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 font-bold text-xs cursor-pointer"
                   >
-                    <Download className="w-3.5 h-3.5 text-blue-600" />
+                    <Download className="w-3.5 h-3.5 text-[#1F386B]" />
                     <span>Add to Calendar (.ics)</span>
                   </button>
                 )}
@@ -290,7 +290,7 @@ export const DashboardLiveClasses: React.FC = () => {
                   }
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-sm transition-all cursor-pointer shrink-0"
+                  className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-[#E41937] hover:bg-[#c5122d] text-white font-bold text-xs shadow-sm transition-all cursor-pointer shrink-0"
                 >
                   <Video className="w-4 h-4" />
                   <span>Join Session</span>
@@ -317,7 +317,7 @@ export const DashboardLiveClasses: React.FC = () => {
               {primary ? (
                 <button
                   onClick={() => openCheckout(primary.enrollmentId)}
-                  className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl shadow-xs shrink-0 cursor-pointer"
+                  className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-[#E41937] hover:bg-[#c5122d] text-white text-xs font-bold rounded-xl shadow-xs shrink-0 cursor-pointer"
                 >
                   <CreditCard className="w-4 h-4" />
                   <span>Enroll & Pay Now</span>
@@ -327,7 +327,7 @@ export const DashboardLiveClasses: React.FC = () => {
                   <button
                     disabled={isEnrolling}
                     onClick={() => enrollInBatch(previewBatch._id)}
-                    className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl shadow-xs shrink-0 cursor-pointer disabled:opacity-60"
+                    className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-[#E41937] hover:bg-[#c5122d] text-white text-xs font-bold rounded-xl shadow-xs shrink-0 cursor-pointer disabled:opacity-60"
                   >
                     <CreditCard className="w-4 h-4" />
                     <span>{isEnrolling ? 'Reserving...' : 'Enroll & Pay'}</span>
@@ -343,7 +343,7 @@ export const DashboardLiveClasses: React.FC = () => {
         <div className="space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <h3 className="text-base font-bold text-[#0F172A] flex items-center gap-2">
-              <Calendar className="w-4 h-4 text-blue-600" />
+              <Calendar className="w-4 h-4 text-[#1F386B]" />
               <span>
                 {selectedSessionId && selectedSessionId !== 'all'
                   ? 'Selected Interactive Session'
@@ -367,7 +367,7 @@ export const DashboardLiveClasses: React.FC = () => {
                       onClick={() => setSelectedSessionId(sid)}
                       className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                         isSelected
-                          ? 'bg-blue-600 text-white shadow-2xs'
+                          ? 'bg-[#1F386B] text-white shadow-2xs'
                           : 'text-slate-600 hover:text-[#0F172A]'
                       }`}
                     >
@@ -380,7 +380,7 @@ export const DashboardLiveClasses: React.FC = () => {
                   onClick={() => setSelectedSessionId('all')}
                   className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                     selectedSessionId === 'all'
-                      ? 'bg-white text-blue-700 shadow-2xs font-extrabold'
+                      ? 'bg-white text-[#1F386B] shadow-2xs font-extrabold'
                       : 'text-slate-600 hover:text-[#0F172A]'
                   }`}
                 >
@@ -406,7 +406,7 @@ export const DashboardLiveClasses: React.FC = () => {
               >
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div className="flex flex-wrap items-center gap-1.5">
-                    <span className="text-xs font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-md bg-blue-50 text-blue-700 border border-blue-200">
+                    <span className="text-xs font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-md bg-[#1F386B]/[0.06] text-[#1F386B] border border-[#1F386B]/20">
                       Session {s.dayNumber || idx + 1}
                     </span>
 
@@ -420,7 +420,7 @@ export const DashboardLiveClasses: React.FC = () => {
                         Live Now
                       </span>
                     ) : isCompleted ? (
-                      <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200">
+                      <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-[#E41937]/[0.08] text-[#E41937] border border-[#E41937]/25">
                         Completed
                       </span>
                     ) : (
@@ -438,7 +438,7 @@ export const DashboardLiveClasses: React.FC = () => {
                   </div>
 
                   <span className="text-xs text-slate-500 font-semibold flex items-center gap-1">
-                    <Calendar className="w-3.5 h-3.5 text-blue-600" />
+                    <Calendar className="w-3.5 h-3.5 text-[#1F386B]" />
                     {s.startAt || s.sessionDate
                       ? new Date(s.startAt || s.sessionDate).toLocaleDateString('en-US', {
                           weekday: 'short',
@@ -470,7 +470,7 @@ export const DashboardLiveClasses: React.FC = () => {
 
                 <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-slate-500 pt-2 border-t border-slate-100">
                   <span className="flex items-center gap-1.5 font-medium">
-                    <Clock className="w-3.5 h-3.5 text-blue-600" />
+                    <Clock className="w-3.5 h-3.5 text-[#1F386B]" />
                     {s.startTime} – {s.endTime} ({s.timezone})
                   </span>
 
@@ -506,7 +506,7 @@ export const DashboardLiveClasses: React.FC = () => {
                         href={s.liveSessionUrl}
                         target="_blank"
                         rel="noreferrer"
-                        className="font-bold text-blue-600 hover:underline flex items-center gap-1"
+                        className="font-bold text-[#1F386B] hover:underline flex items-center gap-1"
                       >
                         <span>Join Class</span>
                         <ExternalLink className="w-3 h-3" />
@@ -527,18 +527,18 @@ export const DashboardLiveClasses: React.FC = () => {
 
         {/* 3. Instructor Details Card */}
         <div className="p-6 rounded-3xl bg-white border border-slate-200 shadow-xs flex flex-col sm:flex-row items-start sm:items-center gap-5">
-          <div className="w-14 h-14 rounded-2xl bg-blue-600 text-white font-black text-xl flex items-center justify-center shrink-0">
+          <div className="w-14 h-14 rounded-2xl bg-[#1F386B] text-white font-black text-xl flex items-center justify-center shrink-0">
             {instructor.name ? instructor.name.charAt(0) : 'V'}
           </div>
           <div className="space-y-1 flex-1">
             <div className="flex items-center gap-2">
-              <User className="w-3.5 h-3.5 text-blue-600" />
-              <span className="text-[11px] font-bold uppercase tracking-wider text-blue-600">
+              <User className="w-3.5 h-3.5 text-[#1F386B]" />
+              <span className="text-[11px] font-bold uppercase tracking-wider text-[#1F386B]">
                 Lead Instructor
               </span>
             </div>
             <h4 className="text-base font-extrabold text-[#0F172A]">{instructor.name}</h4>
-            <p className="text-xs font-semibold text-blue-700">{instructor.role}</p>
+            <p className="text-xs font-semibold text-[#1F386B]">{instructor.role}</p>
             <p className="text-xs text-slate-500 leading-relaxed pt-0.5">{instructor.bio}</p>
           </div>
         </div>

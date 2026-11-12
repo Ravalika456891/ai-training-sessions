@@ -81,7 +81,7 @@ export const DashboardCertificates: React.FC = () => {
               certificates.length > 0
                 ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
                 : isEligible
-                ? 'bg-indigo-50 text-indigo-700 border-indigo-200'
+                ? 'bg-[#E41937]/[0.08] text-[#E41937] border-[#E41937]/25'
                 : 'bg-slate-100 text-slate-600 border-slate-200'
             }`}
           >
@@ -92,7 +92,7 @@ export const DashboardCertificates: React.FC = () => {
               </>
             ) : isEligible ? (
               <>
-                <Clock className="w-3.5 h-3.5 text-indigo-600" />
+                <Clock className="w-3.5 h-3.5 text-[#E41937]" />
                 <span>Eligible • Ready for Approval</span>
               </>
             ) : (
@@ -165,7 +165,7 @@ export const DashboardCertificates: React.FC = () => {
       {/* 2. Issued Certificates Grid */}
       {certificates.length === 0 ? (
         <div className="p-8 rounded-3xl bg-white border border-slate-200 text-center space-y-4">
-          <div className="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto">
+          <div className="w-12 h-12 rounded-2xl bg-[#E41937]/[0.08] text-[#E41937] flex items-center justify-center mx-auto">
             {isConfirmed ? <Award className="w-6 h-6" /> : <Lock className="w-6 h-6 text-amber-600" />}
           </div>
           <h3 className="font-bold text-base text-[#0F172A]">
@@ -197,7 +197,7 @@ export const DashboardCertificates: React.FC = () => {
                   <button
                     onClick={() => enrollInBatch(previewWorkshop._id)}
                     disabled={isEnrolling}
-                    className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-xs transition-all cursor-pointer disabled:opacity-60"
+                    className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-[#E41937] hover:bg-[#c5122d] text-white text-xs font-bold shadow-xs transition-all cursor-pointer disabled:opacity-60"
                   >
                     <CreditCard className="w-3.5 h-3.5" />
                     <span>
@@ -220,7 +220,7 @@ export const DashboardCertificates: React.FC = () => {
             >
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <div className="w-10 h-10 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-2xl bg-[#E41937]/[0.08] text-[#E41937] flex items-center justify-center">
                     <Award className="w-5 h-5" />
                   </div>
                   <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200">
@@ -242,7 +242,7 @@ export const DashboardCertificates: React.FC = () => {
                     <span className="text-slate-400 text-[10px] uppercase font-bold">
                       Serial Number
                     </span>
-                    <span className="font-bold text-indigo-600">{cert.serialNumber}</span>
+                    <span className="font-bold text-[#E41937]">{cert.serialNumber}</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-slate-400 text-[10px] uppercase font-bold">
@@ -260,7 +260,7 @@ export const DashboardCertificates: React.FC = () => {
                   onClick={() => {
                     setVerifySerialInput(cert.serialNumber);
                   }}
-                  className="text-xs font-semibold text-indigo-600 hover:underline flex items-center gap-1 cursor-pointer"
+                  className="text-xs font-semibold text-[#E41937] hover:underline flex items-center gap-1 cursor-pointer"
                 >
                   <ShieldCheck className="w-3.5 h-3.5" />
                   <span>Verify Serial</span>
@@ -268,7 +268,7 @@ export const DashboardCertificates: React.FC = () => {
 
                 <button
                   onClick={() => setSelectedCert(cert)}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-xs cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#E41937] hover:bg-[#c5122d] text-white text-xs font-bold shadow-xs cursor-pointer"
                 >
                   <ExternalLink className="w-3.5 h-3.5" />
                   <span>Download / View</span>
@@ -283,7 +283,7 @@ export const DashboardCertificates: React.FC = () => {
       <div className="p-6 rounded-3xl bg-white border border-slate-200 shadow-xs space-y-4">
         <div className="space-y-1">
           <h3 className="text-sm font-extrabold text-[#0F172A] flex items-center gap-2">
-            <ShieldCheck className="w-4 h-4 text-indigo-600" />
+            <ShieldCheck className="w-4 h-4 text-[#E41937]" />
             <span>Verify a Certificate Record</span>
           </h3>
           <p className="text-xs text-slate-500">
@@ -302,7 +302,7 @@ export const DashboardCertificates: React.FC = () => {
           <button
             type="submit"
             disabled={isVerifying}
-            className="inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold cursor-pointer shrink-0 transition-colors"
+            className="inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-xl bg-[#E41937] hover:bg-[#c5122d] text-white text-xs font-bold cursor-pointer shrink-0 transition-colors"
           >
             <Search className="w-3.5 h-3.5" />
             <span>{isVerifying ? 'Verifying...' : 'Verify Credential'}</span>
@@ -335,7 +335,7 @@ export const DashboardCertificates: React.FC = () => {
           <div className="bg-white max-w-xl w-full rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-2xl space-y-5">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <div className="flex items-center gap-2">
-                <Award className="w-5 h-5 text-indigo-600" />
+                <Award className="w-5 h-5 text-[#E41937]" />
                 <h3 className="font-bold text-base text-[#0F172A]">Verified Certificate</h3>
               </div>
               <button
@@ -346,16 +346,16 @@ export const DashboardCertificates: React.FC = () => {
               </button>
             </div>
 
-            <div className="p-6 sm:p-8 rounded-2xl bg-gradient-to-b from-blue-50/70 to-white text-[#0F172A] border-2 border-blue-200 text-center space-y-3">
-              <div className="w-12 h-12 rounded-full bg-blue-600 text-white flex items-center justify-center mx-auto shadow-sm">
+            <div className="p-6 sm:p-8 rounded-2xl bg-gradient-to-b from-blue-50/70 to-white text-[#0F172A] border-2 border-[#1F386B]/20 text-center space-y-3">
+              <div className="w-12 h-12 rounded-full bg-[#1F386B] text-white flex items-center justify-center mx-auto shadow-sm">
                 <Award className="w-6 h-6" />
               </div>
-              <span className="text-[10px] uppercase tracking-widest font-black text-blue-600">
+              <span className="text-[10px] uppercase tracking-widest font-black text-[#1F386B]">
                 AI LAUNCHPAD ACADEMY
               </span>
               <h2 className="text-xl font-black text-[#0F172A]">Certificate of Completion</h2>
               <p className="text-xs text-slate-500">This certifies that</p>
-              <div className="text-lg font-black text-blue-600">
+              <div className="text-lg font-black text-[#1F386B]">
                 {selectedCert.recipientName || 'Student'}
               </div>
               <p className="text-xs text-slate-600 max-w-md mx-auto">
@@ -376,7 +376,7 @@ export const DashboardCertificates: React.FC = () => {
               </button>
               <button
                 onClick={() => window.print()}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#E41937] hover:bg-[#c5122d] text-white text-xs font-bold cursor-pointer"
               >
                 <Download className="w-3.5 h-3.5" />
                 <span>Download / Print PDF</span>

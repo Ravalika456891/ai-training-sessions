@@ -125,13 +125,13 @@ export const DashboardMaterials: React.FC = () => {
           className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border self-start sm:self-auto ${
             isAuthorized
               ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-              : 'bg-blue-50 text-blue-700 border-blue-200'
+              : 'bg-[#1F386B]/[0.06] text-[#1F386B] border-[#1F386B]/20'
           }`}
         >
           {isAuthorized ? (
             <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
           ) : (
-            <Lock className="w-3.5 h-3.5 text-blue-600" />
+            <Lock className="w-3.5 h-3.5 text-[#1F386B]" />
           )}
           <span>{isAuthorized ? 'Materials Unlocked' : 'Material Previews • Locked'}</span>
         </span>
@@ -157,7 +157,7 @@ export const DashboardMaterials: React.FC = () => {
           {primary ? (
             <button
               onClick={() => openCheckout(primary.enrollmentId)}
-              className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-xs transition-colors shrink-0 cursor-pointer"
+              className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-[#E41937] hover:bg-[#c5122d] text-white font-bold rounded-xl shadow-xs transition-colors shrink-0 cursor-pointer"
             >
               <CreditCard className="w-3.5 h-3.5" />
               <span>Enroll & Pay Now</span>
@@ -167,7 +167,7 @@ export const DashboardMaterials: React.FC = () => {
               <button
                 disabled={isEnrolling}
                 onClick={() => enrollInBatch(previewBatch._id)}
-                className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-xs transition-colors shrink-0 cursor-pointer disabled:opacity-60"
+                className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-[#E41937] hover:bg-[#c5122d] text-white font-bold rounded-xl shadow-xs transition-colors shrink-0 cursor-pointer disabled:opacity-60"
               >
                 <CreditCard className="w-3.5 h-3.5" />
                 <span>{isEnrolling ? 'Reserving...' : 'Enroll & Pay'}</span>
@@ -186,7 +186,7 @@ export const DashboardMaterials: React.FC = () => {
             onClick={() => setActiveTab(tab.id)}
             className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
               activeTab === tab.id
-                ? 'bg-blue-600 text-white shadow-xs'
+                ? 'bg-[#1F386B] text-white shadow-xs'
                 : 'bg-white text-slate-600 hover:text-[#0F172A] border border-slate-200'
             }`}
           >
@@ -196,11 +196,11 @@ export const DashboardMaterials: React.FC = () => {
       </div>
 
       {downloadNotice && (
-        <div className="p-3.5 rounded-xl bg-blue-50 border border-blue-200 text-blue-800 text-xs flex items-center justify-between">
+        <div className="p-3.5 rounded-xl bg-[#1F386B]/[0.06] border border-[#1F386B]/20 text-[#1F386B] text-xs flex items-center justify-between">
           <span>{downloadNotice}</span>
           <button
             onClick={() => setDownloadNotice(null)}
-            className="text-blue-500 hover:text-blue-700 font-bold ml-2 cursor-pointer"
+            className="text-blue-500 hover:text-[#E41937] font-bold ml-2 cursor-pointer"
           >
             ✕
           </button>
@@ -218,10 +218,10 @@ export const DashboardMaterials: React.FC = () => {
             >
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <div className="w-10 h-10 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-2xl bg-[#1F386B]/[0.06] text-[#1F386B] flex items-center justify-center">
                     <Icon className="w-5 h-5" />
                   </div>
-                  <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-md bg-blue-50 text-blue-700 border border-blue-200">
+                  <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-md bg-[#1F386B]/[0.06] text-[#1F386B] border border-[#1F386B]/20">
                     {m.type}
                   </span>
                 </div>
@@ -240,7 +240,7 @@ export const DashboardMaterials: React.FC = () => {
                   onClick={() => handleAccessResource(m)}
                   className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                     isAuthorized
-                      ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-xs'
+                      ? 'bg-[#E41937] hover:bg-[#c5122d] text-white shadow-xs'
                       : 'bg-slate-100 text-slate-600 hover:bg-slate-200 border border-slate-200'
                   }`}
                 >
@@ -275,7 +275,7 @@ export const DashboardMaterials: React.FC = () => {
           <div className="bg-white max-w-xl w-full rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-2xl space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <div>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-blue-600">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[#1F386B]">
                   {selectedResource.type}
                 </span>
                 <h3 className="font-extrabold text-base text-[#0F172A]">
@@ -306,7 +306,7 @@ export const DashboardMaterials: React.FC = () => {
                     setDownloadNotice('Copied template to clipboard!');
                     setSelectedResource(null);
                   }}
-                  className="px-4 py-2 rounded-xl bg-blue-600 text-white text-xs font-bold cursor-pointer"
+                  className="px-4 py-2 rounded-xl bg-[#1F386B] text-white text-xs font-bold cursor-pointer"
                 >
                   Copy Content
                 </button>

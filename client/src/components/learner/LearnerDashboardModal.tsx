@@ -122,7 +122,7 @@ export const LearnerDashboardModal: React.FC<LearnerDashboardModalProps> = ({
         {/* Header Bar */}
         <div className="p-5 sm:p-6 bg-slate-50 border-b border-slate-200 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-sm">
+            <div className="w-10 h-10 rounded-xl bg-[#1F386B] flex items-center justify-center text-white shadow-sm">
               <GraduationCap className="w-5 h-5 text-white" />
             </div>
             <div>
@@ -162,11 +162,11 @@ export const LearnerDashboardModal: React.FC<LearnerDashboardModalProps> = ({
                 onClick={() => setActiveTab(tab.id as any)}
                 className={`flex items-center gap-2 py-3 px-4 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap transition-colors ${
                   isActive
-                    ? 'border-blue-600 text-blue-700 font-semibold'
+                    ? 'border-blue-600 text-[#1F386B] font-semibold'
                     : 'border-transparent text-[#475569] hover:text-[#0F172A]'
                 }`}
               >
-                <Icon className={`w-4 h-4 ${isActive ? 'text-blue-600' : 'text-slate-400'}`} />
+                <Icon className={`w-4 h-4 ${isActive ? 'text-[#1F386B]' : 'text-slate-400'}`} />
                 <span>{tab.label}</span>
                 {tab.count !== undefined && (
                   <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-slate-100 text-slate-600">
@@ -182,7 +182,7 @@ export const LearnerDashboardModal: React.FC<LearnerDashboardModalProps> = ({
         <div className="p-6 overflow-y-auto flex-1">
           {isLoading ? (
             <div className="py-20 text-center space-y-3">
-              <Loader2 className="w-8 h-8 animate-spin text-blue-600 mx-auto" />
+              <Loader2 className="w-8 h-8 animate-spin text-[#1F386B] mx-auto" />
               <p className="text-xs text-slate-500">Loading your learner records...</p>
             </div>
           ) : (
@@ -203,13 +203,13 @@ export const LearnerDashboardModal: React.FC<LearnerDashboardModalProps> = ({
                       <Card key={w.enrollmentId} className="p-5 border-slate-200 bg-slate-50 space-y-4">
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-200">
                           <div>
-                            <span className="text-[11px] font-mono text-blue-700 font-bold block">
+                            <span className="text-[11px] font-mono text-[#1F386B] font-bold block">
                               {w.workshop.batchCode}
                             </span>
                             <h4 className="text-base font-bold text-[#0F172A] mt-0.5">{w.workshop.title}</h4>
                             <div className="flex items-center gap-3 text-xs text-slate-500 mt-1">
                               <span className="flex items-center gap-1">
-                                <Clock className="w-3.5 h-3.5 text-blue-600" />
+                                <Clock className="w-3.5 h-3.5 text-[#1F386B]" />
                                 {w.workshop.timings}
                               </span>
                               <span>•</span>
@@ -228,7 +228,7 @@ export const LearnerDashboardModal: React.FC<LearnerDashboardModalProps> = ({
                         <div className="p-4 rounded-xl bg-white border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm">
                           <div className="space-y-1 text-xs">
                             <div className="font-semibold text-[#0F172A] flex items-center gap-2">
-                              <Video className="w-4 h-4 text-blue-600" />
+                              <Video className="w-4 h-4 text-[#1F386B]" />
                               <span>Virtual Classroom Status: {w.sessionAccess.platform}</span>
                             </div>
                             <p className="text-slate-500 text-[11px]">
@@ -243,7 +243,7 @@ export const LearnerDashboardModal: React.FC<LearnerDashboardModalProps> = ({
                               href={w.sessionAccess.joinUrl}
                               target="_blank"
                               rel="noreferrer"
-                              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shrink-0"
+                              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#E41937] hover:bg-[#c5122d] text-white font-bold text-xs shrink-0"
                             >
                               <Video className="w-4 h-4" />
                               <span>Join Live Session</span>
@@ -264,8 +264,8 @@ export const LearnerDashboardModal: React.FC<LearnerDashboardModalProps> = ({
               {/* TAB 2: RESOURCES & DELIVERABLES */}
               {activeTab === 'resources' && (
                 <div className="space-y-4">
-                  <div className="p-4 rounded-2xl bg-blue-50/60 border border-blue-200 text-xs text-[#0F172A]">
-                    <strong className="block mb-1 text-blue-800">Bootcamp Starter Pack:</strong>
+                  <div className="p-4 rounded-2xl bg-[#1F386B]/[0.06] border border-[#1F386B]/20 text-xs text-[#0F172A]">
+                    <strong className="block mb-1 text-[#1F386B]">Bootcamp Starter Pack:</strong>
                     Download your standardized prompt templates, project boilerplates, and automation workflows.
                   </div>
 
@@ -304,7 +304,7 @@ export const LearnerDashboardModal: React.FC<LearnerDashboardModalProps> = ({
                           <button
                             type="button"
                             onClick={() => alert(`Downloaded: ${item.title}`)}
-                            className="inline-flex items-center gap-1.5 text-xs text-blue-600 hover:underline font-semibold"
+                            className="inline-flex items-center gap-1.5 text-xs text-[#1F386B] hover:underline font-semibold"
                           >
                             <Download className="w-3.5 h-3.5" />
                             <span>Download Asset</span>
@@ -320,8 +320,8 @@ export const LearnerDashboardModal: React.FC<LearnerDashboardModalProps> = ({
               {activeTab === 'submissions' && (
                 <div className="space-y-6">
                   {projectSuccessMsg && (
-                    <div className="p-3.5 rounded-xl bg-blue-50 border border-blue-200 text-blue-700 text-xs flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 shrink-0 text-blue-600" />
+                    <div className="p-3.5 rounded-xl bg-[#1F386B]/[0.06] border border-[#1F386B]/20 text-[#1F386B] text-xs flex items-center gap-2">
+                      <CheckCircle2 className="w-4 h-4 shrink-0 text-[#1F386B]" />
                       <span>{projectSuccessMsg}</span>
                     </div>
                   )}
@@ -348,7 +348,7 @@ export const LearnerDashboardModal: React.FC<LearnerDashboardModalProps> = ({
                             placeholder="e.g., Autonomous Support Agent & PRD Prototype"
                             value={projectTitle}
                             onChange={(e) => setProjectTitle(e.target.value)}
-                            className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-[#0F172A] focus:outline-none focus:ring-2 focus:ring-blue-600 focus:bg-white"
+                            className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-[#0F172A] focus:outline-none focus:ring-2 focus:ring-[#1F386B] focus:bg-white"
                           />
                         </div>
 
@@ -360,7 +360,7 @@ export const LearnerDashboardModal: React.FC<LearnerDashboardModalProps> = ({
                               placeholder="https://github.com/username/project"
                               value={repoUrl}
                               onChange={(e) => setRepoUrl(e.target.value)}
-                              className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-[#0F172A] focus:outline-none focus:ring-2 focus:ring-blue-600 focus:bg-white"
+                              className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-[#0F172A] focus:outline-none focus:ring-2 focus:ring-[#1F386B] focus:bg-white"
                             />
                           </div>
 
@@ -371,7 +371,7 @@ export const LearnerDashboardModal: React.FC<LearnerDashboardModalProps> = ({
                               placeholder="https://my-app.netlify.app"
                               value={demoUrl}
                               onChange={(e) => setDemoUrl(e.target.value)}
-                              className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-[#0F172A] focus:outline-none focus:ring-2 focus:ring-blue-600 focus:bg-white"
+                              className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-[#0F172A] focus:outline-none focus:ring-2 focus:ring-[#1F386B] focus:bg-white"
                             />
                           </div>
                         </div>
@@ -383,7 +383,7 @@ export const LearnerDashboardModal: React.FC<LearnerDashboardModalProps> = ({
                             placeholder="Briefly describe what you built, which AI tools were integrated, and key challenges solved..."
                             value={notes}
                             onChange={(e) => setNotes(e.target.value)}
-                            className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-[#0F172A] focus:outline-none focus:ring-2 focus:ring-blue-600 focus:bg-white"
+                            className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-[#0F172A] focus:outline-none focus:ring-2 focus:ring-[#1F386B] focus:bg-white"
                           />
                         </div>
 
@@ -446,7 +446,7 @@ export const LearnerDashboardModal: React.FC<LearnerDashboardModalProps> = ({
                               <Badge variant="primary" size="sm">
                                 Verified Credential
                               </Badge>
-                              <span className="font-mono text-xs text-blue-700 font-bold">
+                              <span className="font-mono text-xs text-[#1F386B] font-bold">
                                 {cert.serialNumber}
                               </span>
                             </div>

@@ -121,7 +121,7 @@ export const DashboardAssignments: React.FC = () => {
               <button
                 onClick={() => enrollInBatch(previewWorkshop._id)}
                 disabled={isEnrolling}
-                className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-xs transition-all cursor-pointer shrink-0 disabled:opacity-60"
+                className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-[#E41937] hover:bg-[#c5122d] text-white text-xs font-bold shadow-xs transition-all cursor-pointer shrink-0 disabled:opacity-60"
               >
                 <CreditCard className="w-3.5 h-3.5" />
                 <span>
@@ -147,7 +147,7 @@ export const DashboardAssignments: React.FC = () => {
               className="p-5 rounded-3xl bg-white border border-slate-200 shadow-xs space-y-2.5"
             >
               <div className="flex items-center justify-between">
-                <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-md bg-indigo-50 text-indigo-700 border border-indigo-200">
+                <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-md bg-[#E41937]/[0.08] text-[#E41937] border border-[#E41937]/25">
                   Day {task.dayNumber || 1} Task
                 </span>
                 <span className="text-xs font-semibold text-slate-500">
@@ -167,11 +167,11 @@ export const DashboardAssignments: React.FC = () => {
         <div className="lg:col-span-7 bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-xs space-y-5">
           <div className="pb-3 border-b border-slate-100 flex items-center justify-between">
             <h3 className="text-sm font-bold text-[#0F172A] flex items-center gap-2">
-              <Upload className="w-4 h-4 text-indigo-600" />
+              <Upload className="w-4 h-4 text-[#E41937]" />
               <span>Submit Assignment Deliverable</span>
             </h3>
             {primary && (
-              <span className="text-[10px] font-mono font-bold text-indigo-600 bg-indigo-50 px-2.5 py-0.5 rounded-md border border-indigo-200">
+              <span className="text-[10px] font-mono font-bold text-[#E41937] bg-[#E41937]/[0.08] px-2.5 py-0.5 rounded-md border border-[#E41937]/25">
                 {primary.workshop?.batchCode}
               </span>
             )}
@@ -250,7 +250,7 @@ export const DashboardAssignments: React.FC = () => {
             <button
               type="submit"
               disabled={isSubmitting || !isAuthorized}
-              className="w-full inline-flex items-center justify-center gap-2 py-3 px-5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-xs transition-all cursor-pointer disabled:opacity-60"
+              className="w-full inline-flex items-center justify-center gap-2 py-3 px-5 rounded-xl bg-[#E41937] hover:bg-[#c5122d] text-white text-xs font-bold shadow-xs transition-all cursor-pointer disabled:opacity-60"
             >
               {isSubmitting ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -270,7 +270,7 @@ export const DashboardAssignments: React.FC = () => {
 
         {/* Submission Status & Instructor Feedback Column */}
         <div className="lg:col-span-5 space-y-4">
-          <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-xs space-y-4">
+          <div className="bg-white p-6 rounded-xl border border-slate-200 border-b-[3px] border-b-[#1F386B] shadow-xs space-y-4">
             <h3 className="text-sm font-bold text-[#0F172A] flex items-center justify-between pb-3 border-b border-slate-100">
               <span className="flex items-center gap-2">
                 <ClipboardCheck className="w-4 h-4 text-emerald-600" />
@@ -301,7 +301,7 @@ export const DashboardAssignments: React.FC = () => {
                             ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
                             : sub.status === 'needs_revision'
                             ? 'bg-amber-50 text-amber-700 border-amber-200'
-                            : 'bg-indigo-50 text-indigo-700 border-indigo-200'
+                            : 'bg-[#E41937]/[0.08] text-[#E41937] border-[#E41937]/25'
                         }`}
                       >
                         {sub.status || 'submitted'}
@@ -315,7 +315,7 @@ export const DashboardAssignments: React.FC = () => {
                     {/* Instructor Feedback Box */}
                     <div className="p-3 rounded-xl bg-white border border-slate-200/80 space-y-1">
                       <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-purple-700">
-                        <MessageSquare className="w-3 h-3 text-purple-600" />
+                        <MessageSquare className="w-3 h-3 text-[#E41937]" />
                         <span>Instructor Feedback</span>
                       </div>
                       <p className="text-[11px] text-slate-600">
@@ -332,7 +332,7 @@ export const DashboardAssignments: React.FC = () => {
                           href={sub.repositoryUrl}
                           target="_blank"
                           rel="noreferrer"
-                          className="text-indigo-600 hover:underline flex items-center gap-1 font-mono"
+                          className="text-[#E41937] hover:underline flex items-center gap-1 font-mono"
                         >
                           <Code2 className="w-3 h-3" />
                           <span>Repo</span>
@@ -343,7 +343,7 @@ export const DashboardAssignments: React.FC = () => {
                           href={sub.liveDemoUrl}
                           target="_blank"
                           rel="noreferrer"
-                          className="text-indigo-600 hover:underline flex items-center gap-1 font-mono"
+                          className="text-[#E41937] hover:underline flex items-center gap-1 font-mono"
                         >
                           <ExternalLink className="w-3 h-3" />
                           <span>Demo</span>
