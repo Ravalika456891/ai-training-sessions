@@ -3,6 +3,7 @@ import { Plus, Edit3, Archive, Trash2, Globe, EyeOff, RefreshCw, X, ExternalLink
 import { useAdmin } from './AdminLayout';
 import { Button } from '../../components/common/Button';
 import { normalizeMeetingUrl, isValidMeetingUrl } from '../../utils/url';
+import { saveCustomWorkshop } from '../../utils/customWorkshops';
 
 export const AdminWorkshops: React.FC = () => {
   const { adminFetch, showToast } = useAdmin();
@@ -112,6 +113,13 @@ export const AdminWorkshops: React.FC = () => {
         });
         showToast('New workshop cohort created');
       }
+
+      // Save locally so it immediately shows up on public registration
+      saveCustomWorkshop({
+        ...payload,
+        batchCode: payload.batchCode.trim().toUpperCase(),
+      });
+
       setIsModalOpen(false);
       loadWorkshops();
     } catch (err: any) {

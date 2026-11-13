@@ -1,4 +1,5 @@
 import type { RegistrationFormData } from '../types/workshop';
+import { mergeWorkshopsWithStored } from '../utils/customWorkshops';
 
 const API_BASE = (import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api` : '/api');
 
@@ -176,15 +177,26 @@ function getRegistrationProof(email?: string): string | undefined {
 export const api = {
   // Workshops
   async getWorkshops(): Promise<{ success: boolean; data: ApiWorkshop[] }> {
-    const res = await fetch(`${API_BASE}/workshops`, {
-      headers: customHeaders,
-      cache: 'no-store',
-    });
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.message || 'Failed to fetch workshops');
+    try {
+      const res = await fetch(`${API_BASE}/workshops`, {
+        headers: customHeaders,
+        cache: 'no-store',
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.message || 'Failed to fetch workshops');
+      }
+      const json = await res.json();
+      return {
+        ...json,
+        data: mergeWorkshopsWithStored(json.data || []),
+      };
+    } catch {
+      return {
+        success: true,
+        data: mergeWorkshopsWithStored([]),
+      };
     }
-    return res.json();
   },
 
   async getWorkshopById(id: string): Promise<{ success: boolean; data: ApiWorkshop }> {

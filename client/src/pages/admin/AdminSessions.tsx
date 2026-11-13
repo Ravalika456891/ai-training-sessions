@@ -15,6 +15,7 @@ import {
 import { useAdmin } from './AdminLayout';
 import { Button } from '../../components/common/Button';
 import { normalizeMeetingUrl, isValidMeetingUrl } from '../../utils/url';
+import { saveCustomSession } from '../../utils/customWorkshops';
 
 export const AdminSessions: React.FC = () => {
   const { adminFetch, showToast } = useAdmin();
@@ -139,6 +140,14 @@ export const AdminSessions: React.FC = () => {
           liveSessionUrl: normalizedUrl,
         }),
       });
+
+      // Save locally so the public registration selector immediately reflects this session on any tab/refresh
+      saveCustomSession({
+        ...form,
+        batchCode: form.batchCode.trim().toUpperCase(),
+        liveSessionUrl: normalizedUrl,
+      });
+
       showToast('Session saved & synced to public workshop registration');
       setIsModalOpen(false);
       await loadSessions();

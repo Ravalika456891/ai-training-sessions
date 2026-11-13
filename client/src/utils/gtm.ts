@@ -17,3 +17,4 @@ export function pushGtmEvent(event: string, payload?: Record<string, any>): void
     });
   }
 }
+

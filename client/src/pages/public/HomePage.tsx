@@ -16,6 +16,7 @@ import { AuthModal } from '../../components/auth/AuthModal';
 import { AdminConsoleModal } from '../../components/admin/AdminConsoleModal';
 import { CertificateVerifyModal } from '../../components/certificate/CertificateVerifyModal';
 import { BATCH_OPTIONS, WORKSHOP_CONFIG } from '../../data/workshopData';
+import { mergeBatchOptionsWithStored } from '../../utils/customWorkshops';
 import { ArrowRight, Clock, Mail, ShieldCheck, LogIn, LayoutDashboard } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { api, type ApiWorkshop } from '../../services/api';
@@ -27,7 +28,7 @@ export const HomePage: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const batchFromUrl = searchParams.get('batch');
-  const [batches, setBatches] = useState<BatchOption[]>(BATCH_OPTIONS);
+  const [batches, setBatches] = useState<BatchOption[]>(() => mergeBatchOptionsWithStored(BATCH_OPTIONS));
   const [selectedBatchId, setSelectedBatchId] = useState<string>(
     () => batchFromUrl || sessionStorage.getItem('ailp_selected_batch') || BATCH_OPTIONS[0].id
   );
@@ -73,12 +74,13 @@ export const HomePage: React.FC = () => {
               taxPercentage: w.price.taxPercentage || 18,
             },
           }));
-          setBatches(apiBatches);
+          const merged = mergeBatchOptionsWithStored(apiBatches);
+          setBatches(merged);
           const savedBatch = batchFromUrl || sessionStorage.getItem('ailp_selected_batch');
           const matchedBatch = savedBatch
-            ? apiBatches.find((b) => b.id === savedBatch || b.batchCode === savedBatch)
+            ? merged.find((b) => b.id === savedBatch || b.batchCode === savedBatch)
             : null;
-          const nextId = matchedBatch ? matchedBatch.id : apiBatches[0].id;
+          const nextId = matchedBatch ? matchedBatch.id : merged[0]?.id || BATCH_OPTIONS[0].id;
           setSelectedBatchId(nextId);
           sessionStorage.setItem('ailp_selected_batch', nextId);
         }

@@ -36,8 +36,40 @@ export const BATCH_OPTIONS: BatchOption[] = [
       basePrice: 1999,
       currency: 'INR',
       taxPercentage: 18,
-    }
-  }
+    },
+  },
+  {
+    id: 'batch-nov-26',
+    batchCode: 'AILP-2026-NOV-26',
+    dateRange: 'Nov 26 – Nov 27, 2026',
+    days: 'Thursday & Friday',
+    timings: '10:00 AM – 3:00 PM IST',
+    timezone: 'Asia/Kolkata (IST)',
+    totalSeats: 60,
+    availableSeats: 48,
+    status: 'Open',
+    pricing: {
+      basePrice: 1999,
+      currency: 'INR',
+      taxPercentage: 18,
+    },
+  },
+  {
+    id: 'batch-dec-12',
+    batchCode: 'AILP-2026-DEC-12',
+    dateRange: 'Dec 12 – Dec 13, 2026',
+    days: 'Saturday & Sunday',
+    timings: '10:00 AM – 3:00 PM IST',
+    timezone: 'Asia/Kolkata (IST)',
+    totalSeats: 60,
+    availableSeats: 60,
+    status: 'Open',
+    pricing: {
+      basePrice: 1999,
+      currency: 'INR',
+      taxPercentage: 18,
+    },
+  },
 ];
 
 export const LEARNING_OUTCOMES: LearningOutcome[] = [

@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import { useAdmin } from './AdminLayout';
 import { normalizeMeetingUrl, isValidMeetingUrl } from '../../utils/url';
+import { saveCustomSession } from '../../utils/customWorkshops';
 
 export interface CalendarSession {
   _id: string;
@@ -632,6 +633,21 @@ export const AdminCalendar: React.FC = () => {
         });
         showToast(res.message || 'Class scheduled successfully');
       }
+
+      // Save locally so the public registration selector immediately reflects this session on any tab/refresh
+      saveCustomSession({
+        batchCode: payload.batchCode,
+        dayNumber: 1,
+        title: payload.title,
+        sessionDate: payload.sessionDate,
+        startTime: payload.startTime,
+        endTime: payload.endTime,
+        timezone: payload.timezone,
+        instructorName: payload.instructorName,
+        liveSessionUrl: payload.liveSessionUrl,
+        meetingPasscode: payload.meetingPasscode,
+        capacity: payload.maxAttendees,
+      });
 
       // Jump calendar to the scheduled date so admin sees it immediately
       setCurrentDate(new Date(`${formData.sessionDate}T10:00:00`));
