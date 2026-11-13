@@ -20,3 +20,4 @@ export function isValidMeetingUrl(rawUrl?: string | null): boolean {
     return false;
   }
 }
+
